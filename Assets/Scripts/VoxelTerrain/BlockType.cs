@@ -6,10 +6,11 @@
     
         Grass,
         Dirt,
-        Water,
         Stone,
-        Wood,
         Sand,
+        Water,
+        Wood,
+        Snow,
     
         NumTypes
     }

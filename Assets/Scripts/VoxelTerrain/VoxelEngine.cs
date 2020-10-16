@@ -13,8 +13,12 @@ namespace VoxelTerrain
         [SerializeField] private Material _material;
         [SerializeField] private int _chunkDistance = 10;
         [SerializeField] private int _chunkHeight = 10;
+        [SerializeField] private Transform _origin;
+        [SerializeField] private int _stoneDepth;
+        [SerializeField] private int _snowHeight;
+        [SerializeField] private int _caveStartHeight;
 
-        private void Start()
+        private void Awake()
         {
             StartCoroutine(GenerateWorld());
         }
@@ -22,13 +26,13 @@ namespace VoxelTerrain
         private IEnumerator GenerateWorld()
         {
             var timeElapsed = 0f;
-            for (var x = -_chunkDistance; x <= _chunkDistance; x += _chunkSize)
+            for (var x = _origin.position.x - _chunkDistance; x <= _origin.position.x + _chunkDistance; x += _chunkSize)
             {
-                for (int y = -_chunkHeight; y <= _chunkHeight; y += _chunkSize)
+                for (var y = _origin.position.y - _chunkHeight; y <= _origin.position.y + _chunkHeight; y += _chunkSize)
                 {
-                    for (var z = -_chunkDistance; z <= _chunkDistance; z += _chunkSize)
+                    for (var z = _origin.position.z - _chunkDistance; z <= _origin.position.z + _chunkDistance; z += _chunkSize)
                     {
-                        StartCoroutine(BuildChunk(x, y, z));
+                        StartCoroutine(BuildChunk((int) x, (int) y, (int) z));
                         timeElapsed += Time.deltaTime;
                         yield return null;
                     }
@@ -64,19 +68,26 @@ namespace VoxelTerrain
 
         private BlockType SetBlocks(int x, int y, int z)
         {
-            float simplex1 = _fastNoise.GetNoise(x*.8f, z*.8f)*10;
-            float simplex2 = _fastNoise.GetNoise(x * 3f, z * 3f) * 10*(_fastNoise.GetNoise(x*.3f, z*.3f)+.5f);
+            var simplex1 = _fastNoise.GetNoise(x*.8f, z*.8f)*10;
+            var simplex2 = _fastNoise.GetNoise(x * 3f, z * 3f) * 10*(_fastNoise.GetNoise(x*.3f, z*.3f)+.5f);
 
-            float heightMap = simplex1 + simplex2;
+            var heightMap = simplex1 + simplex2;
         
             //add the 2d noise to the middle of the terrain chunk
-            float baseLandHeight = _chunkSize * .5f + heightMap;
+            var baseLandHeight = _chunkSize * 0.5f + heightMap;
             
             //3d noise for caves and overhangs and such
-            float caveNoise1 = _fastNoise.GetNoise(x*5f, y*10f, z*5f);
-            float caveMask = _fastNoise.GetNoise(x * .3f, z * .3f)+.3f;
-        
-            BlockType blockType = BlockType.Default;
+            var caveNoise1 = _fastNoise.GetNoise(x*5f, y*10f, z*5f);
+            var caveMask = _fastNoise.GetNoise(x * .3f, z * .3f)+.3f;
+            
+            //stone layer heightmap
+            var simplexStone1 = _fastNoise.GetNoise(x * 1f, z * 1f) * 10;
+            var simplexStone2 = (_fastNoise.GetNoise(x * 5f, z * 5f)+.5f) * 20 * (_fastNoise.GetNoise(x * .3f, z * .3f) + .5f);
+
+            var stoneHeightMap = simplexStone1 + simplexStone2;
+            var baseStoneHeight = _chunkSize * 0.1f + stoneHeightMap;
+
+            var blockType = BlockType.Default;
 
             //under the surface, dirt block
             if(y <= baseLandHeight)
@@ -84,12 +95,13 @@ namespace VoxelTerrain
                 blockType = BlockType.Dirt;
 
                 //just on the surface, use a grass type
-                if(y > baseLandHeight - 1)
-                    blockType = BlockType.Grass;
+                if(y > baseLandHeight - 1) blockType = BlockType.Grass;
+
+                if (y > _snowHeight) blockType = BlockType.Snow;
+
+                if(y <= baseStoneHeight && y < baseLandHeight - _stoneDepth) blockType = BlockType.Stone;
             }
-            
-            
-            if(caveNoise1 > Mathf.Max(caveMask, .2f))
+            if(caveNoise1 > Mathf.Max(caveMask, .2f) && y <= _caveStartHeight)
                 blockType = BlockType.Default;
 
             return blockType;

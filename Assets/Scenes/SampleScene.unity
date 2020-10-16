@@ -150,9 +150,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b650019544c210a4a8945ae2b27800be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _material: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  _material: {fileID: 2100000, guid: 07a6c4bab4ac7e44cab965e02712bc17, type: 2}
   _chunkDistance: 160
   _chunkHeight: 16
+  _origin: {fileID: 201202582}
+  _stoneDepth: 3
+  _snowHeight: 15
+  _caveStartHeight: 0
 --- !u!4 &201202582
 Transform:
   m_ObjectHideFlags: 0

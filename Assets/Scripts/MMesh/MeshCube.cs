@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using VoxelTerrain;
 
@@ -9,7 +10,9 @@ namespace MMesh
         private readonly Chunk _chunk;
     
         private static readonly List<Vector3> Vertices = new List<Vector3>();
-        private static readonly List<int>Triangles = new List<int>();
+        private static readonly List<int> Triangles = new List<int>();
+        private static readonly List<Color> Colors = new List<Color>();
+        private static readonly Color32[] _colors = {new Color32(66, 177, 0, 255), new Color32(87, 51, 0, 255), new Color32(85, 85, 85, 255), new Color32(255, 176, 0, 255), new Color32(255, 255, 255, 255)   };
 
 
         private static readonly Vector3[] CubeVertices = {
@@ -59,6 +62,7 @@ namespace MMesh
         {
             Vertices.Clear();
             Triangles.Clear();
+            Colors.Clear();
 
             for (var x = 0; x < Chunk.ChunkSize; x++)
             {
@@ -129,6 +133,50 @@ namespace MMesh
                             numFaces++;
                         }
 
+                        switch (voxelType)
+                        {
+                            case BlockType.Grass:
+                                for (var i = 0; i < numFaces * 4; i++)
+                                {
+                                    Colors.Add(_colors[0]);
+                                }
+                                break;
+                            case BlockType.Dirt:
+                                for (var i = 0; i < numFaces * 4; i++)
+                                {
+                                    Colors.Add(_colors[1]);
+                                }
+                                break;
+                            case BlockType.Water:
+                                break;
+                            case BlockType.Stone:
+                                for (var i = 0; i < numFaces * 4; i++)
+                                {
+                                    Colors.Add(_colors[2]);
+                                }
+                                break;
+                            case BlockType.Wood:
+                                break;
+                            case BlockType.Sand:
+                                for (var i = 0; i < numFaces * 4; i++)
+                                {
+                                    Colors.Add(_colors[3]);
+                                }
+                                break;
+                            case BlockType.NumTypes:
+                                break;
+                            case BlockType.Default:
+                                break;
+                            case BlockType.Snow:
+                                for (var i = 0; i < numFaces * 4; i++)
+                                {
+                                    Colors.Add(_colors[4]);
+                                }
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
                         var tl = Vertices.Count - 4 * numFaces;
                         for (var i = 0; i < numFaces; i++)
                         {
@@ -139,9 +187,12 @@ namespace MMesh
             }
             // Apply new mesh to MeshFilter
             var mesh = new Mesh();
+            if (!mesh) return mesh;
             mesh.SetVertices(Vertices);
             mesh.SetTriangles(Triangles.ToArray(), 0);
+            mesh.SetColors(Colors);
             mesh.RecalculateNormals();
+
             return mesh;
         }
     }
