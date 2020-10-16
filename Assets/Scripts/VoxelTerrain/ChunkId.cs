@@ -8,9 +8,9 @@
 
         public ChunkId(int x, int y, int z)
         {
-            _x = x >> 4;
-            _y = y >> 4;
-            _z = z >> 4;
+            _x = x;
+            _y = y;
+            _z = z;
         }
 
         #region Equality Members
@@ -51,7 +51,8 @@
 
         public static ChunkId FromWorldPos(int x, int y, int z)
         {
-            return new ChunkId(x >> 4, y >> 4, z >> 4);
+            //return new ChunkId(x << 4, y << 4, z << 4);
+            return new ChunkId(x, y, z);
         }
     }
 }

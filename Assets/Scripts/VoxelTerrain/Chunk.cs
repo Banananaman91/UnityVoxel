@@ -1,4 +1,5 @@
-﻿using MMesh;
+﻿using System;
+using MMesh;
 using UnityEngine;
 
 namespace VoxelTerrain
@@ -10,7 +11,7 @@ namespace VoxelTerrain
         private BlockType[,,] Voxels = new BlockType[ChunkSize,ChunkSize,ChunkSize];
     
         public MeshFilter MeshFilter => GetComponent<MeshFilter>();
-    
+
         public BlockType this[int x, int y, int z]
         {
             get => Voxels[x, y, z];

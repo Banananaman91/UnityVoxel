@@ -8,10 +8,10 @@
         Dirt,
         Stone,
         Sand,
+        Snow,
         Water,
         Wood,
-        Snow,
-    
+
         NumTypes
     }
 }
