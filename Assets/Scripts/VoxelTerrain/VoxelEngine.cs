@@ -28,12 +28,6 @@ namespace VoxelTerrain
                 {
                     for (var z = -_chunkDistance; z <= _chunkDistance; z += _chunkSize)
                     {
-                        // var chunkGameObject = new GameObject("Chunk " + x + ", 0, " + z);
-                        // chunkGameObject.transform.position = new Vector3(x, 0, z);
-                        // chunkGameObject.transform.parent = transform.parent;
-                        // var chunk = chunkGameObject.AddComponent<Chunk>();
-                        // _world.Chunks.Add(new ChunkId(x, 0, z), chunk);
-                        // chunkGameObject.GetComponent<MeshRenderer>().material = _material;
                         StartCoroutine(BuildChunk(x, y, z));
                         timeElapsed += Time.deltaTime;
                         yield return null;
@@ -77,6 +71,10 @@ namespace VoxelTerrain
         
             //add the 2d noise to the middle of the terrain chunk
             float baseLandHeight = _chunkSize * .5f + heightMap;
+            
+            //3d noise for caves and overhangs and such
+            float caveNoise1 = _fastNoise.GetNoise(x*5f, y*10f, z*5f);
+            float caveMask = _fastNoise.GetNoise(x * .3f, z * .3f)+.3f;
         
             BlockType blockType = BlockType.Default;
 
@@ -89,6 +87,10 @@ namespace VoxelTerrain
                 if(y > baseLandHeight - 1)
                     blockType = BlockType.Grass;
             }
+            
+            
+            if(caveNoise1 > Mathf.Max(caveMask, .2f))
+                blockType = BlockType.Default;
 
             return blockType;
         }
