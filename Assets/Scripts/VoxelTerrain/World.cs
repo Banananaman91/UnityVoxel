@@ -1,24 +1,24 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
-public class World
+namespace VoxelTerrain
 {
-    public Dictionary<ChunkId, Chunk> Chunks = new Dictionary<ChunkId, Chunk>();
-
-    public BlockType this[int x, int y, int z]
+    public class World
     {
-        get
-        {
-            var chunk = Chunks[ChunkId.FromWorldPos(x, y, z)];
-            return chunk[x & 0xf, y & 0xf, z & 0xf];
-        }
+        public Dictionary<ChunkId, Chunk> Chunks = new Dictionary<ChunkId, Chunk>();
 
-        set
+        public BlockType this[int x, int y, int z]
         {
-            var chunk = Chunks[ChunkId.FromWorldPos(x, y, z)];
-            chunk[x & 0xf, y & 0xf, z & 0xf] = value;
+            get
+            {
+                var chunk = Chunks[ChunkId.FromWorldPos(x, y, z)];
+                return chunk[x & 0xf, y & 0xf, z & 0xf];
+            }
+
+            set
+            {
+                var chunk = Chunks[ChunkId.FromWorldPos(x, y, z)];
+                chunk[x & 0xf, y & 0xf, z & 0xf] = value;
+            }
         }
     }
 }

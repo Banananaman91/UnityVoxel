@@ -1,17 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public enum BlockType
+﻿namespace VoxelTerrain
 {
-    Default = 0,
+    public enum BlockType
+    {
+        Default = 0,
     
-    Grass,
-    Dirt,
-    Water,
-    Stone,
-    Wood,
-    Sand,
+        Grass,
+        Dirt,
+        Water,
+        Stone,
+        Wood,
+        Sand,
     
-    NumTypes
+        NumTypes
+    }
 }
