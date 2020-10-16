@@ -151,8 +151,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _material: {fileID: 2100000, guid: 07a6c4bab4ac7e44cab965e02712bc17, type: 2}
-  _chunkDistance: 160
-  _chunkHeight: 16
+  _chunkDistance: 80
+  _chunkHeightDist: 32
+  _chunkHeight: 32
   _origin: {fileID: 1562540283}
   _stoneDepth: 3
   _snowHeight: 15
@@ -342,7 +343,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1562540280}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 22.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

@@ -8,7 +8,8 @@ namespace VoxelTerrain
     public class Chunk : MonoBehaviour
     {
         public const int ChunkSize = 16;
-        private BlockType[,,] Voxels = new BlockType[ChunkSize,ChunkSize,ChunkSize];
+        public const int ChunkHeight = 32;
+        private BlockType[,,] Voxels = new BlockType[ChunkSize,ChunkHeight,ChunkSize];
     
         public MeshFilter MeshFilter => GetComponent<MeshFilter>();
 

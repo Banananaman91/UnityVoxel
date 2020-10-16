@@ -67,7 +67,7 @@ namespace MMesh
 
             for (var x = 0; x < Chunk.ChunkSize; x++)
             {
-                for (var y = 0; y < Chunk.ChunkSize; y++)
+                for (var y = 0; y < Chunk.ChunkHeight; y++)
                 {
                     for (var z = 0; z < Chunk.ChunkSize; z++)
                     {
@@ -105,7 +105,7 @@ namespace MMesh
                             _numFaces++;
                         }
                     
-                        if (y == Chunk.ChunkSize - 1 || _chunk[x, y + 1, z] == 0) //top face
+                        if (y == Chunk.ChunkHeight - 1 || _chunk[x, y + 1, z] == 0) //top face
                         {
                             Vertices.Add(_pos + CubeVertices[3]);
                             Vertices.Add(_pos + CubeVertices[4]);

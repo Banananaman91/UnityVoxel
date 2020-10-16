@@ -15,7 +15,8 @@ namespace VoxelTerrain
         private FastNoiseLite _fastNoise = new FastNoiseLite();
         [SerializeField] private Material _material;
         [SerializeField] private int _chunkDistance = 10;
-        [SerializeField] private int _chunkHeight = 10;
+        [SerializeField, Tooltip("Must be divisible by 32")] private int _chunkHeightDist = 32;
+        [SerializeField] private int _chunkHeight = 32;
         [SerializeField] private Transform _origin;
         [SerializeField] private int _stoneDepth;
         [SerializeField] private int _snowHeight;
@@ -40,12 +41,11 @@ namespace VoxelTerrain
             if (!_loaded) return;
 
             var curChunkPosX = Mathf.FloorToInt(position.x / 16) * 16;
-            var curChunkPosY = Mathf.FloorToInt(position.y / 16) * 16;
+            var curChunkPosY = Mathf.FloorToInt(position.y / 32) * 32;
             var curChunkPosZ = Mathf.FloorToInt(position.z / 16) * 16;
 
             var hasChunk =
                 _world.Chunks.ContainsKey(ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ));
-            Debug.Log(ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ));
             if (!hasChunk) return;
             var chunk = _world.Chunks[ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ)];
             if (!currentChunk) currentChunk = chunk;
@@ -61,7 +61,7 @@ namespace VoxelTerrain
 
             for (var x = chunkTransPos.x - _chunkDistance; x <= chunkTransPos.x + _chunkDistance; x += _chunkSize)
             {
-                for (var y = chunkTransPos.y - _chunkHeight; y <= chunkTransPos.y + _chunkHeight; y += _chunkSize)
+                for (var y = chunkTransPos.y - _chunkHeightDist; y <= chunkTransPos.y + _chunkHeightDist; y += _chunkHeight)
                 {
                     for (var z = chunkTransPos.z - _chunkDistance; z <= chunkTransPos.z + _chunkDistance; z += _chunkSize)
                     {
@@ -79,7 +79,7 @@ namespace VoxelTerrain
             {
                 var cp = chunk.Value.transform.position;
                 if (Mathf.Abs(chunkTransPos.x - cp.x) > _chunkDistance ||
-                    Mathf.Abs(chunkTransPos.y - cp.y) > _chunkDistance ||
+                    Mathf.Abs(chunkTransPos.y - cp.y) > _chunkHeightDist ||
                     Mathf.Abs(chunkTransPos.z - cp.z) > _chunkDistance)
                 {
                     toDestroy.Add(chunk.Key);
@@ -112,7 +112,7 @@ namespace VoxelTerrain
             var timeElapsed = 0f;
             for (var x = _start.x - _chunkDistance; x <= _start.x + _chunkDistance; x += _chunkSize)
             {
-                for (var y = _start.y - _chunkHeight; y <= _start.y + _chunkHeight; y += _chunkSize)
+                for (var y = _start.y - _chunkHeightDist; y <= _start.y + _chunkHeightDist; y += _chunkHeight)
                 {
                     for (var z = _start.z - _chunkDistance; z <= _start.z + _chunkDistance; z += _chunkSize)
                     {
@@ -139,7 +139,7 @@ namespace VoxelTerrain
             {
                 for(var k = 0; k < _chunkSize; k++)
                 {
-                    for(var j = 0; j < _chunkSize; j++)
+                    for(var j = 0; j < _chunkHeight; j++)
                     {
                         chunk[i, j, k] = SetBlocks(x + i, j + y, k + z);
                     }
