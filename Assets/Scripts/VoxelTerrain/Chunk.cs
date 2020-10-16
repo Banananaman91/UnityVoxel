@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Noise;
 using UnityEngine;
-[RequireComponent(typeof(MeshFilter))][RequireComponent(typeof(MeshRenderer))]
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Chunk : MonoBehaviour
 {
     public const int ChunkSize = 16;
