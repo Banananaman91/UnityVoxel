@@ -1,23 +1,25 @@
-﻿namespace VoxelTerrain
+﻿using System;
+
+namespace VoxelTerrain
 {
     public readonly struct ChunkId
     {
-        private readonly int _x;
-        private readonly int _y;
-        private readonly int _z;
+        public readonly int X;
+        public readonly int Y;
+        public readonly int Z;
 
         public ChunkId(int x, int y, int z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         #region Equality Members
 
         public bool Equals(ChunkId other)
         {
-            return _x == other._x && _y == other._y && _z == other._z;
+            return X == other.X && Y == other.Y && Z == other.Z;
         }
 
         public override bool Equals(object obj)
@@ -30,9 +32,9 @@
         {
             unchecked
             {
-                var hashCode = _x;
-                hashCode = (hashCode * 397) ^ _y;
-                hashCode = (hashCode * 397) ^ _z;
+                var hashCode = X;
+                hashCode = (hashCode * 397) ^ Y;
+                hashCode = (hashCode * 397) ^ Z;
                 return hashCode;
             }
         }

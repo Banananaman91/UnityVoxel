@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using Noise;
 using UnityEngine;
 
@@ -24,12 +23,15 @@ namespace VoxelTerrain
 
         private Vector3 _start = Vector3.zero;
         
-        private List<Vector3> _chunkPool = new List<Vector3>();
-        public Chunk currentChunk;
+        private List<ChunkId> _toDestroy = new List<ChunkId>();
+        public Chunk _currentChunk;
+        private Vector3 _curChunkPos;
 
-        private Vector3 position => _origin.position;
+        private Vector3 Position => _origin.position;
 
         private bool _loaded;
+
+        private Vector3 _cp;
 
         private void Awake()
         {
@@ -40,73 +42,68 @@ namespace VoxelTerrain
         {
             if (!_loaded) return;
 
-            var curChunkPosX = Mathf.FloorToInt(position.x / 16) * 16;
-            var curChunkPosY = Mathf.FloorToInt(position.y / 32) * 32;
-            var curChunkPosZ = Mathf.FloorToInt(position.z / 16) * 16;
+            var curChunkPosX = Mathf.FloorToInt(Position.x / 16) * 16;
+            var curChunkPosY = Mathf.FloorToInt(Position.y / 32) * 32;
+            var curChunkPosZ = Mathf.FloorToInt(Position.z / 16) * 16;
 
             var hasChunk =
                 _world.Chunks.ContainsKey(ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ));
             if (!hasChunk) return;
             var chunk = _world.Chunks[ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ)];
-            if (!currentChunk) currentChunk = chunk;
+            if (!_currentChunk) _currentChunk = chunk;
 
-            if (chunk == currentChunk) return;
-            currentChunk = chunk;
+            if (chunk == _currentChunk) return;
+            _currentChunk = chunk;
+            _curChunkPos = _currentChunk.transform.position;
             StartCoroutine(ExpandTerrain());
         }
 
         private IEnumerator ExpandTerrain()
         {
-            var chunkTransPos = currentChunk.transform.position;
-
-            for (var x = chunkTransPos.x - _chunkDistance; x <= chunkTransPos.x + _chunkDistance; x += _chunkSize)
+            _toDestroy.Clear();
+            _curChunkPos = _currentChunk.transform.position;
+            for (var x = _curChunkPos.x - _chunkDistance; x <= _curChunkPos.x + _chunkDistance; x += _chunkSize)
             {
-                for (var y = chunkTransPos.y - _chunkHeightDist; y <= chunkTransPos.y + _chunkHeightDist; y += _chunkHeight)
+                for (var y = _curChunkPos.y - _chunkHeightDist;
+                    y <= _curChunkPos.y + _chunkHeightDist;
+                    y += _chunkHeight)
                 {
-                    for (var z = chunkTransPos.z - _chunkDistance; z <= chunkTransPos.z + _chunkDistance; z += _chunkSize)
+                    for (var z = _curChunkPos.z - _chunkDistance; z <= _curChunkPos.z + _chunkDistance; z += _chunkSize)
                     {
                         var hasChunk = _world.Chunks.ContainsKey(ChunkId.FromWorldPos((int) x, (int) y, (int) z));
                         if (hasChunk) continue;
-                        _chunkPool.Add(new Vector3(x, y, z));
+                        if (!_world.Chunks.ContainsKey(ChunkId.FromWorldPos((int) x, (int) y,
+                            (int) z)))
+                        {
+                            StartCoroutine(BuildChunk((int) x, (int) y, (int) z));
+                        }
+
                         yield return null;
                     }
                 }
             }
 
-            var toDestroy = new List<ChunkId>();
-
             foreach (var chunk in _world.Chunks)
             {
-                var cp = chunk.Value.transform.position;
-                if (Mathf.Abs(chunkTransPos.x - cp.x) > _chunkDistance ||
-                    Mathf.Abs(chunkTransPos.y - cp.y) > _chunkHeightDist ||
-                    Mathf.Abs(chunkTransPos.z - cp.z) > _chunkDistance)
+                if (Mathf.Abs(_curChunkPos.x - chunk.Key.X) > _chunkDistance ||
+                    Mathf.Abs(_curChunkPos.y - chunk.Key.Y) > _chunkHeightDist ||
+                    Mathf.Abs(_curChunkPos.z - chunk.Key.Z) > _chunkDistance)
                 {
-                    toDestroy.Add(chunk.Key);
+                    _toDestroy.Add(chunk.Key);
                 }
             }
 
-            foreach (var chunk in toDestroy)
+            if (_toDestroy.Count == 0) yield break;
+
+            foreach (var chunk in _toDestroy)
             {
+                if (!_world.Chunks.ContainsKey(chunk)) continue;
                 var dChunk = _world.Chunks[chunk];
                 _world.Chunks.Remove(chunk);
                 Destroy(dChunk.gameObject);
             }
-
-            if (_chunkPool.Count == 0) yield break;
-            for (int i = _chunkPool.Count - 1; i > 0; i--)
-            {
-                var chunkPos = _chunkPool[i];
-                if (!_world.Chunks.ContainsKey(ChunkId.FromWorldPos((int) chunkPos.x, (int) chunkPos.y,
-                    (int) chunkPos.z)))
-                {
-                    StartCoroutine(BuildChunk((int) chunkPos.x, (int) chunkPos.y, (int) chunkPos.z));
-                }
-
-                _chunkPool.Remove(chunkPos);
-            }
         }
-        
+
         private IEnumerator GenerateWorld()
         {
             var timeElapsed = 0f;
