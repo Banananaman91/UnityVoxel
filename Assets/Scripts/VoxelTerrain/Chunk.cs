@@ -12,6 +12,8 @@ namespace VoxelTerrain
         private BlockType[,,] Voxels = new BlockType[ChunkSize,ChunkHeight,ChunkSize];
     
         public MeshFilter MeshFilter => GetComponent<MeshFilter>();
+        
+        public bool IsAvailable { get; set; }
 
         public BlockType this[int x, int y, int z]
         {
@@ -21,7 +23,7 @@ namespace VoxelTerrain
 
         public MeshCube MeshCube;
 
-        public Chunk()
+        public void Awake()
         {
             MeshCube = new MeshCube(this);
         }
