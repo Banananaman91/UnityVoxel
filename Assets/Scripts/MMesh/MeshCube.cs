@@ -60,7 +60,7 @@ namespace MMesh
             _chunk = chunk;
         }
 
-        public async Task CreateMesh()
+        public async void CreateMesh()
         {
             Vertices.Clear();
             Triangles.Clear();

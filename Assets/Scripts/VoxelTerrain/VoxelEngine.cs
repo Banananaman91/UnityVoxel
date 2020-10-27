@@ -38,7 +38,8 @@ namespace VoxelTerrain
 
         private void Awake()
         {
-            StartCoroutine(GenerateWorld());
+            //StartCoroutine(GenerateWorld());
+            GenerateWorld();
         }
 
         private void Update()
@@ -89,42 +90,39 @@ namespace VoxelTerrain
             _curChunkPos = _currentChunk.transform.position;
             for (var x = _curChunkPos.x - _chunkDistance; x <= _curChunkPos.x + _chunkDistance; x += _chunkSize)
             {
-                for (var y = _curChunkPos.y - _chunkHeightDist;
-                    y <= _curChunkPos.y + _chunkHeightDist;
-                    y += _chunkHeight)
+                for (var y = _curChunkPos.y - _chunkHeightDist; y <= _curChunkPos.y + _chunkHeightDist; y += _chunkHeight)
                 {
                     for (var z = _curChunkPos.z - _chunkDistance; z <= _curChunkPos.z + _chunkDistance; z += _chunkSize)
                     {
-                        var hasChunk = _world.Chunks.ContainsKey(ChunkId.FromWorldPos((int) x, (int) y, (int) z));
-                        if (hasChunk) continue;
-                        if (!_world.Chunks.ContainsKey(ChunkId.FromWorldPos((int) x, (int) y,
-                            (int) z)))
-                        {
-                            BuildChunk((int) x, (int) y, (int) z);
-                            yield return null;
-                        }
+                        if (_world.Chunks.ContainsKey(ChunkId.FromWorldPos((int) x, (int) y, (int) z))) continue;
+                        BuildChunk((int) x, (int) y, (int) z);
+                        yield return null;
                     }
                 }
             }
         }
 
-        private IEnumerator GenerateWorld()
+        private void GenerateWorld()
         {
             var timeElapsed = 0f;
             for (var x = _start.x - _chunkDistance; x <= _start.x + _chunkDistance; x += _chunkSize)
             {
-                for (var y = _start.y - _chunkHeightDist; y <= _start.y + _chunkHeightDist; y += _chunkHeight)
-                {
-                    for (var z = _start.z - _chunkDistance; z <= _start.z + _chunkDistance; z += _chunkSize)
-                    {
-                        CreateNewChunkObject((int) x, (int) y, (int) z);
-                        timeElapsed += Time.deltaTime;
-                        yield return null;
-                    }
-                }
+                GenerateRow((int) x);
+                timeElapsed += Time.deltaTime;
             }
             Debug.Log("Time taken: " + timeElapsed);
             _loaded = true;
+        }
+
+        private void GenerateRow(int x)
+        {
+            for (var y = _start.y - _chunkHeightDist; y <= _start.y + _chunkHeightDist; y += _chunkHeight)
+            {
+                for (var z = _start.z - _chunkDistance; z <= _start.z + _chunkDistance; z += _chunkSize)
+                {
+                    CreateNewChunkObject(x, (int) y, (int) z);
+                }
+            }
         }
 
         private Chunk CreateNewChunkObject(int x, int y, int z)
@@ -166,7 +164,7 @@ namespace VoxelTerrain
             return chunk;
         }
 
-        private async Task BuildChunk(int x, int y, int z)
+        private void BuildChunk(int x, int y, int z)
         {
             var chunk = GetChunkObject(x, y, z);
             chunk.name = "Chunk " + x + ", " + y + ", " + z;
@@ -186,7 +184,7 @@ namespace VoxelTerrain
                     }
                 }
             }
-            await chunk.MeshCube.CreateMesh();
+            chunk.MeshCube.CreateMesh();
         }
 
         private BlockType SetBlocks(int x, int y, int z)

@@ -55,7 +55,7 @@ using FNLfloat = System.Single;
 
 namespace Noise
 {
-    public struct FastNoiseLite
+    public class FastNoiseLite
     {
         private const short INLINE = 256; // MethodImplOptions.AggressiveInlining;
         private const short OPTIMISE = 512; // MethodImplOptions.AggressiveOptimization;
@@ -121,28 +121,28 @@ namespace Noise
             DefaultOpenSimplex2 
         };
 
-        private static int mSeed = 1337;
-        private static float mFrequency = 0.01f;
-        private static NoiseType mNoiseType = NoiseType.OpenSimplex2;
-        private static RotationType3D mRotationType3D = RotationType3D.None;
-        private static TransformType3D mTransformType3D = TransformType3D.DefaultOpenSimplex2;
+        private int mSeed = 1337;
+        private float mFrequency = 0.01f;
+        private NoiseType mNoiseType = NoiseType.OpenSimplex2;
+        private RotationType3D mRotationType3D = RotationType3D.None;
+        private TransformType3D mTransformType3D = TransformType3D.DefaultOpenSimplex2;
 
-        private static FractalType mFractalType = FractalType.None;
-        private static int mOctaves = 3;
-        private static float mLacunarity = 2.0f;
-        private static float mGain = 0.5f;
-        private static float mWeightedStrength = 0.0f;
-        private static float mPingPongStength = 2.0f;
+        private FractalType mFractalType = FractalType.None;
+        private int mOctaves = 3;
+        private float mLacunarity = 2.0f;
+        private float mGain = 0.5f;
+        private float mWeightedStrength = 0.0f;
+        private float mPingPongStength = 2.0f;
 
-        private static float mFractalBounding = 1 / 1.75f;
+        private float mFractalBounding = 1 / 1.75f;
 
-        private static CellularDistanceFunction mCellularDistanceFunction = CellularDistanceFunction.EuclideanSq;
-        private static CellularReturnType mCellularReturnType = CellularReturnType.Distance;
-        private static float mCellularJitterModifier = 1.0f;
+        private CellularDistanceFunction mCellularDistanceFunction = CellularDistanceFunction.EuclideanSq;
+        private CellularReturnType mCellularReturnType = CellularReturnType.Distance;
+        private float mCellularJitterModifier = 1.0f;
 
-        private static DomainWarpType mDomainWarpType = DomainWarpType.OpenSimplex2;
-        private static TransformType3D mWarpTransformType3D = TransformType3D.DefaultOpenSimplex2;
-        private static float mDomainWarpAmp = 1.0f;
+        private DomainWarpType mDomainWarpType = DomainWarpType.OpenSimplex2;
+        private TransformType3D mWarpTransformType3D = TransformType3D.DefaultOpenSimplex2;
+        private float mDomainWarpAmp = 1.0f;
 
         /// <summary>
         /// Create new FastNoise object with optional seed
