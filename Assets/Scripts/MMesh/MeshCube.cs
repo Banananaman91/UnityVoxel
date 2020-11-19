@@ -63,7 +63,7 @@ namespace MMesh
             mesh = new Mesh();
         }
 
-        public async Task CreateMesh()
+        public async void CreateMesh()
         {
             Vertices.Clear();
             Triangles.Clear();

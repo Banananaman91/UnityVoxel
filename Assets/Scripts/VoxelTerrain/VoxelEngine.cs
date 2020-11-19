@@ -120,13 +120,8 @@ namespace VoxelTerrain
                 {
                     for (var z = _curChunkPos.z - _chunkDistance; z <= _curChunkPos.z + _chunkDistance; z += _chunkSize)
                     {
-                        var hasChunk = _world.Chunks.ContainsKey(ChunkId.FromWorldPos((int) x, (int) y, (int) z));
-                        if (hasChunk) continue;
-                        if (!_world.Chunks.ContainsKey(ChunkId.FromWorldPos((int) x, (int) y, (int) z)))
-                        {
-                            BuildChunk((int) x, (int) y, (int) z);
-                            //yield return null;
-                        }
+                        if (_world.Chunks.ContainsKey(ChunkId.FromWorldPos((int) x, (int) y, (int) z))) continue;
+                        BuildChunk((int) x, (int) y, (int) z);
                     }
                 }
             }
@@ -139,18 +134,22 @@ namespace VoxelTerrain
             var timeElapsed = 0f;
             for (var x = _start.x - _chunkDistance; x <= _start.x + _chunkDistance; x += _chunkSize)
             {
-                for (var y = _start.y - _chunkHeightDist; y <= _start.y + _chunkHeightDist; y += _chunkHeight)
-                {
-                    for (var z = _start.z - _chunkDistance; z <= _start.z + _chunkDistance; z += _chunkSize)
-                    {
-                        CreateNewChunkObject((int) x, (int) y, (int) z);
-                        timeElapsed += Time.deltaTime;
-                        //yield return null;
-                    }
-                }
+                GenerateRow((int) x);
+                timeElapsed += Time.deltaTime;
             }
             Debug.Log("Time taken: " + timeElapsed);
             _loaded = true;
+        }
+
+        private void GenerateRow(int x)
+        {
+            for (var y = _start.y - _chunkHeightDist; y <= _start.y + _chunkHeightDist; y += _chunkHeight)
+            {
+                for (var z = _start.z - _chunkDistance; z <= _start.z + _chunkDistance; z += _chunkSize)
+                {
+                    CreateNewChunkObject(x, (int) y, (int) z);
+                }
+            }
         }
 
         private Chunk CreateNewChunkObject(int x, int y, int z)
