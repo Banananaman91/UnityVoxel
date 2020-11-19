@@ -12,7 +12,11 @@ namespace VoxelTerrain
         private BlockType[,,] Voxels = new BlockType[ChunkSize,ChunkHeight,ChunkSize];
     
         public MeshFilter MeshFilter => GetComponent<MeshFilter>();
-        
+        public MeshRenderer MeshRender => GetComponent<MeshRenderer>();
+
+        public VoxelEngine Engine;
+        private bool MeshUpdate;
+
         public bool IsAvailable { get; set; }
 
         public BlockType this[int x, int y, int z]
@@ -26,6 +30,68 @@ namespace VoxelTerrain
         public void Awake()
         {
             MeshCube = new MeshCube(this);
+        }
+
+        public void LateUpdate()
+        {
+            if (!Engine || !MeshUpdate) return;
+            MeshCube.CreateMesh();
+            MeshUpdate = false;
+        }
+
+        public void SetBlock(int x, int y, int z)
+        {
+            for(var i = 0; i < ChunkSize; i++)
+            {
+                for(var k = 0; k < ChunkSize; k++)
+                {
+                    for(var j = 0; j < ChunkHeight; j++)
+                    {
+                        this[i, j, k] = SetBlocks(x + i, j + y, k + z);
+                    }
+                }
+            }
+
+            MeshUpdate = true;
+            //MeshCube.CreateMesh();
+        }
+        
+        private BlockType SetBlocks(int x, int y, int z)
+        {
+            var simplex1 = Engine._fastNoise.GetNoise(x*.8f, z*.8f)*10;
+            var simplex2 = Engine._fastNoise.GetNoise(x * 3f, z * 3f) * 10*(Engine._fastNoise.GetNoise(x*.3f, z*.3f)+.5f);
+
+            //3d noise for caves and overhangs and such
+            var caveNoise1 = Engine._fastNoise.GetNoise(x*5f, y*10f, z*5f);
+            var caveMask = Engine._fastNoise.GetNoise(x * .3f, z * .3f)+.3f;
+            
+            //stone layer heightmap
+            var simplexStone1 = Engine._fastNoise.GetNoise(x * 1f, z * 1f) * 10;
+            var simplexStone2 = (Engine._fastNoise.GetNoise(x * 5f, z * 5f)+.5f) * 20 * (Engine._fastNoise.GetNoise(x * .3f, z * .3f) + .5f);
+            
+            var heightMap = simplex1 + simplex2;
+            var baseLandHeight = ChunkSize * 0.5f + heightMap;
+            var stoneHeightMap = simplexStone1 + simplexStone2;
+            var baseStoneHeight = ChunkSize * 0.1f + stoneHeightMap;
+
+            var blockType = BlockType.Default;
+
+            //under the surface, dirt block
+            if(y <= baseLandHeight)
+            {
+                blockType = BlockType.Dirt;
+
+                //just on the surface, use a grass type
+                if(y > baseLandHeight - 1) blockType = BlockType.Grass;
+
+                if (y > Engine._snowHeight) blockType = BlockType.Snow;
+
+                if(y <= baseStoneHeight && y < baseLandHeight - Engine._stoneDepth) blockType = BlockType.Stone;
+            }
+            if(caveNoise1 > Mathf.Max(caveMask, .2f) && y <= Engine._caveStartHeight)
+               blockType = BlockType.Default;
+
+            return blockType;
         }
     }
 }

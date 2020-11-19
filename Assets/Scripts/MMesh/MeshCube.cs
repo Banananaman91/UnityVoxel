@@ -55,9 +55,12 @@ namespace MMesh
             0, 1, 6
         };
 
+        private Mesh mesh;
+
         public MeshCube(Chunk chunk)
         {
             _chunk = chunk;
+            mesh = new Mesh();
         }
 
         public async Task CreateMesh()
@@ -65,111 +68,11 @@ namespace MMesh
             Vertices.Clear();
             Triangles.Clear();
             Colors.Clear();
-
-            // for (var x = 0; x < Chunk.ChunkSize; x++)
-            // {
-            //     for (var y = 0; y < Chunk.ChunkHeight; y++)
-            //     {
-            //         for (var z = 0; z < Chunk.ChunkSize; z++)
-            //         {
-            //             var voxelType = _chunk[x, y, z];
-            //             // If it is air we ignore this block
-            //             if (voxelType == 0)
-            //                 continue;
-            //             _pos = new Vector3(x, y, z);
-            //             // Remember current position in vertices list so we can add triangles relative to that
-            //             _numFaces = 0;
-            //
-            //             if (x == Chunk.ChunkSize - 1 || _chunk[x + 1, y, z] == 0) //right face
-            //             {
-            //                 Vertices.Add(_pos + CubeVertices[1]);
-            //                 Vertices.Add(_pos + CubeVertices[2]);
-            //                 Vertices.Add(_pos + CubeVertices[5]);
-            //                 Vertices.Add(_pos + CubeVertices[6]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 _numFaces++;
-            //             }
-            //         
-            //             if (x == 0 || x > 0 && _chunk[x - 1, y, z] == 0) //left face
-            //             {
-            //                 Vertices.Add(_pos + CubeVertices[7]);
-            //                 Vertices.Add(_pos + CubeVertices[4]);
-            //                 Vertices.Add(_pos + CubeVertices[3]);
-            //                 Vertices.Add(_pos + CubeVertices[0]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 _numFaces++;
-            //             }
-            //         
-            //             if (y == Chunk.ChunkHeight - 1 || _chunk[x, y + 1, z] == 0) //top face
-            //             {
-            //                 Vertices.Add(_pos + CubeVertices[3]);
-            //                 Vertices.Add(_pos + CubeVertices[4]);
-            //                 Vertices.Add(_pos + CubeVertices[5]);
-            //                 Vertices.Add(_pos + CubeVertices[2]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 _numFaces++;
-            //             }
-            //         
-            //             if (y == 0 || y > 0 && _chunk[x, y - 1, z] == 0) //bottom face
-            //             {
-            //                 Vertices.Add(_pos + CubeVertices[0]);
-            //                 Vertices.Add(_pos + CubeVertices[1]);
-            //                 Vertices.Add(_pos + CubeVertices[6]);
-            //                 Vertices.Add(_pos + CubeVertices[7]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 _numFaces++;
-            //             }
-            //         
-            //             if (z == Chunk.ChunkSize - 1 || _chunk[x, y, z + 1] == 0) //back face
-            //             {
-            //                 Vertices.Add(_pos + CubeVertices[6]);
-            //                 Vertices.Add(_pos + CubeVertices[5]);
-            //                 Vertices.Add(_pos + CubeVertices[4]);
-            //                 Vertices.Add(_pos + CubeVertices[7]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 _numFaces++;
-            //             }
-            //         
-            //             if (z == 0 || z > 0 && _chunk[x, y, z - 1] == 0) //front face
-            //             {
-            //                 Vertices.Add(_pos + CubeVertices[0]);
-            //                 Vertices.Add(_pos + CubeVertices[3]);
-            //                 Vertices.Add(_pos + CubeVertices[2]);
-            //                 Vertices.Add(_pos + CubeVertices[1]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 Colors.Add(_colors[(int) (voxelType - 1)]);
-            //                 _numFaces++;
-            //             }
-            //
-            //             var tl = Vertices.Count - 4 * _numFaces;
-            //             for (var i = 0; i < _numFaces; i++)
-            //             {
-            //                 Triangles.AddRange(new [] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
-            //             }
-            //         }
-            //     }
-            // }
+            
             await GetMeshData();
 
             // Apply new mesh to MeshFilter
-            var mesh = new Mesh();
+            mesh = new Mesh();
             mesh.SetVertices(Vertices);
             mesh.SetTriangles(Triangles.ToArray(), 0);
             mesh.SetColors(Colors);
