@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Noise;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace VoxelTerrain
 {
     public class VoxelEngine : MonoBehaviour
     {
+        
         private World _world = new World();
         readonly int _chunkSize = 16;
         private float[][] _perlinNoiseArray;
@@ -35,8 +37,10 @@ namespace VoxelTerrain
         private bool _loaded;
 
         private Vector3 _cp;
-        
-        
+
+        //NAV SHIT 
+        public GameObject agent;
+
         #region NoiseVariables
 
         public float simplex1;
@@ -64,9 +68,14 @@ namespace VoxelTerrain
 
         private void Awake()
         {
+            
             GenerateWorld();
+           
         }
+        private void Start()
+        {
 
+        }
         private void Update()
         {
             if (!_loaded) return;
@@ -148,8 +157,10 @@ namespace VoxelTerrain
                 for (var z = _start.z - _chunkDistance; z <= _start.z + _chunkDistance; z += _chunkSize)
                 {
                     CreateNewChunkObject(x, (int) y, (int) z);
+                    
                 }
             }
+            
         }
 
         private Chunk CreateNewChunkObject(int x, int y, int z)
@@ -163,6 +174,7 @@ namespace VoxelTerrain
             _chunkPool.Add(chunk);
             _world.Chunks.Add(new ChunkId(x, y, z), chunk);
             chunkGameObject.GetComponent<MeshRenderer>().material = _material;
+            chunkGameObject.AddComponent<NavMeshSurface>();
             
             var t = new Task(() => chunk.SetBlock(x, y, z));
             t.Start();
@@ -220,7 +232,7 @@ namespace VoxelTerrain
             // }
             // chunk.MeshCube.CreateMesh();
         }
-
+       
         private BlockType SetBlocks(int x, int y, int z)
         {
             simplex1 = _fastNoise.GetNoise(x*.8f, z*.8f)*10;
@@ -252,6 +264,10 @@ namespace VoxelTerrain
                 blockType = BlockType.Default;
 
             return blockType;
+            
         }
+        
     }
+    
+    
 }
