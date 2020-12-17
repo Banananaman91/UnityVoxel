@@ -1,6 +1,7 @@
 ﻿using System;
 using MMesh;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace VoxelTerrain
 {
@@ -34,10 +35,15 @@ namespace VoxelTerrain
 
         public void LateUpdate()
         {
-            if (!Engine || !MeshUpdate) return;
+            if (!Engine || !MeshUpdate) return;   /// LEAVE FKING COMMENTS!!!!!!
+            
+        
             MeshCube.CreateMesh();
+           
             MeshUpdate = false;
         }
+
+        
 
         public void SetBlock(int x, int y, int z)
         {

@@ -78,6 +78,8 @@ namespace MMesh
             mesh.SetColors(Colors);
             mesh.RecalculateNormals();
             _chunk.MeshFilter.mesh = mesh;
+           
+
         }
 
         private async Task GetMeshData()

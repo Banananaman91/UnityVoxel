@@ -5,18 +5,39 @@ using UnityEngine.AI;
 
 public class NavMeshBuilder : MonoBehaviour
 {
+    public NavMeshSurface surface;
 
-    public NavMeshSurface[] surface;
+    //private void Start()
+    //{
+    //    InvokeRepeating("getmesh", 1,1);
+    //}
 
-    private void Start()
-    {
-        surface = FindObjectsOfType<NavMeshSurface>();
+    //public void Getmesh()
+    //{
+    //    surface = FindObjectOfType<NavMeshSurface>();
 
-        for (int i = 0; i < surface.Length; i++)
-        {
-            surface[i].BuildNavMesh();
-        }
-    }
+    //    surface.BuildNavMesh();
+        
+    //}
+
+    
+
+    //public NavMeshSurface[] surface;
+
+    //private void Start()
+    //{
+    //    Invoke("getmesh", 1);
+    //}
+
+    //private void getmesh()
+    //{
+    //    surface = FindObjectsOfType<NavMeshSurface>();
+
+    //    for (int i = 0; i < 1; i++)
+    //    {
+    //        surface[i].BuildNavMesh();
+    //    }
+    //}
 
 
 

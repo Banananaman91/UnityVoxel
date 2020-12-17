@@ -40,6 +40,8 @@ namespace VoxelTerrain
 
         //NAV SHIT 
         public GameObject agent;
+        public NavMeshSurface surface;
+        
 
         #region NoiseVariables
 
@@ -68,18 +70,15 @@ namespace VoxelTerrain
 
         private void Awake()
         {
-            
             GenerateWorld();
            
         }
-        private void Start()
-        {
-
-        }
+        
         private void Update()
         {
+         
             if (!_loaded) return;
-
+            
             var curChunkPosX = Mathf.FloorToInt(Position.x / 16) * 16;
             var curChunkPosY = Mathf.FloorToInt(Position.y / 32) * 32;
             var curChunkPosZ = Mathf.FloorToInt(Position.z / 16) * 16;
@@ -93,13 +92,15 @@ namespace VoxelTerrain
             if (chunk == _currentChunk) return;
             _currentChunk = chunk;
             _curChunkPos = _currentChunk.transform.position;
+            
             ExpandTerrain();
         }
-
+        
         private void ExpandTerrain()
         {
-            _toDestroy.Clear();
 
+            _toDestroy.Clear();
+            
             foreach (var chunk in _world.Chunks)
             {
                 if (Mathf.Abs(_curChunkPos.x - chunk.Key.X) > _chunkDistance ||
@@ -107,7 +108,9 @@ namespace VoxelTerrain
                     Mathf.Abs(_curChunkPos.z - chunk.Key.Z) > _chunkDistance)
                 {
                     _toDestroy.Add(chunk.Key);
+                    
                 }
+                
             }
 
             if (_toDestroy.Count != 0)
@@ -131,10 +134,15 @@ namespace VoxelTerrain
                     {
                         if (_world.Chunks.ContainsKey(ChunkId.FromWorldPos((int) x, (int) y, (int) z))) continue;
                         BuildChunk((int) x, (int) y, (int) z);
+                       
                     }
+                    
                 }
+                
             }
-
+            
+            
+           
             //yield return null;
         }
 
@@ -148,10 +156,12 @@ namespace VoxelTerrain
             }
             Debug.Log("Time taken: " + timeElapsed);
             _loaded = true;
+            
         }
 
         private void GenerateRow(int x)
         {
+
             for (var y = _start.y - _chunkHeightDist; y <= _start.y + _chunkHeightDist; y += _chunkHeight)
             {
                 for (var z = _start.z - _chunkDistance; z <= _start.z + _chunkDistance; z += _chunkSize)
@@ -174,8 +184,12 @@ namespace VoxelTerrain
             _chunkPool.Add(chunk);
             _world.Chunks.Add(new ChunkId(x, y, z), chunk);
             chunkGameObject.GetComponent<MeshRenderer>().material = _material;
-            chunkGameObject.AddComponent<NavMeshSurface>();
             
+            ///ADDING NAVMESH TO CHUNKS
+            chunkGameObject.AddComponent<NavMeshSurface>();
+            chunkGameObject.AddComponent<NavMeshSourceTag>();
+            ///
+
             var t = new Task(() => chunk.SetBlock(x, y, z));
             t.Start();
             
@@ -205,6 +219,7 @@ namespace VoxelTerrain
 
             chunk.IsAvailable = false;
             return chunk;
+
         }
 
         private void BuildChunk(int x, int y, int z)
@@ -220,6 +235,8 @@ namespace VoxelTerrain
             var t = new Task(() => chunk.SetBlock(x, y, z));
             t.Start();
             
+
+
             // for(var i = 0; i < _chunkSize; i++)
             // {
             //     for(var k = 0; k < _chunkSize; k++)
@@ -266,8 +283,7 @@ namespace VoxelTerrain
             return blockType;
             
         }
-        
+
     }
-    
     
 }
