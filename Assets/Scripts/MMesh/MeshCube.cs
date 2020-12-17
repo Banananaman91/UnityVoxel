@@ -9,6 +9,7 @@ namespace MMesh
     public struct MeshCube
     {
         private readonly Chunk _chunk;
+        private readonly VoxelEngine _engine;
     
         public static readonly List<Vector3> Vertices = new List<Vector3>();
         public static readonly List<int> Triangles = new List<int>();
@@ -17,22 +18,7 @@ namespace MMesh
         private static Vector3 _pos = new Vector3(0, 0, 0);
         private static int _numFaces;
 
-        private static readonly Vector3[] CubeVertices = {
-            new Vector3 (0, 0, 0), //0
-            new Vector3 (1, 0, 0), //1
-            new Vector3 (1, 1, 0), //2
-            new Vector3 (0, 1, 0), //3
-            new Vector3 (0, 1, 1), //4
-            new Vector3 (1, 1, 1), //5
-            new Vector3 (1, 0, 1), //6
-            new Vector3 (0, 0, 1), //7
-        }; //Vertices Cheat Sheet
-        // Right Face 1 2 5 6
-        // Left Face 7 4 3 0
-        // Top Face 3 4 5 2
-        // Bottom Face 0 1 6 7
-        // Back Face 6 5 4 7
-        // Front Face 0 3 2 1
+        private readonly Vector3[] CubeVertices;
 
         private static readonly int[] CubeTriangles = {
             // Front
@@ -60,7 +46,24 @@ namespace MMesh
         public MeshCube(Chunk chunk)
         {
             _chunk = chunk;
+            _engine = chunk.Engine;
             mesh = new Mesh();
+            CubeVertices = new Vector3[] {
+            new Vector3 (0, 0, 0), //0
+            new Vector3 (1 * _engine.VoxelSize, 0, 0), //1
+            new Vector3 (1 * _engine.VoxelSize, 1 * _engine.VoxelSize, 0), //2
+            new Vector3 (0, 1 * _engine.VoxelSize, 0), //3
+            new Vector3 (0, 1 * _engine.VoxelSize, 1 * _engine.VoxelSize), //4
+            new Vector3 (1 * _engine.VoxelSize, 1 * _engine.VoxelSize, 1 * _engine.VoxelSize), //5
+            new Vector3 (1 * _engine.VoxelSize, 0, 1 * _engine.VoxelSize), //6
+            new Vector3 (0, 0, 1 * _engine.VoxelSize), //7
+        }; //Vertices Cheat Sheet
+        // Right Face 1 2 5 6
+        // Left Face 7 4 3 0
+        // Top Face 3 4 5 2
+        // Bottom Face 0 1 6 7
+        // Back Face 6 5 4 7
+        // Front Face 0 3 2 1
         }
 
         public async void CreateMesh()
@@ -92,7 +95,7 @@ namespace MMesh
                         // If it is air we ignore this block
                         if (voxelType == 0)
                             continue;
-                        _pos = new Vector3(x, y, z);
+                        _pos = new Vector3(x, y, z) * _engine.VoxelSize;
                         // Remember current position in vertices list so we can add triangles relative to that
                         _numFaces = 0;
 

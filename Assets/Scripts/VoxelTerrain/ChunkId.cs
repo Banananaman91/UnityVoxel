@@ -4,11 +4,11 @@ namespace VoxelTerrain
 {
     public readonly struct ChunkId
     {
-        public readonly int X;
-        public readonly int Y;
-        public readonly int Z;
+        public readonly float X;
+        public readonly float Y;
+        public readonly float Z;
 
-        public ChunkId(int x, int y, int z)
+        public ChunkId(float x, float y, float z)
         {
             X = x;
             Y = y;
@@ -28,16 +28,16 @@ namespace VoxelTerrain
             return obj is ChunkId other && Equals(other);
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = X;
-                hashCode = (hashCode * 397) ^ Y;
-                hashCode = (hashCode * 397) ^ Z;
-                return hashCode;
-            }
-        }
+        // public override int GetHashCode()
+        // {
+        //     unchecked
+        //     {
+        //         var hashCode = X;
+        //         hashCode = (hashCode * 397) ^ Y;
+        //         hashCode = (hashCode * 397) ^ Z;
+        //         return hashCode;
+        //     }
+        // }
 
         public static bool operator ==(ChunkId left, ChunkId right)
         {
@@ -51,7 +51,7 @@ namespace VoxelTerrain
 
         #endregion
 
-        public static ChunkId FromWorldPos(int x, int y, int z)
+        public static ChunkId FromWorldPos(float x, float y, float z)
         {
             //return new ChunkId(x << 4, y << 4, z << 4);
             return new ChunkId(x, y, z);

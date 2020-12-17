@@ -29,6 +29,7 @@ namespace VoxelTerrain
 
         public void Awake()
         {
+            Engine = FindObjectOfType<VoxelEngine>();
             MeshCube = new MeshCube(this);
         }
 
@@ -39,7 +40,7 @@ namespace VoxelTerrain
             MeshUpdate = false;
         }
 
-        public void SetBlock(int x, int y, int z)
+        public void SetBlock(float x, float y, float z, float size)
         {
             for(var i = 0; i < ChunkSize; i++)
             {
@@ -47,7 +48,7 @@ namespace VoxelTerrain
                 {
                     for(var j = 0; j < ChunkHeight; j++)
                     {
-                        this[i, j, k] = SetBlocks(x + i, j + y, k + z);
+                        this[i, j, k] = SetBlocks(x + (i * size), y + (j * size), z + (k * size));
                     }
                 }
             }
@@ -56,7 +57,7 @@ namespace VoxelTerrain
             //MeshCube.CreateMesh();
         }
         
-        private BlockType SetBlocks(int x, int y, int z)
+        private BlockType SetBlocks(float x, float y, float z)
         {
             var simplex1 = Engine._fastNoise.GetNoise(x*.8f, z*.8f)*10;
             var simplex2 = Engine._fastNoise.GetNoise(x * 3f, z * 3f) * 10*(Engine._fastNoise.GetNoise(x*.3f, z*.3f)+.5f);
