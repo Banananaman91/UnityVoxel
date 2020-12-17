@@ -186,7 +186,7 @@ namespace VoxelTerrain
             chunkGameObject.GetComponent<MeshRenderer>().material = _material;
             
             ///ADDING NAVMESH TO CHUNKS
-            chunkGameObject.AddComponent<NavMeshSurface>();
+           //chunkGameObject.AddComponent<NavMeshSurface>();
             chunkGameObject.AddComponent<NavMeshSourceTag>();
             ///
 
