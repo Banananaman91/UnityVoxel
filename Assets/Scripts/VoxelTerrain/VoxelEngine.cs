@@ -15,7 +15,8 @@ namespace VoxelTerrain
         public float _chunkSize => 16 * _voxelSize;
         public float _chunkHeight => 32 * _voxelSize;
         public FastNoiseLite _fastNoise = new FastNoiseLite();
-        [SerializeField, Range(0.1f, 1.0f)] private float _voxelSize = 1;
+        [SerializeField] private Chunk _chunkPrefab;
+        [SerializeField, Range(0.01f, 1.0f)] private float _voxelSize = 1;
         [SerializeField] private Material _material;
         [SerializeField] private int _chunkDistance = 10;
         [SerializeField, Tooltip("Must be divisible by height")] private int _chunkHeightDist = 32;
@@ -129,12 +130,14 @@ namespace VoxelTerrain
 
         private Chunk CreateNewChunkObject(float x, float y, float z)
         {
-            var chunkGameObject = new GameObject("Chunk " + x + ", " + y + ", " + z);
+            //var chunkGameObject = new GameObject("Chunk " + x + ", " + y + ", " + z);
+            var chunkGameObject = Instantiate(_chunkPrefab, new Vector3(x, y, z), Quaternion.identity);
+            chunkGameObject.name = "Chunk: " + x + ", " + y + ", " + z;
             var transform1 = chunkGameObject.transform;
-            transform1.position = new Vector3(x, y, z);
+            //transform1.position = new Vector3(x, y, z);
             transform1.parent = transform;
-            var chunk = chunkGameObject.AddComponent<Chunk>();
-            //chunk.Engine = this;
+            //var chunk = chunkGameObject.AddComponent<Chunk>();
+            var chunk = chunkGameObject.GetComponent<Chunk>();
             chunk.IsAvailable = false;
             _chunkPool.Add(chunk);
             _world.Chunks.Add(new ChunkId(x, y, z), chunk);

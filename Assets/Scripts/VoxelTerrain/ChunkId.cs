@@ -28,16 +28,16 @@ namespace VoxelTerrain
             return obj is ChunkId other && Equals(other);
         }
 
-        // public override int GetHashCode()
-        // {
-        //     unchecked
-        //     {
-        //         var hashCode = X;
-        //         hashCode = (hashCode * 397) ^ Y;
-        //         hashCode = (hashCode * 397) ^ Z;
-        //         return hashCode;
-        //     }
-        // }
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = X;
+                hashCode = (float)Math.Pow((hashCode * 397), Y);
+                hashCode = (float)Math.Pow((hashCode * 397), Z);
+                return (int)hashCode;
+            }
+        }
 
         public static bool operator ==(ChunkId left, ChunkId right)
         {

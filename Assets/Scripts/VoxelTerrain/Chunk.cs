@@ -15,7 +15,8 @@ namespace VoxelTerrain
         public MeshRenderer MeshRender => GetComponent<MeshRenderer>();
 
         public VoxelEngine Engine;
-        private bool MeshUpdate;
+        public bool MeshUpdate;
+        private Mesh mesh;
 
         public bool IsAvailable { get; set; }
 
@@ -36,7 +37,13 @@ namespace VoxelTerrain
         public void LateUpdate()
         {
             if (!Engine || !MeshUpdate) return;
-            MeshCube.CreateMesh();
+            //MeshCube.CreateMesh();
+            mesh = new Mesh();
+            mesh.SetVertices(MeshCube.Vertices);
+            mesh.SetTriangles(MeshCube.Triangles.ToArray(), 0);
+            mesh.SetColors(MeshCube.Colors);
+            mesh.RecalculateNormals();
+            MeshFilter.mesh = mesh;
             MeshUpdate = false;
         }
 
@@ -53,8 +60,8 @@ namespace VoxelTerrain
                 }
             }
 
-            MeshUpdate = true;
-            //MeshCube.CreateMesh();
+            //MeshUpdate = true;
+            MeshCube.CreateMesh();
         }
         
         private BlockType SetBlocks(float x, float y, float z)

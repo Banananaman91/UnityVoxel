@@ -11,12 +11,12 @@ namespace MMesh
         private readonly Chunk _chunk;
         private readonly VoxelEngine _engine;
     
-        public static readonly List<Vector3> Vertices = new List<Vector3>();
-        public static readonly List<int> Triangles = new List<int>();
-        public static readonly List<Color> Colors = new List<Color>();
+        public readonly List<Vector3> Vertices;
+        public readonly List<int> Triangles;
+        public readonly List<Color> Colors;
         private static readonly Color32[] _colors = {new Color32(66, 177, 0, 255), new Color32(87, 51, 0, 255), new Color32(85, 85, 85, 255), new Color32(255, 176, 0, 255), new Color32(255, 255, 255, 255)   };
-        private static Vector3 _pos = new Vector3(0, 0, 0);
-        private static int _numFaces;
+        private Vector3 _pos;
+        private int _numFaces;
 
         private readonly Vector3[] CubeVertices;
 
@@ -64,6 +64,12 @@ namespace MMesh
         // Bottom Face 0 1 6 7
         // Back Face 6 5 4 7
         // Front Face 0 3 2 1
+
+        Vertices = new List<Vector3>();
+        Triangles = new List<int>();
+        Colors = new List<Color>();
+        _pos = new Vector3(0, 0, 0);
+        _numFaces = 0;
         }
 
         public async void CreateMesh()
@@ -75,12 +81,13 @@ namespace MMesh
             await GetMeshData();
 
             // Apply new mesh to MeshFilter
-            mesh = new Mesh();
-            mesh.SetVertices(Vertices);
-            mesh.SetTriangles(Triangles.ToArray(), 0);
-            mesh.SetColors(Colors);
-            mesh.RecalculateNormals();
-            _chunk.MeshFilter.mesh = mesh;
+            // mesh = new Mesh();
+            // mesh.SetVertices(Vertices);
+            // mesh.SetTriangles(Triangles.ToArray(), 0);
+            // mesh.SetColors(Colors);
+            // mesh.RecalculateNormals();
+            // _chunk.MeshFilter.mesh = mesh;
+            _chunk.MeshUpdate = true;
         }
 
         private async Task GetMeshData()
