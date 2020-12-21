@@ -10,7 +10,7 @@ namespace VoxelTerrain
 {
     public class VoxelEngine : MonoBehaviour
     {
-        public World _world = new World();
+        private World _world = new World();
         public float VoxelSize => _voxelSize;
         public float _chunkSize => 16 * _voxelSize;
         public float _chunkHeight => 32 * _voxelSize;
@@ -29,13 +29,13 @@ namespace VoxelTerrain
         private Vector3 _start = Vector3.zero;
         
         private List<ChunkId> _toDestroy = new List<ChunkId>();
-        private List<Chunk> _chunkPool = new List<Chunk>();
+        public List<Chunk> _chunkPool = new List<Chunk>();
         public Chunk _currentChunk;
         private Vector3 _curChunkPos;
 
         private Vector3 Position => _origin.position;
 
-        private bool _loaded;        
+        public bool _loaded;        
 
         private void Awake()
         {
