@@ -19,6 +19,8 @@ namespace VoxelTerrain
         private Mesh mesh;
 
         public bool IsAvailable { get; set; }
+        
+        public bool BlocksSet { get; set; }
 
         public BlockType this[int x, int y, int z]
         {
@@ -30,6 +32,7 @@ namespace VoxelTerrain
 
         public void Awake()
         {
+            BlocksSet = false;
             Engine = FindObjectOfType<VoxelEngine>();
             MeshCube = new MeshCube(this);
         }
@@ -60,11 +63,12 @@ namespace VoxelTerrain
                 }
             }
 
+            BlocksSet = true;
             //MeshUpdate = true;
-            MeshCube.CreateMesh();
+            MeshCube.CreateMesh(x, y, z);
         }
         
-        private BlockType SetBlocks(float x, float y, float z)
+        public BlockType SetBlocks(float x, float y, float z)
         {
             var simplex1 = Engine._fastNoise.GetNoise(x*.8f, z*.8f)*10;
             var simplex2 = Engine._fastNoise.GetNoise(x * 3f, z * 3f) * 10*(Engine._fastNoise.GetNoise(x*.3f, z*.3f)+.5f);

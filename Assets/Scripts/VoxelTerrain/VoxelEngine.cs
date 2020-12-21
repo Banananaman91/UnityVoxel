@@ -10,7 +10,7 @@ namespace VoxelTerrain
 {
     public class VoxelEngine : MonoBehaviour
     {
-        private World _world = new World();
+        public World _world = new World();
         public float VoxelSize => _voxelSize;
         public float _chunkSize => 16 * _voxelSize;
         public float _chunkHeight => 32 * _voxelSize;

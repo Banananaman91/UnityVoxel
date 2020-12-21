@@ -156,7 +156,7 @@ MonoBehaviour:
   _voxelSize: 1
   _material: {fileID: 2100000, guid: 07a6c4bab4ac7e44cab965e02712bc17, type: 2}
   _chunkDistance: 64
-  _chunkHeightDist: 32
+  _chunkHeightDist: 16
   _origin: {fileID: 1562540283}
   _stoneDepth: 3
   _snowHeight: 15

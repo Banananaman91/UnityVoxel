@@ -72,13 +72,13 @@ namespace MMesh
         _numFaces = 0;
         }
 
-        public async void CreateMesh()
+        public async void CreateMesh(float x, float y, float z)
         {
             Vertices.Clear();
             Triangles.Clear();
             Colors.Clear();
             
-            await GetMeshData();
+            await GetMeshData(x, y, z);
 
             // Apply new mesh to MeshFilter
             // mesh = new Mesh();
@@ -90,23 +90,25 @@ namespace MMesh
             _chunk.MeshUpdate = true;
         }
 
-        private async Task GetMeshData()
+        private async Task GetMeshData(float x, float y, float z)
         { 
-            for (var x = 0; x < Chunk.ChunkSize; x++)
+            for (var i = 0; i < Chunk.ChunkSize; i++)
             {
-                for (var y = 0; y < Chunk.ChunkHeight; y++)
+                for (var j = 0; j < Chunk.ChunkHeight; j++)
                 {
-                    for (var z = 0; z < Chunk.ChunkSize; z++)
+                    for (var k = 0; k < Chunk.ChunkSize; k++)
                     {
-                        var voxelType = _chunk[x, y, z];
+                        var voxelType = _chunk[i, j, k];
                         // If it is air we ignore this block
                         if (voxelType == 0)
                             continue;
-                        _pos = new Vector3(x, y, z) * _engine.VoxelSize;
+                        _pos = new Vector3(i, j, k) * _engine.VoxelSize;
                         // Remember current position in vertices list so we can add triangles relative to that
                         _numFaces = 0;
 
-                        if (x == Chunk.ChunkSize - 1 || _chunk[x + 1, y, z] == 0) //right face
+                        #region RightFace
+
+                        if (_chunk.SetBlocks( x + i + 1, y + j, z + k) == 0) //right face
                         {
                             Vertices.Add(_pos + CubeVertices[1]);
                             Vertices.Add(_pos + CubeVertices[2]);
@@ -118,8 +120,13 @@ namespace MMesh
                             Colors.Add(_colors[(int) (voxelType - 1)]);
                             _numFaces++;
                         }
-                    
-                        if (x == 0 || x > 0 && _chunk[x - 1, y, z] == 0) //left face
+
+                        #endregion
+
+                        #region LeftFace
+
+
+                        if (_chunk.SetBlocks(x + i - 1, y + j, z + k) == 0) //left face
                         {
                             Vertices.Add(_pos + CubeVertices[7]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -131,8 +138,13 @@ namespace MMesh
                             Colors.Add(_colors[(int) (voxelType - 1)]);
                             _numFaces++;
                         }
-                    
-                        if (y == Chunk.ChunkHeight - 1 || _chunk[x, y + 1, z] == 0) //top face
+
+                        #endregion
+
+                        #region TopFace
+
+
+                        if (_chunk.SetBlocks(x + i, y + j + 1, z + k) == 0) //top face
                         {
                             Vertices.Add(_pos + CubeVertices[3]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -144,8 +156,12 @@ namespace MMesh
                             Colors.Add(_colors[(int) (voxelType - 1)]);
                             _numFaces++;
                         }
-                    
-                        if (y == 0 || y > 0 && _chunk[x, y - 1, z] == 0) //bottom face
+
+                        #endregion
+
+                        #region BottomFace
+
+                        if (_chunk.SetBlocks(x + i, y + j - 1, z + k) == 0) //bottom face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[1]);
@@ -157,8 +173,12 @@ namespace MMesh
                             Colors.Add(_colors[(int) (voxelType - 1)]);
                             _numFaces++;
                         }
-                    
-                        if (z == Chunk.ChunkSize - 1 || _chunk[x, y, z + 1] == 0) //back face
+
+                        #endregion
+
+                        #region BackFace
+
+                        if (_chunk.SetBlocks(x + i, y + j, z + k + 1) == 0) //back face
                         {
                             Vertices.Add(_pos + CubeVertices[6]);
                             Vertices.Add(_pos + CubeVertices[5]);
@@ -170,8 +190,12 @@ namespace MMesh
                             Colors.Add(_colors[(int) (voxelType - 1)]);
                             _numFaces++;
                         }
-                    
-                        if (z == 0 || z > 0 && _chunk[x, y, z - 1] == 0) //front face
+
+                        #endregion
+
+                        #region FrontFace
+
+                        if (_chunk.SetBlocks(x + i, y + j, z + k - 1) == 0) //front face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[3]);
@@ -184,10 +208,15 @@ namespace MMesh
                             _numFaces++;
                         }
 
+                        #endregion
+
                         var tl = Vertices.Count - 4 * _numFaces;
-                        for (var i = 0; i < _numFaces; i++)
+                        for (var l = 0; l < _numFaces; l++)
                         {
-                            Triangles.AddRange(new [] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
+                            Triangles.AddRange(new[]
+                            {
+                                tl + l * 4, tl + l * 4 + 1, tl + l * 4 + 2, tl + l * 4, tl + l * 4 + 2, tl + l * 4 + 3
+                            });
                         }
                     }
                 }
