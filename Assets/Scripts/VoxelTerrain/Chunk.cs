@@ -7,40 +7,36 @@ namespace VoxelTerrain
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class Chunk : MonoBehaviour
     {
-        public const int ChunkSize = 16;
-        public const int ChunkHeight = 32;
+        public const int ChunkSize = 16; //Leave at this size
+        public const int ChunkHeight = 32; //This should be 16 too, but I wanted taller chunks
+        [HideInInspector] public VoxelEngine Engine;
         private BlockType[,,] Voxels = new BlockType[ChunkSize,ChunkHeight,ChunkSize];
-    
+        private Mesh mesh;
+        private MeshCube MeshCube;
+        public bool IsAvailable { get; set; }
+        public bool MeshUpdate { get; set; }
         public MeshFilter MeshFilter => GetComponent<MeshFilter>();
         public MeshRenderer MeshRender => GetComponent<MeshRenderer>();
 
-        public VoxelEngine Engine;
-        public bool MeshUpdate;
-        private Mesh mesh;
-
-        public bool IsAvailable { get; set; }
-        
-        public bool BlocksSet { get; set; }
-
+        //Used to find voxel at position
         public BlockType this[int x, int y, int z]
         {
             get => Voxels[x, y, z];
             set => Voxels[x, y, z] = value;
         }
 
-        public MeshCube MeshCube;
-
         public void Awake()
         {
-            BlocksSet = false;
+            //Find engine and create mesh cube
             Engine = FindObjectOfType<VoxelEngine>();
             MeshCube = new MeshCube(this);
         }
 
         public void LateUpdate()
         {
-            if (!Engine || !MeshUpdate) return;
-            //MeshCube.CreateMesh();
+            if (!Engine || !MeshUpdate) return; //stops running if Engine is not found or MeshUpdate isn't required
+
+            //Update mesh
             mesh = new Mesh();
             mesh.SetVertices(MeshCube.Vertices);
             mesh.SetTriangles(MeshCube.Triangles.ToArray(), 0);
@@ -50,7 +46,8 @@ namespace VoxelTerrain
             MeshUpdate = false;
         }
 
-        public void SetBlock(float x, float y, float z, float size)
+        //Iterate through all voxels and set their type
+        public void SetVoxel(float x, float y, float z, float size)
         {
             for(var i = 0; i < ChunkSize; i++)
             {
@@ -58,18 +55,18 @@ namespace VoxelTerrain
                 {
                     for(var j = 0; j < ChunkHeight; j++)
                     {
-                        this[i, j, k] = SetBlocks(x + (i * size), y + (j * size), z + (k * size));
+                        this[i, j, k] = SetVoxelType(x + (i * size), y + (j * size), z + (k * size));
                     }
                 }
             }
-
-            BlocksSet = true;
             //MeshUpdate = true;
             MeshCube.CreateMesh(x, y, z);
         }
         
-        public BlockType SetBlocks(float x, float y, float z)
+        //set individual voxel type using noise function
+        public BlockType SetVoxelType(float x, float y, float z)
         {
+            //3D noise for heightmap
             var simplex1 = Engine._fastNoise.GetNoise(x*.8f, z*.8f)*10;
             var simplex2 = Engine._fastNoise.GetNoise(x * 3f, z * 3f) * 10*(Engine._fastNoise.GetNoise(x*.3f, z*.3f)+.5f);
 
@@ -96,10 +93,14 @@ namespace VoxelTerrain
                 //just on the surface, use a grass type
                 if(y > baseLandHeight - 1) blockType = BlockType.Grass;
 
+                //surface is above snow height, use snow type
                 if (y > Engine._snowHeight) blockType = BlockType.Snow;
 
+                //too low for dirt, make it stone
                 if(y <= baseStoneHeight && y < baseLandHeight - Engine._stoneDepth) blockType = BlockType.Stone;
             }
+
+            //mask for generating caves
             if(caveNoise1 > Mathf.Max(caveMask, .2f) && y <= Engine._caveStartHeight)
                blockType = BlockType.Default;
 

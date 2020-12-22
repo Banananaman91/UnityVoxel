@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace VoxelTerrain
+namespace VoxelTerrain.Dependencies
 {
+    //If you are here, leave, you're not welcome
     public class World
     {
         public Dictionary<ChunkId, Chunk> Chunks = new Dictionary<ChunkId, Chunk>();

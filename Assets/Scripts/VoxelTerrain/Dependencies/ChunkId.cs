@@ -1,7 +1,8 @@
 ﻿using System;
 
-namespace VoxelTerrain
+namespace VoxelTerrain.Dependencies
 {
+    //If you are here, leave, you're not welcome
     public readonly struct ChunkId
     {
         public readonly float X;
@@ -53,7 +54,6 @@ namespace VoxelTerrain
 
         public static ChunkId FromWorldPos(float x, float y, float z)
         {
-            //return new ChunkId(x << 4, y << 4, z << 4);
             return new ChunkId(x, y, z);
         }
     }

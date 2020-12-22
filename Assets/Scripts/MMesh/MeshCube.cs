@@ -8,18 +8,15 @@ namespace MMesh
 {
     public struct MeshCube
     {
-        private readonly Chunk _chunk;
-        private readonly VoxelEngine _engine;
-    
         public readonly List<Vector3> Vertices;
         public readonly List<int> Triangles;
         public readonly List<Color> Colors;
+        private readonly Chunk _chunk;
+        private readonly VoxelEngine _engine;
         private static readonly Color32[] _colors = {new Color32(66, 177, 0, 255), new Color32(87, 51, 0, 255), new Color32(85, 85, 85, 255), new Color32(255, 176, 0, 255), new Color32(255, 255, 255, 255)   };
         private Vector3 _pos;
         private int _numFaces;
-
         private readonly Vector3[] CubeVertices;
-
         private static readonly int[] CubeTriangles = {
             // Front
             0, 2, 1,
@@ -41,13 +38,10 @@ namespace MMesh
             0, 1, 6
         };
 
-        private Mesh mesh;
-
         public MeshCube(Chunk chunk)
         {
             _chunk = chunk;
             _engine = chunk.Engine;
-            mesh = new Mesh();
             CubeVertices = new Vector3[] {
             new Vector3 (0, 0, 0), //0
             new Vector3 (1 * _engine.VoxelSize, 0, 0), //1
@@ -80,13 +74,6 @@ namespace MMesh
             
             await GetMeshData(x, y, z);
 
-            // Apply new mesh to MeshFilter
-            // mesh = new Mesh();
-            // mesh.SetVertices(Vertices);
-            // mesh.SetTriangles(Triangles.ToArray(), 0);
-            // mesh.SetColors(Colors);
-            // mesh.RecalculateNormals();
-            // _chunk.MeshFilter.mesh = mesh;
             _chunk.MeshUpdate = true;
         }
 
@@ -106,9 +93,13 @@ namespace MMesh
                         // Remember current position in vertices list so we can add triangles relative to that
                         _numFaces = 0;
 
+                        //for each face, check corresponding position for potential voxel type
+                        //works for spaces where voxels don't currently exist
+                        //neighbour checks will be required once destruction/construction is added to voxel mechanics
+
                         #region RightFace
 
-                        if (_chunk.SetBlocks( x + i + 1, y + j, z + k) == 0) //right face
+                        if (_chunk.SetVoxelType( x + i + 1, y + j, z + k) == 0) //right face
                         {
                             Vertices.Add(_pos + CubeVertices[1]);
                             Vertices.Add(_pos + CubeVertices[2]);
@@ -126,7 +117,7 @@ namespace MMesh
                         #region LeftFace
 
 
-                        if (_chunk.SetBlocks(x + i - 1, y + j, z + k) == 0) //left face
+                        if (_chunk.SetVoxelType(x + i - 1, y + j, z + k) == 0) //left face
                         {
                             Vertices.Add(_pos + CubeVertices[7]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -144,7 +135,7 @@ namespace MMesh
                         #region TopFace
 
 
-                        if (_chunk.SetBlocks(x + i, y + j + 1, z + k) == 0) //top face
+                        if (_chunk.SetVoxelType(x + i, y + j + 1, z + k) == 0) //top face
                         {
                             Vertices.Add(_pos + CubeVertices[3]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -161,7 +152,7 @@ namespace MMesh
 
                         #region BottomFace
 
-                        if (_chunk.SetBlocks(x + i, y + j - 1, z + k) == 0) //bottom face
+                        if (_chunk.SetVoxelType(x + i, y + j - 1, z + k) == 0) //bottom face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[1]);
@@ -178,7 +169,7 @@ namespace MMesh
 
                         #region BackFace
 
-                        if (_chunk.SetBlocks(x + i, y + j, z + k + 1) == 0) //back face
+                        if (_chunk.SetVoxelType(x + i, y + j, z + k + 1) == 0) //back face
                         {
                             Vertices.Add(_pos + CubeVertices[6]);
                             Vertices.Add(_pos + CubeVertices[5]);
@@ -195,7 +186,7 @@ namespace MMesh
 
                         #region FrontFace
 
-                        if (_chunk.SetBlocks(x + i, y + j, z + k - 1) == 0) //front face
+                        if (_chunk.SetVoxelType(x + i, y + j, z + k - 1) == 0) //front face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[3]);
