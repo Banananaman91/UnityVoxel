@@ -1,0 +1,17 @@
+﻿{
+  "name": "com.banananaman91.unity-voxel-terrain-system",
+  "version": "1.0.0",
+  "displayName": "Voxel Terrain",
+  "description": "Procedurally generated voxel terrain",
+  "unity": "2019.4",
+  "keywords": [
+    "Voxel",
+    "Procedural Generation",
+    "Terrain"
+  ],
+  "author": {
+    "name": "Ian Barrow",
+    "email": "Barrowian1991@gmail.com",
+    "url": "https://github.com/Banananaman91"
+  }
+}
