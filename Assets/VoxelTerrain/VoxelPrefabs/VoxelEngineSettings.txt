@@ -1,0 +1,27 @@
+Terrain settings for voxel engine, so that I remember.
+
+ArrrTower Settings:
+Distance: 1.5
+Height: 0.5
+Voxel Size: 0.01
+Noise Type: Perlin
+Set Random Seed
+Noise Frequency: 1.5
+
+Octaves: 3
+Lacunarity: 2
+Gain: 0.5
+Weighted strength: 0
+Ping Pong Strength: 2
+
+Stone Depth: 0.1
+Snow Height: 0.1
+Cave Start Height: -0.01
+
+Simplex One Scale: 0.5
+Simplex Two Scale: 0.5
+Cave Noise One Scale: 0.5
+Cave Noise Two Scale: 0.5
+Cave Mask: 0.1
+Simplex Stone One Scale: 0.5
+Simplex Stone Two Scale: 0.5

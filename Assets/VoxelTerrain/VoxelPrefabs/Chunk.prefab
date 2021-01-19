@@ -92,5 +92,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc0d26f07da807e4bba49c021eb03edc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _simplexOneScale: 10
+  _simplexTwoScale: 10
+  _caveNoiseOneScale: 10
+  _caveMask: 0.3
+  _simplexStoneOneScale: 10
+  _simplexStoneTwoScale: 20
   Engine: {fileID: 0}
-  MeshUpdate: 0

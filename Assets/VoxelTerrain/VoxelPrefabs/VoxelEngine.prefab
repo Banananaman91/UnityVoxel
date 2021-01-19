@@ -43,16 +43,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b650019544c210a4a8945ae2b27800be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _material: {fileID: 2100000, guid: 07a6c4bab4ac7e44cab965e02712bc17, type: 2}
+  _distance: 16
+  _height: 16
+  _origin: {fileID: 0}
   _chunkPrefab: {fileID: 267561072652388548, guid: 9b9ced7c5de5dc94dbe09cac2c11378b,
     type: 3}
   _voxelSize: 1
-  _material: {fileID: 2100000, guid: 07a6c4bab4ac7e44cab965e02712bc17, type: 2}
-  _chunkDistance: 64
-  _chunkHeightDist: 32
-  _origin: {fileID: 0}
-  _stoneDepth: 3
-  _snowHeight: 15
-  _caveStartHeight: 0
+  _noiseType: 1
+  _setCustomSeed: 0
+  _seedValue: 0
+  _randomSeed: 1
+  _noiseFrequency: 0.01
+  mRotationType3D: 0
+  mTransformType3D: 3
+  mFractalType: 0
+  mOctaves: 3
+  mLacunarity: 2
+  mGain: 0.5
+  mWeightedStrength: 0
+  mPingPongStength: 2
+  mCellularDistanceFunction: 1
+  mCellularReturnType: 1
+  mCellularJitterModifier: 1
+  mDomainWarpType: 0
+  mWarpTransformType3D: 3
+  mDomainWarpAmp: 1
+  _stoneDepth: 5
+  _snowHeight: 10
+  _caveStartHeight: 6
+  _simplexOneScale: 10
+  _simplexTwoScale: 20
+  _caveNoiseOneScale: 10
+  _caveNoiseTwoScale: 20
+  _caveMask: 0.3
+  _simplexStoneOneScale: 5
+  _simplexStoneTwoScale: 10
   _chunkPool: []
-  _currentChunk: {fileID: 0}
-  _loaded: 0

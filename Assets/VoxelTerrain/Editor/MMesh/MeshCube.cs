@@ -99,7 +99,7 @@ namespace MMesh
 
                         #region RightFace
 
-                        if (_chunk.SetVoxelType( x + i + 1, y + j, z + k) == 0) //right face
+                        if (_chunk.SetVoxelType(x + ((i + 1) * _engine.VoxelSize), y + (j * _engine.VoxelSize), z + (k * _engine.VoxelSize)) == 0) //right face
                         {
                             Vertices.Add(_pos + CubeVertices[1]);
                             Vertices.Add(_pos + CubeVertices[2]);
@@ -117,7 +117,7 @@ namespace MMesh
                         #region LeftFace
 
 
-                        if (_chunk.SetVoxelType(x + i - 1, y + j, z + k) == 0) //left face
+                        if (_chunk.SetVoxelType(x + ((i - 1) * _engine.VoxelSize), y + (j * _engine.VoxelSize), z + (k * _engine.VoxelSize)) == 0) //left face
                         {
                             Vertices.Add(_pos + CubeVertices[7]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -135,7 +135,7 @@ namespace MMesh
                         #region TopFace
 
 
-                        if (_chunk.SetVoxelType(x + i, y + j + 1, z + k) == 0) //top face
+                        if (_chunk.SetVoxelType(x + (i * _engine.VoxelSize), y + ((j + 1) * _engine.VoxelSize), z + (k * _engine.VoxelSize)) == 0) //top face
                         {
                             Vertices.Add(_pos + CubeVertices[3]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -152,7 +152,7 @@ namespace MMesh
 
                         #region BottomFace
 
-                        if (_chunk.SetVoxelType(x + i, y + j - 1, z + k) == 0) //bottom face
+                        if (_chunk.SetVoxelType(x + (i * _engine.VoxelSize), y + ((j - 1) * _engine.VoxelSize), z + (k * _engine.VoxelSize)) == 0) //bottom face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[1]);
@@ -169,7 +169,7 @@ namespace MMesh
 
                         #region BackFace
 
-                        if (_chunk.SetVoxelType(x + i, y + j, z + k + 1) == 0) //back face
+                        if (_chunk.SetVoxelType(x + (i * _engine.VoxelSize), y + (j * _engine.VoxelSize), z + ((k + 1) * _engine.VoxelSize)) == 0) //back face
                         {
                             Vertices.Add(_pos + CubeVertices[6]);
                             Vertices.Add(_pos + CubeVertices[5]);
@@ -186,7 +186,7 @@ namespace MMesh
 
                         #region FrontFace
 
-                        if (_chunk.SetVoxelType(x + i, y + j, z + k - 1) == 0) //front face
+                        if (_chunk.SetVoxelType(x + (i * _engine.VoxelSize), y + (j * _engine.VoxelSize), z + ((k - 1) * _engine.VoxelSize)) == 0) //front face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[3]);

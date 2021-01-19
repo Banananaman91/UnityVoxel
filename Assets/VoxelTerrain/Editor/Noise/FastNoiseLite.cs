@@ -113,7 +113,7 @@ namespace Noise
             BasicGrid 
         };
 
-        private enum TransformType3D 
+        public enum TransformType3D 
         {
             None, 
             ImproveXYPlanes, 
