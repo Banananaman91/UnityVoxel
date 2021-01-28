@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using VoxelTerrain;
+using VoxelTerrain.Editor.Voxel;
 
 namespace MMesh
 {
@@ -13,7 +14,7 @@ namespace MMesh
         public readonly List<Color> Colors;
         private readonly Chunk _chunk;
         private readonly VoxelEngine _engine;
-        private static readonly Color32[] _colors = {new Color32(66, 177, 0, 255), new Color32(87, 51, 0, 255), new Color32(85, 85, 85, 255), new Color32(255, 176, 0, 255), new Color32(255, 255, 255, 255)   };
+        private static readonly Color32[] _colors = {new Color32(66, 177, 0, 255), new Color32(87, 51, 0, 255), new Color32(85, 85, 85, 255), new Color32(255, 176, 0, 255), new Color32(255, 255, 255, 255), new Color32(0, 0, 255, 255), new Color32(110, 70, 0, 255)  };
         private Vector3 _pos;
         private int _numFaces;
         private readonly Vector3[] CubeVertices;
@@ -73,8 +74,8 @@ namespace MMesh
             Colors.Clear();
             
             await GetMeshData(x, y, z);
-
-            _chunk.MeshUpdate = true;
+            
+            //_chunk.CreateMesh();
         }
 
         private async Task GetMeshData(float x, float y, float z)

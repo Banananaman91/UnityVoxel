@@ -25,3 +25,24 @@ Cave Noise Two Scale: 0.5
 Cave Mask: 0.1
 Simplex Stone One Scale: 0.5
 Simplex Stone Two Scale: 0.5
+
+
+World scale settings:
+Distance: 64
+Height: 32
+Voxel Size: 1
+Noise Type: Open Simplex 2S
+Noise Frequency: 0.01
+Octaves: 1
+
+Stone Depth: 5
+Snow Height: 20
+Cave Start Height: -5
+
+Simplex One Scale: 10
+Simplex Two Scale: 20
+Cave Noise One Scale: 5
+Cave Noise Two Scale: 5
+Cave Mask: 0.3
+Simplex Stone One Scale: 10
+Simplex Stone Two Scale: 10

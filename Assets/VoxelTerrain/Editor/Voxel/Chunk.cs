@@ -1,22 +1,17 @@
-﻿using System;
-using MMesh;
+﻿using MMesh;
 using UnityEngine;
 
-namespace VoxelTerrain
+namespace VoxelTerrain.Editor.Voxel
 {
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-    public class Chunk : MonoBehaviour
+    
+    public class Chunk
     {
         public const int ChunkSize = 16; //Leave at this size
         public const int ChunkHeight = 32; //This should be 16 too, but I wanted taller chunks
-        [HideInInspector] public VoxelEngine Engine;
         private BlockType[,,] Voxels = new BlockType[ChunkSize,ChunkHeight,ChunkSize];
-        private Mesh mesh;
+        public Mesh mesh;
         private MeshCube MeshCube;
-        public bool IsAvailable { get; set; }
-        public bool MeshUpdate { get; set; }
-        public MeshFilter MeshFilter => GetComponent<MeshFilter>();
-        public MeshRenderer MeshRender => GetComponent<MeshRenderer>();
+        public VoxelEngine Engine;
 
         //Used to find voxel at position
         public BlockType this[int x, int y, int z]
@@ -25,25 +20,21 @@ namespace VoxelTerrain
             set => Voxels[x, y, z] = value;
         }
 
-        public void Awake()
+        public Chunk(float x, float y, float z, float size, VoxelEngine engine)
         {
-            //Find engine and create mesh cube
-            Engine = FindObjectOfType<VoxelEngine>();
+            mesh = new Mesh();
+            Engine = engine;
             MeshCube = new MeshCube(this);
+            SetVoxel(x, y, z, size);
         }
 
-        public void LateUpdate()
+        public void CreateMesh()
         {
-            if (!Engine || !MeshUpdate) return; //stops running if Engine is not found or MeshUpdate isn't required
-
             //Update mesh
-            mesh = new Mesh();
             mesh.SetVertices(MeshCube.Vertices);
             mesh.SetTriangles(MeshCube.Triangles.ToArray(), 0);
             mesh.SetColors(MeshCube.Colors);
             mesh.RecalculateNormals();
-            MeshFilter.mesh = mesh;
-            MeshUpdate = false;
         }
 
         //Iterate through all voxels and set their type
@@ -78,12 +69,17 @@ namespace VoxelTerrain
             //stone layer heightmap
             var simplexStone1 = Engine._fastNoise.GetNoise(x * 0.3f, z * 0.3f) * Engine.SimplexStoneOneScale;
             var simplexStone2 = Engine._fastNoise.GetNoise(x * 0.8f, z * 0.8f) * Engine.SimplexStoneTwoScale;
+
+            var treeNoise1 = Engine._fastNoise.GetNoise(x * 0.5f, z * 0.5f) * 5;
+            var treeNoise2 = Engine._fastNoise.GetNoise(x * 0.9f, z * 0.9f) * 50;
+            var treeMask = Engine._fastNoise.GetNoise(x, z) + 8;
             
             var heightMap = simplex1 + simplex2;
             var caveMap = caveNoise1 + caveNoise2;
             var baseLandHeight = heightMap;
             var stoneHeightMap = simplexStone1 + simplexStone2;
             var baseStoneHeight = ChunkSize + stoneHeightMap;
+            var treeMap = treeNoise1 + treeNoise2;
 
             var blockType = BlockType.Default;
 
@@ -93,7 +89,11 @@ namespace VoxelTerrain
                 blockType = BlockType.Dirt;
 
                 //just on the surface, use a grass type
-                if(y > baseLandHeight - 1) blockType = BlockType.Grass;
+                if (y > baseLandHeight - 1)
+                {
+                    if (treeMap > Mathf.Max(treeMask, 0.2f)) blockType = BlockType.Wood;
+                    else blockType = BlockType.Grass;
+                }
 
                 //surface is above snow height, use snow type
                 if (y > Engine.SnowHeight) blockType = BlockType.Snow;

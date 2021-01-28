@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using VoxelTerrain.Editor.Voxel;
 
 namespace VoxelTerrain.Dependencies
 {

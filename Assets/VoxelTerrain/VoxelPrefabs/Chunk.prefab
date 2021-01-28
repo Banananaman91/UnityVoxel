@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2513963543006980836}
   - component: {fileID: 2119454998717359238}
   - component: {fileID: 3641158307215053582}
-  - component: {fileID: 267561072652388548}
+  - component: {fileID: 5807394119334776112}
   m_Layer: 0
   m_Name: Chunk
   m_TagString: Untagged
@@ -80,7 +80,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &267561072652388548
+--- !u!114 &5807394119334776112
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -89,13 +89,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8788348479459475484}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc0d26f07da807e4bba49c021eb03edc, type: 3}
+  m_Script: {fileID: 11500000, guid: e84c7b847931df940aba7b034356712c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _simplexOneScale: 10
-  _simplexTwoScale: 10
-  _caveNoiseOneScale: 10
-  _caveMask: 0.3
-  _simplexStoneOneScale: 10
-  _simplexStoneTwoScale: 20
   Engine: {fileID: 0}

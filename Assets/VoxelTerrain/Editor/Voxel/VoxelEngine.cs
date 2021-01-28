@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Noise;
 using UnityEngine;
+using UnityEngine.UI;
 using VoxelTerrain.Dependencies;
+using VoxelTerrain.Editor.Voxel;
 
 namespace VoxelTerrain
 {
@@ -20,7 +22,7 @@ namespace VoxelTerrain
         [SerializeField] private Transform _origin;
 
         [Header("Chunk Info")]
-        [SerializeField] private Chunk _chunkPrefab;
+        [SerializeField] private MonoChunk _chunkPrefab;
         [SerializeField, Range(0.01f, 1.0f), Tooltip("Metre cubed")] private float _voxelSize = 1;
 
         [Header("Noise Info")]
@@ -63,13 +65,17 @@ namespace VoxelTerrain
         [SerializeField] private float _caveMask = 0.3f;
         [SerializeField] private float _simplexStoneOneScale = 10;
         [SerializeField] private float _simplexStoneTwoScale = 20;
+
+        [Header("Progress Bar")] 
+        [SerializeField] private Slider _progress;
         private Vector3 _start;
         private Vector3 _curChunkPos;
-        private List<ChunkId> _toDestroy = new List<ChunkId>();
-        public List<Chunk> _chunkPool = new List<Chunk>();
-        private Chunk _currentChunk;
+        private List<MonoChunk> _toDestroy = new List<MonoChunk>();
+        public List<MonoChunk> _chunkPool = new List<MonoChunk>();
+        private MonoChunk _currentChunk;
     
-        private bool _loaded;        
+        private bool _chunksloaded;
+        private bool _worldLoaded;
         private World _world = new World();
 
         private Vector3 Position => _origin != null ? _origin.position : Vector3.zero;
@@ -138,34 +144,37 @@ namespace VoxelTerrain
             _fastNoise.SetCellularJitter(_cellularJitterModifier);
             _fastNoise.SetDomainWarpType(_domainWarpType);
             _fastNoise.SetDomainWarpAmp(_domainWarpAmp);
-            GenerateWorld(); 
+            StartCoroutine(GenerateWorldData()); 
         }
 
         private void Update()
         {
-            if (!_loaded) return; // Don't run until world generation is complete
+            if (!_chunksloaded) return; // Don't run until world generation is complete
 
-            //Get current position from origin
-            var curChunkPosX = Mathf.FloorToInt(Position.x / _chunkSize) * _chunkSize;
-            var curChunkPosY = Mathf.FloorToInt(Position.y / _chunkHeight) * _chunkHeight;
-            var curChunkPosZ = Mathf.FloorToInt(Position.z / _chunkSize) * _chunkSize;
-
-            //check if a chunk exists in current position
-            var hasChunk =
-                _world.Chunks.ContainsKey(ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ));
-            if (!hasChunk) return;
-
-            //If position has chunk, get chunky boi
-            var chunk = _world.Chunks[ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ)];
-
-            //Set current chunk if one hasn't already been set
-            if (!_currentChunk) _currentChunk = chunk;
-
-            //Chunk comparison, update terrain if current chunk doesn't match
-            if (chunk == _currentChunk) return;
-            _currentChunk = chunk;
-            _curChunkPos = _currentChunk.transform.position;
-            ExpandTerrain();
+            // //Get current position from origin
+            // var curChunkPosX = Mathf.FloorToInt(Position.x / _chunkSize) * _chunkSize;
+            // var curChunkPosY = Mathf.FloorToInt(Position.y / _chunkHeight) * _chunkHeight;
+            // var curChunkPosZ = Mathf.FloorToInt(Position.z / _chunkSize) * _chunkSize;
+            // var pos = new Vector3(curChunkPosX, curChunkPosY, curChunkPosZ);
+            //
+            // // //check if a chunk exists in current position
+            // // var hasChunk =
+            // //     _world.Chunks.ContainsKey(ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ));
+            // // if (!hasChunk) return;
+            // //
+            // // //If position has chunk, get chunky boi
+            // // var chunk = _world.Chunks[ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ)];
+            //
+            // var chunk = _chunkPool.Where(x => x.Position == pos);
+            //
+            // //Set current chunk if one hasn't already been set
+            // if (!_currentChunk) _currentChunk = chunk;
+            //
+            // //Chunk comparison, update terrain if current chunk doesn't match
+            // if (chunk == _currentChunk) return;
+            // _currentChunk = chunk;
+            // _curChunkPos = _currentChunk.transform.position;
+            //ExpandTerrain();
         }
 
         private void ExpandTerrain()
@@ -173,13 +182,13 @@ namespace VoxelTerrain
             _toDestroy.Clear();
 
             //Collect all chunks that are out of range to be 'destroyed'
-            foreach (var chunk in _world.Chunks)
+            foreach (var chunk in _chunkPool)
             {
-                if (Mathf.Abs(_curChunkPos.x - chunk.Key.X) > _distance ||
-                    Mathf.Abs(_curChunkPos.y - chunk.Key.Y) > _height ||
-                    Mathf.Abs(_curChunkPos.z - chunk.Key.Z) > _distance)
+                if (Mathf.Abs(_curChunkPos.x - chunk.transform.position.x) > _distance ||
+                    Mathf.Abs(_curChunkPos.y - chunk.transform.position.y) > _height ||
+                    Mathf.Abs(_curChunkPos.z - chunk.transform.position.z) > _distance)
                 {
-                    _toDestroy.Add(chunk.Key);
+                    _toDestroy.Add(chunk);
                 }
             }
 
@@ -188,10 +197,7 @@ namespace VoxelTerrain
             {
                 foreach (var chunk in _toDestroy)
                 {
-                    if (!_world.Chunks.ContainsKey(chunk)) continue;
-                    var dChunk = _world.Chunks[chunk];
-                    _world.Chunks.Remove(chunk);
-                    ReturnChunkToPool(dChunk);
+                    ReturnChunkToPool(chunk);
                 }
             }
 
@@ -204,7 +210,9 @@ namespace VoxelTerrain
                 {
                     for (var z = _curChunkPos.z - _distance; z <= _curChunkPos.z + _distance; z += _chunkSize)
                     {
-                        if (_world.Chunks.ContainsKey(ChunkId.FromWorldPos(x, y, z))) continue;
+                        if (_chunkPool.Any(c => c.CurrentChunk == _world.Chunks[ChunkId.FromWorldPos(x, y, z)]))
+                            continue;
+                        //if (_world.Chunks.ContainsKey(ChunkId.FromWorldPos(x, y, z))) continue;
                         BuildChunk( x, y, z);
                     }
                 }
@@ -217,6 +225,7 @@ namespace VoxelTerrain
         private void GenerateWorld()
         {
             var timeElapsed = 0f;
+
             for (var x = _start.x - _distance; x <= _start.x + _distance; x += _chunkSize)
             {
                 //splits y and z for each row into a separate method, seemed to be faster
@@ -227,7 +236,7 @@ namespace VoxelTerrain
             //Debug.Log("Time taken: " + timeElapsed);
 
             //World generation complete
-            _loaded = true;
+            _chunksloaded = true;
 
             //Voxel Count display
             var voxelCount = _chunkPool.Count * (Chunk.ChunkSize * Chunk.ChunkSize * Chunk.ChunkHeight);
@@ -246,8 +255,56 @@ namespace VoxelTerrain
             }
         }
 
+        private const float dataDist = 64f;
+        public bool taskComplete;
+        public int chunkCount;
+        
+
+        private IEnumerator GenerateWorldData()
+        {
+            StartCoroutine(ChunkLoop());
+
+            while (!taskComplete)
+            {
+                yield return null;
+            }
+
+            GenerateWorld();
+        }
+
+        private IEnumerator ChunkLoop()
+        {
+            for (float x = _start.x - dataDist; x <= _start.x + dataDist; x+=_chunkSize)
+            {
+                for (float y = _start.y - dataDist; y <= _start.y + dataDist; y+=_chunkHeight)
+                {
+                    for (float z = _start.z - dataDist; z <= _start.z + dataDist; z+=_chunkSize)
+                    {
+                        GenerateChunkData(x, y, z);
+                        yield return null;
+                    }
+                }
+            }
+
+            taskComplete = true;
+            _progress.gameObject.SetActive(false);
+        }
+
+        private void GenerateChunkData(float x, float y, float z)
+        {
+            var total = ((dataDist * 2 + _chunkSize) * (dataDist * 2 + _chunkSize) * (dataDist * 2 + _chunkHeight)) / (_chunkSize * _chunkSize * _chunkHeight);
+            _progress.value = (_world.Chunks.Count / total) * 100;
+            if (_world.Chunks.ContainsKey(ChunkId.FromWorldPos(x, y, z))) return;
+            var chunk = new Chunk(x, y, z, _voxelSize, this);
+            _world.Chunks.Add(new ChunkId(x, y, z), chunk);
+            //chunk.SetVoxel(x, y, z, _voxelSize);
+            chunkCount++;
+            var t = new Task(() => chunk.SetVoxel(x, y, z, _voxelSize));
+            t.Start();
+        }
+
         //Instantiate a new chunk
-        private Chunk CreateNewChunkObject(float x, float y, float z)
+        private MonoChunk CreateNewChunkObject(float x, float y, float z)
         {
             //Uncomment next line if you wish to not use prefabs
             //var chunkGameObject = new GameObject("Chunk " + x + ", " + y + ", " + z);
@@ -268,22 +325,20 @@ namespace VoxelTerrain
             //var chunk = chunkGameObject.AddComponent<Chunk>();
 
             //Comment out next line if you wish to not use prefabs
-            var chunk = chunkGameObject.GetComponent<Chunk>();
+            var chunk = chunkGameObject.GetComponent<MonoChunk>();
 
             chunk.IsAvailable = false;
             _chunkPool.Add(chunk);
-            _world.Chunks.Add(new ChunkId(x, y, z), chunk);
             chunkGameObject.GetComponent<MeshRenderer>().material = _material;
-            
-            var t = new Task(() => chunk.SetVoxel(x, y, z, _voxelSize));
-            t.Start();
+            var newChunk = _world.Chunks[ChunkId.FromWorldPos(x, y, z)];
+            chunk.UpdateChunk(newChunk);
 
             return chunk;
         }
 
-        private void ReturnChunkToPool(Chunk target) => target.IsAvailable = true;
+        private void ReturnChunkToPool(MonoChunk target) => target.IsAvailable = true;
 
-        private Chunk GetChunkObject(float X, float Y, float Z)
+        private MonoChunk GetChunkObject(float X, float Y, float Z)
         {
             var chunk = _chunkPool.FirstOrDefault(x => x.IsAvailable);
             if (chunk == null)
@@ -304,11 +359,10 @@ namespace VoxelTerrain
             var transform1 = chunk.transform;
             transform1.position = new Vector3(x, y, z);
             transform1.parent = transform;
-            _world.Chunks.Add(new ChunkId(x, y, z), chunk);
+            var newChunk = _world.Chunks[ChunkId.FromWorldPos(x, y, z)];
             chunk.MeshRender.material = _material;
             
-            var t = new Task(() => chunk.SetVoxel(x, y, z, _voxelSize));
-            t.Start();
+            chunk.UpdateChunk(newChunk);
         }
     }
 }
