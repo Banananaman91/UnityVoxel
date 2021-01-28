@@ -98,6 +98,7 @@ namespace VoxelTerrain
         private bool _randomSeedActive;
         private bool _customSeedActive;
 
+        #region Validate Function
         private void OnValidate() 
         {
             if (_randomSeed || _setCustomSeed)
@@ -124,7 +125,9 @@ namespace VoxelTerrain
                 }
             }
         }
+        #endregion
 
+        #region Unity Functions
         private void Awake()
         {
             _start = transform.position;
@@ -144,11 +147,12 @@ namespace VoxelTerrain
             _fastNoise.SetCellularJitter(_cellularJitterModifier);
             _fastNoise.SetDomainWarpType(_domainWarpType);
             _fastNoise.SetDomainWarpAmp(_domainWarpAmp);
-            StartCoroutine(GenerateWorldData()); 
+            GenerateWorldData(); 
         }
 
         private void Update()
         {
+            if (taskComplete) GenerateWorld();
             if (!_chunksloaded) return; // Don't run until world generation is complete
 
             //Get current position from origin
@@ -173,7 +177,9 @@ namespace VoxelTerrain
             _curChunkPos = new Vector3(curChunkPosX, curChunkPosY, curChunkPosZ);
             ExpandTerrain();
         }
+        #endregion
 
+        #region Expand Terrain
         private void ExpandTerrain()
         {
             _toDestroy.Clear();
@@ -217,10 +223,14 @@ namespace VoxelTerrain
 
             //yield return null;
         }
+        
+        #endregion
 
+        #region World Generation
         //Build the world, the whole world, in his hands
         private void GenerateWorld()
         {
+            taskComplete = false;
             var timeElapsed = 0f;
 
             for (var x = _start.x - _distance; x <= _start.x + _distance; x += _chunkSize)
@@ -234,6 +244,7 @@ namespace VoxelTerrain
 
             //World generation complete
             _chunksloaded = true;
+            
 
             //Voxel Count display
             var voxelCount = _chunkPool.Count * (Chunk.ChunkSize * Chunk.ChunkSize * Chunk.ChunkHeight);
@@ -257,28 +268,21 @@ namespace VoxelTerrain
         public int chunkCount;
         
 
-        private IEnumerator GenerateWorldData()
+        private void GenerateWorldData()
         {
-            StartCoroutine(ChunkLoop());
-
-            while (!taskComplete)
-            {
-                yield return null;
-            }
-
-            GenerateWorld();
+            var t = new Task(() => ChunkLoop());
+            t.Start();
         }
 
-        private IEnumerator ChunkLoop()
+        private void ChunkLoop()
         {
-            for (float x = _start.x - dataDist; x <= _start.x + dataDist; x+=_chunkSize)
+            for (float x = dataDist; x <= dataDist; x+=_chunkSize)
             {
-                for (float y = _start.y - dataDist; y <= _start.y + dataDist; y+=_chunkHeight)
+                for (float y = dataDist; y <= dataDist; y+=_chunkHeight)
                 {
-                    for (float z = _start.z - dataDist; z <= _start.z + dataDist; z+=_chunkSize)
+                    for (float z = dataDist; z <= dataDist; z+=_chunkSize)
                     {
                         GenerateChunkData(x, y, z);
-                        yield return null;
                     }
                 }
             }
@@ -299,7 +303,10 @@ namespace VoxelTerrain
             var t = new Task(() => chunk.SetVoxel(x, y, z, _voxelSize));
             t.Start();
         }
+        
+        #endregion
 
+        #region Chunk Object Handling
         //Instantiate a new chunk
         private MonoChunk CreateNewChunkObject(float x, float y, float z)
         {
@@ -361,5 +368,6 @@ namespace VoxelTerrain
             
             chunk.UpdateChunk(newChunk);
         }
+        #endregion
     }
 }
