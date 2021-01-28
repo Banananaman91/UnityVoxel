@@ -72,7 +72,7 @@ namespace VoxelTerrain
         private Vector3 _curChunkPos;
         private List<MonoChunk> _toDestroy = new List<MonoChunk>();
         public List<MonoChunk> _chunkPool = new List<MonoChunk>();
-        private MonoChunk _currentChunk;
+        private Chunk _currentChunk { get; set; }
     
         private bool _chunksloaded;
         private bool _worldLoaded;
@@ -151,30 +151,27 @@ namespace VoxelTerrain
         {
             if (!_chunksloaded) return; // Don't run until world generation is complete
 
-            // //Get current position from origin
-            // var curChunkPosX = Mathf.FloorToInt(Position.x / _chunkSize) * _chunkSize;
-            // var curChunkPosY = Mathf.FloorToInt(Position.y / _chunkHeight) * _chunkHeight;
-            // var curChunkPosZ = Mathf.FloorToInt(Position.z / _chunkSize) * _chunkSize;
-            // var pos = new Vector3(curChunkPosX, curChunkPosY, curChunkPosZ);
-            //
-            // // //check if a chunk exists in current position
-            // // var hasChunk =
-            // //     _world.Chunks.ContainsKey(ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ));
-            // // if (!hasChunk) return;
-            // //
-            // // //If position has chunk, get chunky boi
-            // // var chunk = _world.Chunks[ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ)];
-            //
-            // var chunk = _chunkPool.Where(x => x.Position == pos);
-            //
-            // //Set current chunk if one hasn't already been set
-            // if (!_currentChunk) _currentChunk = chunk;
-            //
-            // //Chunk comparison, update terrain if current chunk doesn't match
-            // if (chunk == _currentChunk) return;
-            // _currentChunk = chunk;
-            // _curChunkPos = _currentChunk.transform.position;
-            //ExpandTerrain();
+            //Get current position from origin
+            var curChunkPosX = Mathf.FloorToInt(Position.x / _chunkSize) * _chunkSize;
+            var curChunkPosY = Mathf.FloorToInt(Position.y / _chunkHeight) * _chunkHeight;
+            var curChunkPosZ = Mathf.FloorToInt(Position.z / _chunkSize) * _chunkSize;
+
+            //check if a chunk exists in current position
+            var hasChunk =
+                _world.Chunks.ContainsKey(ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ));
+            if (!hasChunk) return;
+            
+            //If position has chunk, get chunky boi
+            var chunk = _world.Chunks[ChunkId.FromWorldPos(curChunkPosX, curChunkPosY, curChunkPosZ)];
+
+            //Set current chunk if one hasn't already been set
+            if (_currentChunk == null) _currentChunk = chunk;
+            
+            //Chunk comparison, update terrain if current chunk doesn't match
+            if (chunk == _currentChunk) return;
+            _currentChunk = chunk;
+            _curChunkPos = new Vector3(curChunkPosX, curChunkPosY, curChunkPosZ);
+            ExpandTerrain();
         }
 
         private void ExpandTerrain()
@@ -201,7 +198,7 @@ namespace VoxelTerrain
                 }
             }
 
-            _curChunkPos = _currentChunk.transform.position;
+            //_curChunkPos = _currentChunk.transform.position;
 
             //Iterate through all positions within range, if that position doesn't have a chunk then set one there
             for (var x = _curChunkPos.x - _distance; x <= _curChunkPos.x + _distance; x += _chunkSize)
@@ -255,7 +252,7 @@ namespace VoxelTerrain
             }
         }
 
-        private const float dataDist = 64f;
+        private const float dataDist = 96f;
         public bool taskComplete;
         public int chunkCount;
         
