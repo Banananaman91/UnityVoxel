@@ -1,6 +1,6 @@
 ﻿namespace VoxelTerrain
 {
-    public enum BlockType
+    public enum VoxelType
     {
         Default = 0,
     

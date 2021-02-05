@@ -8,7 +8,7 @@ namespace VoxelTerrain.Dependencies
     {
         public Dictionary<ChunkId, Chunk> Chunks = new Dictionary<ChunkId, Chunk>();
 
-        public BlockType this[int x, int y, int z]
+        public VoxelType this[int x, int y, int z]
         {
             get
             {

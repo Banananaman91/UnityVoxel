@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MMesh;
 using UnityEngine;
+using VoxelTerrain.Dependencies;
 
 namespace VoxelTerrain.Editor.Voxel
 {
@@ -11,13 +12,15 @@ namespace VoxelTerrain.Editor.Voxel
     {
         public const int ChunkSize = 16; //Leave at this size
         public const int ChunkHeight = 32; //This should be 16 too, but I wanted taller chunks
-        private BlockType[,,] Voxels;
-        public Mesh mesh;
+        private VoxelType[,,] Voxels;
+        //public Mesh mesh;
         //private MeshCube MeshCube;
         public VoxelEngine Engine;
+        public bool MeshCreated { get; set; }
+        public string ChunkName;
 
         //Used to find voxel at position
-        public BlockType this[int x, int y, int z]
+        public VoxelType this[int x, int y, int z]
         {
             get => Voxels[x, y, z];
             set => Voxels[x, y, z] = value;
@@ -25,9 +28,9 @@ namespace VoxelTerrain.Editor.Voxel
 
         public Chunk(float x, float y, float z, float size, VoxelEngine engine)
         {
-            mesh = new Mesh();
+            //mesh = new Mesh();
             Engine = engine;
-            Voxels = new BlockType[ChunkSize,ChunkHeight,ChunkSize];
+            Voxels = new VoxelType[ChunkSize,ChunkHeight,ChunkSize];
             //MeshCube = new MeshCube(this);
             //SetVoxel(x, y, z, size);
             
@@ -53,15 +56,21 @@ namespace VoxelTerrain.Editor.Voxel
             Colors = new List<Color>();
             _pos = new Vector3(0, 0, 0);
             _numFaces = 0;
+            MeshCreated = false;
+            ChunkName = "Chunk: " + x + ", " + y + ", " + z;
         }
 
-        public void CreateMesh()
+        public Mesh AssignMesh()
         {
+            var mesh = new Mesh();
             //Update mesh
             mesh.SetVertices(Vertices);
             mesh.SetTriangles(Triangles.ToArray(), 0);
             mesh.SetColors(Colors);
             mesh.RecalculateNormals();
+            mesh.name = ChunkName;
+            MeshCreated = true;
+            return mesh;
         }
 
         //Iterate through all voxels and set their type
@@ -82,7 +91,7 @@ namespace VoxelTerrain.Editor.Voxel
         }
         
         //set individual voxel type using noise function
-        public BlockType SetVoxelType(float x, float y, float z)
+        public VoxelType SetVoxelType(float x, float y, float z)
         {
             //3D noise for heightmap
             var simplex1 = Engine._fastNoise.GetNoise(x * 0.3f, z * 0.3f) * Engine.SimplexOneScale;
@@ -108,34 +117,36 @@ namespace VoxelTerrain.Editor.Voxel
             var baseStoneHeight = ChunkSize + stoneHeightMap;
             var treeMap = treeNoise1 + treeNoise2;
 
-            var blockType = BlockType.Default;
+            var blockType = VoxelType.Default;
 
             //under the surface, dirt block
             if(y <= baseLandHeight)
             {
-                blockType = BlockType.Dirt;
+                blockType = VoxelType.Dirt;
 
                 //just on the surface, use a grass type
                 if (y > baseLandHeight - 1)
                 {
-                    if (treeMap > Mathf.Max(treeMask, 0.2f)) blockType = BlockType.Wood;
-                    else blockType = BlockType.Grass;
+                    if (treeMap > Mathf.Max(treeMask, 0.2f)) blockType = VoxelType.Wood;
+                    else blockType = VoxelType.Grass;
                 }
 
                 //surface is above snow height, use snow type
-                if (y > Engine.SnowHeight) blockType = BlockType.Snow;
+                if (y > Engine.SnowHeight) blockType = VoxelType.Snow;
 
                 //too low for dirt, make it stone
-                if(y <= baseStoneHeight && y < baseLandHeight - Engine.StoneDepth) blockType = BlockType.Stone;
+                if(y <= baseStoneHeight && y < baseLandHeight - Engine.StoneDepth) blockType = VoxelType.Stone;
             }
 
             //mask for generating caves
             
             if(caveMap > Mathf.Max(caveMask, .2f) && (y <= Engine.CaveStartHeight || y < baseLandHeight - -Engine.CaveStartHeight))
-               blockType = BlockType.Default;
+               blockType = VoxelType.Default;
 
             return blockType;
         }
+
+        #region Mesh
         
         public readonly List<Vector3> Vertices;
         public readonly List<int> Triangles;
@@ -171,18 +182,29 @@ namespace VoxelTerrain.Editor.Voxel
             Triangles.Clear();
             Colors.Clear();
             
-            await GetMeshData(x, y, z);
+            await SetMeshData(x, y, z);
+            
+            //_chunk.CreateMesh();
+        }
+        
+        public async void UpdateMesh(float x, float y, float z)
+        {
+            Vertices.Clear();
+            Triangles.Clear();
+            Colors.Clear();
+            
+            await UpdateMeshData(x, y, z);
             
             //_chunk.CreateMesh();
         }
 
-        private async Task GetMeshData(float x, float y, float z)
+        private async Task SetMeshData(float x, float y, float z)
         {
-            for (var i = 0; i < Chunk.ChunkSize; i++)
+            for (var i = 0; i < ChunkSize; i++)
             {
-                for (var j = 0; j < Chunk.ChunkHeight; j++)
+                for (var j = 0; j < ChunkHeight; j++)
                 {
-                    for (var k = 0; k < Chunk.ChunkSize; k++)
+                    for (var k = 0; k < ChunkSize; k++)
                     {
                         var voxelType = this[i, j, k];
                         // If it is air we ignore this block
@@ -318,6 +340,173 @@ namespace VoxelTerrain.Editor.Voxel
                 }
             }
         }
+        
+        private async Task UpdateMeshData(float x, float y, float z)
+        {
+            for (var i = 0; i < ChunkSize; i++)
+            {
+                for (var j = 0; j < ChunkHeight; j++)
+                {
+                    for (var k = 0; k < ChunkSize; k++)
+                    {
+                        var voxelType = this[i, j, k];
+                        // If it is air we ignore this block
+                        if (voxelType == 0)
+                            continue;
+                        _pos = new Vector3(i, j, k) * Engine.VoxelSize;
+                        // Remember current position in vertices list so we can add triangles relative to that
+                        _numFaces = 0;
+
+                        //for each face, check corresponding position for potential voxel type
+                        //works for spaces where voxels don't currently exist
+                        //neighbour checks will be required once destruction/construction is added to voxel mechanics
+
+                        #region RightFace
+
+                        if (GetNeighbourVoxel(x + ((i + 1) * Engine.VoxelSize), y + (j * Engine.VoxelSize),
+                            z + (k * Engine.VoxelSize)) == 0) //right face
+                        {
+                            Vertices.Add(_pos + CubeVertices[1]);
+                            Vertices.Add(_pos + CubeVertices[2]);
+                            Vertices.Add(_pos + CubeVertices[5]);
+                            Vertices.Add(_pos + CubeVertices[6]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            _numFaces++;
+                        }
+
+                        #endregion
+
+                        #region LeftFace
+
+
+                        if (GetNeighbourVoxel(x + ((i - 1) * Engine.VoxelSize), y + (j * Engine.VoxelSize),
+                            z + (k * Engine.VoxelSize)) == 0) //left face
+                        {
+                            Vertices.Add(_pos + CubeVertices[7]);
+                            Vertices.Add(_pos + CubeVertices[4]);
+                            Vertices.Add(_pos + CubeVertices[3]);
+                            Vertices.Add(_pos + CubeVertices[0]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            _numFaces++;
+                        }
+
+                        #endregion
+
+                        #region TopFace
+
+
+                        if (GetNeighbourVoxel(x + (i * Engine.VoxelSize), y + ((j + 1) * Engine.VoxelSize),
+                            z + (k * Engine.VoxelSize)) == 0) //top face
+                        {
+                            Vertices.Add(_pos + CubeVertices[3]);
+                            Vertices.Add(_pos + CubeVertices[4]);
+                            Vertices.Add(_pos + CubeVertices[5]);
+                            Vertices.Add(_pos + CubeVertices[2]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            _numFaces++;
+                        }
+
+                        #endregion
+
+                        #region BottomFace
+
+                        if (GetNeighbourVoxel(x + (i * Engine.VoxelSize), y + ((j - 1) * Engine.VoxelSize),
+                            z + (k * Engine.VoxelSize)) == 0) //bottom face
+                        {
+                            Vertices.Add(_pos + CubeVertices[0]);
+                            Vertices.Add(_pos + CubeVertices[1]);
+                            Vertices.Add(_pos + CubeVertices[6]);
+                            Vertices.Add(_pos + CubeVertices[7]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            _numFaces++;
+                        }
+
+                        #endregion
+
+                        #region BackFace
+
+                        if (GetNeighbourVoxel(x + (i * Engine.VoxelSize), y + (j * Engine.VoxelSize),
+                            z + ((k + 1) * Engine.VoxelSize)) == 0) //back face
+                        {
+                            Vertices.Add(_pos + CubeVertices[6]);
+                            Vertices.Add(_pos + CubeVertices[5]);
+                            Vertices.Add(_pos + CubeVertices[4]);
+                            Vertices.Add(_pos + CubeVertices[7]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            _numFaces++;
+                        }
+
+                        #endregion
+
+                        #region FrontFace
+
+                        if (GetNeighbourVoxel(x + (i * Engine.VoxelSize), y + (j * Engine.VoxelSize),
+                            z + ((k - 1) * Engine.VoxelSize)) == 0) //front face
+                        {
+                            Vertices.Add(_pos + CubeVertices[0]);
+                            Vertices.Add(_pos + CubeVertices[3]);
+                            Vertices.Add(_pos + CubeVertices[2]);
+                            Vertices.Add(_pos + CubeVertices[1]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            Colors.Add(_colors[(int) (voxelType - 1)]);
+                            _numFaces++;
+                        }
+
+                        #endregion
+
+                        var tl = Vertices.Count - 4 * _numFaces;
+                        for (var l = 0; l < _numFaces; l++)
+                        {
+                            Triangles.AddRange(new[]
+                            {
+                                tl + l * 4, tl + l * 4 + 1, tl + l * 4 + 2, tl + l * 4, tl + l * 4 + 2, tl + l * 4 + 3
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        private VoxelType GetNeighbourVoxel(float x, float y, float z)
+        {
+            var voxelType = VoxelType.Default;
+            
+            var posX = Mathf.FloorToInt(x / Engine._chunkSize) * Engine._chunkSize;
+            var posY = Mathf.FloorToInt(y / Engine._chunkHeight) * Engine._chunkHeight;
+            var posZ = Mathf.FloorToInt(z / Engine._chunkSize) * Engine._chunkSize;
+
+            var hasVoxel = Engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(posX, posY, posZ));
+
+            if (hasVoxel)
+            {
+                var chunk = Engine.WorldData.Chunks[ChunkId.FromWorldPos(posX, posY, posZ)];
+                var voxPosX = x - posX;
+                var voxPosY = y - posY;
+                var voxPosZ = z - posZ;
+                voxelType = chunk[(int) voxPosX, (int) voxPosY, (int) voxPosZ];
+            }
+
+            return voxelType;
+        }
+        
+        #endregion
         
         #region Equality Members
 

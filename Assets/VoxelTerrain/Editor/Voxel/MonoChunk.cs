@@ -8,11 +8,12 @@ using VoxelTerrain.Editor.Voxel;
 public class MonoChunk : MonoBehaviour
 {
     [HideInInspector] public VoxelEngine Engine;
+    public MeshCollider MeshCollider => GetComponent<MeshCollider>();
     public MeshFilter MeshFilter => GetComponent<MeshFilter>();
     public MeshRenderer MeshRender => GetComponent<MeshRenderer>();
     public bool IsAvailable { get; set; }
     public bool MeshUpdate { get; set; }
-    public Chunk CurrentChunk { get; set; }
+    //public Chunk CurrentChunk { get; set; }
 
     public Vector3 Position => transform.position;
     // Start is called before the first frame update
@@ -29,13 +30,10 @@ public class MonoChunk : MonoBehaviour
 
     public void UpdateChunk(Chunk chunk)
     {
-        if (CurrentChunk == null) CurrentChunk = chunk;
-        else if (CurrentChunk == chunk) return;
-
-        CurrentChunk = chunk;
-        
-        CurrentChunk.CreateMesh();
-
-        MeshFilter.mesh = CurrentChunk.mesh;
+        MeshFilter.mesh = chunk.AssignMesh();
+        MeshCollider.sharedMesh = MeshFilter.mesh;
+        // if (!chunk.MeshCreated) chunk.AssignMesh();
+        //
+        // MeshFilter.mesh = chunk.mesh;
     }
 }
