@@ -866,6 +866,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   engine: {fileID: 1529356679}
+  _setVoxelType: 1
 --- !u!1 &1712044596
 GameObject:
   m_ObjectHideFlags: 0
