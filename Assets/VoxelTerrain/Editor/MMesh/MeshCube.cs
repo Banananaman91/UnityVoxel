@@ -45,13 +45,13 @@ namespace MMesh
             _engine = chunk.Engine;
             CubeVertices = new Vector3[] {
             new Vector3 (0, 0, 0), //0
-            new Vector3 (1 * _engine.VoxelSize, 0, 0), //1
-            new Vector3 (1 * _engine.VoxelSize, 1 * _engine.VoxelSize, 0), //2
-            new Vector3 (0, 1 * _engine.VoxelSize, 0), //3
-            new Vector3 (0, 1 * _engine.VoxelSize, 1 * _engine.VoxelSize), //4
-            new Vector3 (1 * _engine.VoxelSize, 1 * _engine.VoxelSize, 1 * _engine.VoxelSize), //5
-            new Vector3 (1 * _engine.VoxelSize, 0, 1 * _engine.VoxelSize), //6
-            new Vector3 (0, 0, 1 * _engine.VoxelSize), //7
+            new Vector3 (1 * _engine.ChunkInfo.VoxelSize, 0, 0), //1
+            new Vector3 (1 * _engine.ChunkInfo.VoxelSize, 1 * _engine.ChunkInfo.VoxelSize, 0), //2
+            new Vector3 (0, 1 * _engine.ChunkInfo.VoxelSize, 0), //3
+            new Vector3 (0, 1 * _engine.ChunkInfo.VoxelSize, 1 * _engine.ChunkInfo.VoxelSize), //4
+            new Vector3 (1 * _engine.ChunkInfo.VoxelSize, 1 * _engine.ChunkInfo.VoxelSize, 1 * _engine.ChunkInfo.VoxelSize), //5
+            new Vector3 (1 * _engine.ChunkInfo.VoxelSize, 0, 1 * _engine.ChunkInfo.VoxelSize), //6
+            new Vector3 (0, 0, 1 * _engine.ChunkInfo.VoxelSize), //7
         }; //Vertices Cheat Sheet
         // Right Face 1 2 5 6
         // Left Face 7 4 3 0
@@ -90,7 +90,7 @@ namespace MMesh
                         // If it is air we ignore this block
                         if (voxelType == 0)
                             continue;
-                        _pos = new Vector3(i, j, k) * _engine.VoxelSize;
+                        _pos = new Vector3(i, j, k) * _engine.ChunkInfo.VoxelSize;
                         // Remember current position in vertices list so we can add triangles relative to that
                         _numFaces = 0;
 
@@ -100,7 +100,7 @@ namespace MMesh
 
                         #region RightFace
 
-                        if (_chunk.SetVoxelType(x + ((i + 1) * _engine.VoxelSize), y + (j * _engine.VoxelSize), z + (k * _engine.VoxelSize)) == 0) //right face
+                        if (_chunk.SetVoxelType(x + ((i + 1) * _engine.ChunkInfo.VoxelSize), y + (j * _engine.ChunkInfo.VoxelSize), z + (k * _engine.ChunkInfo.VoxelSize)) == 0) //right face
                         {
                             Vertices.Add(_pos + CubeVertices[1]);
                             Vertices.Add(_pos + CubeVertices[2]);
@@ -118,7 +118,7 @@ namespace MMesh
                         #region LeftFace
 
 
-                        if (_chunk.SetVoxelType(x + ((i - 1) * _engine.VoxelSize), y + (j * _engine.VoxelSize), z + (k * _engine.VoxelSize)) == 0) //left face
+                        if (_chunk.SetVoxelType(x + ((i - 1) * _engine.ChunkInfo.VoxelSize), y + (j * _engine.ChunkInfo.VoxelSize), z + (k * _engine.ChunkInfo.VoxelSize)) == 0) //left face
                         {
                             Vertices.Add(_pos + CubeVertices[7]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -136,7 +136,7 @@ namespace MMesh
                         #region TopFace
 
 
-                        if (_chunk.SetVoxelType(x + (i * _engine.VoxelSize), y + ((j + 1) * _engine.VoxelSize), z + (k * _engine.VoxelSize)) == 0) //top face
+                        if (_chunk.SetVoxelType(x + (i * _engine.ChunkInfo.VoxelSize), y + ((j + 1) * _engine.ChunkInfo.VoxelSize), z + (k * _engine.ChunkInfo.VoxelSize)) == 0) //top face
                         {
                             Vertices.Add(_pos + CubeVertices[3]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -153,7 +153,7 @@ namespace MMesh
 
                         #region BottomFace
 
-                        if (_chunk.SetVoxelType(x + (i * _engine.VoxelSize), y + ((j - 1) * _engine.VoxelSize), z + (k * _engine.VoxelSize)) == 0) //bottom face
+                        if (_chunk.SetVoxelType(x + (i * _engine.ChunkInfo.VoxelSize), y + ((j - 1) * _engine.ChunkInfo.VoxelSize), z + (k * _engine.ChunkInfo.VoxelSize)) == 0) //bottom face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[1]);
@@ -170,7 +170,7 @@ namespace MMesh
 
                         #region BackFace
 
-                        if (_chunk.SetVoxelType(x + (i * _engine.VoxelSize), y + (j * _engine.VoxelSize), z + ((k + 1) * _engine.VoxelSize)) == 0) //back face
+                        if (_chunk.SetVoxelType(x + (i * _engine.ChunkInfo.VoxelSize), y + (j * _engine.ChunkInfo.VoxelSize), z + ((k + 1) * _engine.ChunkInfo.VoxelSize)) == 0) //back face
                         {
                             Vertices.Add(_pos + CubeVertices[6]);
                             Vertices.Add(_pos + CubeVertices[5]);
@@ -187,7 +187,7 @@ namespace MMesh
 
                         #region FrontFace
 
-                        if (_chunk.SetVoxelType(x + (i * _engine.VoxelSize), y + (j * _engine.VoxelSize), z + ((k - 1) * _engine.VoxelSize)) == 0) //front face
+                        if (_chunk.SetVoxelType(x + (i * _engine.ChunkInfo.VoxelSize), y + (j * _engine.ChunkInfo.VoxelSize), z + ((k - 1) * _engine.ChunkInfo.VoxelSize)) == 0) //front face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[3]);

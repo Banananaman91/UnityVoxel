@@ -36,13 +36,13 @@ namespace VoxelTerrain.Editor.Voxel
             
             CubeVertices = new Vector3[] {
                 new Vector3 (0, 0, 0), //0
-                new Vector3 (1 * Engine.VoxelSize, 0, 0), //1
-                new Vector3 (1 * Engine.VoxelSize, 1 * Engine.VoxelSize, 0), //2
-                new Vector3 (0, 1 * Engine.VoxelSize, 0), //3
-                new Vector3 (0, 1 * Engine.VoxelSize, 1 * Engine.VoxelSize), //4
-                new Vector3 (1 * Engine.VoxelSize, 1 * Engine.VoxelSize, 1 * Engine.VoxelSize), //5
-                new Vector3 (1 * Engine.VoxelSize, 0, 1 * Engine.VoxelSize), //6
-                new Vector3 (0, 0, 1 * Engine.VoxelSize), //7
+                new Vector3 (1 * Engine.ChunkInfo.VoxelSize, 0, 0), //1
+                new Vector3 (1 * Engine.ChunkInfo.VoxelSize, 1 * Engine.ChunkInfo.VoxelSize, 0), //2
+                new Vector3 (0, 1 * Engine.ChunkInfo.VoxelSize, 0), //3
+                new Vector3 (0, 1 * Engine.ChunkInfo.VoxelSize, 1 * Engine.ChunkInfo.VoxelSize), //4
+                new Vector3 (1 * Engine.ChunkInfo.VoxelSize, 1 * Engine.ChunkInfo.VoxelSize, 1 * Engine.ChunkInfo.VoxelSize), //5
+                new Vector3 (1 * Engine.ChunkInfo.VoxelSize, 0, 1 * Engine.ChunkInfo.VoxelSize), //6
+                new Vector3 (0, 0, 1 * Engine.ChunkInfo.VoxelSize), //7
             }; //Vertices Cheat Sheet
             // Right Face 1 2 5 6
             // Left Face 7 4 3 0
@@ -94,17 +94,17 @@ namespace VoxelTerrain.Editor.Voxel
         public VoxelType SetVoxelType(float x, float y, float z)
         {
             //3D noise for heightmap
-            var simplex1 = Engine._fastNoise.GetNoise(x * 0.3f, z * 0.3f) * Engine.SimplexOneScale;
-            var simplex2 = Engine._fastNoise.GetNoise(x * 0.8f, z * 0.8f) * Engine.SimplexTwoScale;
+            var simplex1 = Engine._fastNoise.GetNoise(x * 0.3f, z * 0.3f) * Engine.NoiseValues.SimplexOneScale;
+            var simplex2 = Engine._fastNoise.GetNoise(x * 0.8f, z * 0.8f) * Engine.NoiseValues.SimplexTwoScale;
 
             //3d noise for caves and overhangs and such
-            var caveNoise1 = Engine._fastNoise.GetNoise(x * 0.3f, y * 0.3f, z * 0.3f) * Engine.CaveNoiseOneScale;
-            var caveNoise2 = Engine._fastNoise.GetNoise(x * 0.8f, y * 0.8f, z * 0.8f) * Engine.CaveNoiseTwoScale;
-            var caveMask = Engine._fastNoise.GetNoise(x, z) + Engine.CaveMask;
+            var caveNoise1 = Engine._fastNoise.GetNoise(x * 0.3f, y * 0.3f, z * 0.3f) * Engine.NoiseValues.CaveNoiseOneScale;
+            var caveNoise2 = Engine._fastNoise.GetNoise(x * 0.8f, y * 0.8f, z * 0.8f) * Engine.NoiseValues.CaveNoiseTwoScale;
+            var caveMask = Engine._fastNoise.GetNoise(x, z) + Engine.NoiseValues.CaveMask;
             
             //stone layer heightmap
-            var simplexStone1 = Engine._fastNoise.GetNoise(x * 0.3f, z * 0.3f) * Engine.SimplexStoneOneScale;
-            var simplexStone2 = Engine._fastNoise.GetNoise(x * 0.8f, z * 0.8f) * Engine.SimplexStoneTwoScale;
+            var simplexStone1 = Engine._fastNoise.GetNoise(x * 0.3f, z * 0.3f) * Engine.NoiseValues.SimplexStoneOneScale;
+            var simplexStone2 = Engine._fastNoise.GetNoise(x * 0.8f, z * 0.8f) * Engine.NoiseValues.SimplexStoneTwoScale;
 
             var treeNoise1 = Engine._fastNoise.GetNoise(x * 0.5f, z * 0.5f) * 5;
             var treeNoise2 = Engine._fastNoise.GetNoise(x * 0.9f, z * 0.9f) * 50;
@@ -132,15 +132,15 @@ namespace VoxelTerrain.Editor.Voxel
                 }
 
                 //surface is above snow height, use snow type
-                if (y > Engine.SnowHeight) blockType = VoxelType.Snow;
+                if (y > Engine.VoxelTypeHeights.SnowHeight) blockType = VoxelType.Snow;
 
                 //too low for dirt, make it stone
-                if(y <= baseStoneHeight && y < baseLandHeight - Engine.StoneDepth) blockType = VoxelType.Stone;
+                if(y <= baseStoneHeight && y < baseLandHeight - Engine.VoxelTypeHeights.StoneDepth) blockType = VoxelType.Stone;
             }
 
             //mask for generating caves
             
-            if(caveMap > Mathf.Max(caveMask, .2f) && (y <= Engine.CaveStartHeight || y < baseLandHeight - -Engine.CaveStartHeight))
+            if(caveMap > Mathf.Max(caveMask, .2f) && (y <= Engine.VoxelTypeHeights.CaveStartHeight || y < baseLandHeight - -Engine.VoxelTypeHeights.CaveStartHeight))
                blockType = VoxelType.Default;
 
             return blockType;
@@ -210,7 +210,7 @@ namespace VoxelTerrain.Editor.Voxel
                         // If it is air we ignore this block
                         if (voxelType == 0)
                             continue;
-                        _pos = new Vector3(i, j, k) * Engine.VoxelSize;
+                        _pos = new Vector3(i, j, k) * Engine.ChunkInfo.VoxelSize;
                         // Remember current position in vertices list so we can add triangles relative to that
                         _numFaces = 0;
 
@@ -220,8 +220,8 @@ namespace VoxelTerrain.Editor.Voxel
 
                         #region RightFace
 
-                        if (SetVoxelType(x + ((i + 1) * Engine.VoxelSize), y + (j * Engine.VoxelSize),
-                            z + (k * Engine.VoxelSize)) == 0) //right face
+                        if (SetVoxelType(x + ((i + 1) * Engine.ChunkInfo.VoxelSize), y + (j * Engine.ChunkInfo.VoxelSize),
+                            z + (k * Engine.ChunkInfo.VoxelSize)) == 0) //right face
                         {
                             Vertices.Add(_pos + CubeVertices[1]);
                             Vertices.Add(_pos + CubeVertices[2]);
@@ -239,8 +239,8 @@ namespace VoxelTerrain.Editor.Voxel
                         #region LeftFace
 
 
-                        if (SetVoxelType(x + ((i - 1) * Engine.VoxelSize), y + (j * Engine.VoxelSize),
-                            z + (k * Engine.VoxelSize)) == 0) //left face
+                        if (SetVoxelType(x + ((i - 1) * Engine.ChunkInfo.VoxelSize), y + (j * Engine.ChunkInfo.VoxelSize),
+                            z + (k * Engine.ChunkInfo.VoxelSize)) == 0) //left face
                         {
                             Vertices.Add(_pos + CubeVertices[7]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -258,8 +258,8 @@ namespace VoxelTerrain.Editor.Voxel
                         #region TopFace
 
 
-                        if (SetVoxelType(x + (i * Engine.VoxelSize), y + ((j + 1) * Engine.VoxelSize),
-                            z + (k * Engine.VoxelSize)) == 0) //top face
+                        if (SetVoxelType(x + (i * Engine.ChunkInfo.VoxelSize), y + ((j + 1) * Engine.ChunkInfo.VoxelSize),
+                            z + (k * Engine.ChunkInfo.VoxelSize)) == 0) //top face
                         {
                             Vertices.Add(_pos + CubeVertices[3]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -276,8 +276,8 @@ namespace VoxelTerrain.Editor.Voxel
 
                         #region BottomFace
 
-                        if (SetVoxelType(x + (i * Engine.VoxelSize), y + ((j - 1) * Engine.VoxelSize),
-                            z + (k * Engine.VoxelSize)) == 0) //bottom face
+                        if (SetVoxelType(x + (i * Engine.ChunkInfo.VoxelSize), y + ((j - 1) * Engine.ChunkInfo.VoxelSize),
+                            z + (k * Engine.ChunkInfo.VoxelSize)) == 0) //bottom face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[1]);
@@ -294,8 +294,8 @@ namespace VoxelTerrain.Editor.Voxel
 
                         #region BackFace
 
-                        if (SetVoxelType(x + (i * Engine.VoxelSize), y + (j * Engine.VoxelSize),
-                            z + ((k + 1) * Engine.VoxelSize)) == 0) //back face
+                        if (SetVoxelType(x + (i * Engine.ChunkInfo.VoxelSize), y + (j * Engine.ChunkInfo.VoxelSize),
+                            z + ((k + 1) * Engine.ChunkInfo.VoxelSize)) == 0) //back face
                         {
                             Vertices.Add(_pos + CubeVertices[6]);
                             Vertices.Add(_pos + CubeVertices[5]);
@@ -312,8 +312,8 @@ namespace VoxelTerrain.Editor.Voxel
 
                         #region FrontFace
 
-                        if (SetVoxelType(x + (i * Engine.VoxelSize), y + (j * Engine.VoxelSize),
-                            z + ((k - 1) * Engine.VoxelSize)) == 0) //front face
+                        if (SetVoxelType(x + (i * Engine.ChunkInfo.VoxelSize), y + (j * Engine.ChunkInfo.VoxelSize),
+                            z + ((k - 1) * Engine.ChunkInfo.VoxelSize)) == 0) //front face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[3]);
@@ -353,7 +353,7 @@ namespace VoxelTerrain.Editor.Voxel
                         // If it is air we ignore this block
                         if (voxelType == 0)
                             continue;
-                        _pos = new Vector3(i, j, k) * Engine.VoxelSize;
+                        _pos = new Vector3(i, j, k) * Engine.ChunkInfo.VoxelSize;
                         // Remember current position in vertices list so we can add triangles relative to that
                         _numFaces = 0;
 
@@ -363,8 +363,8 @@ namespace VoxelTerrain.Editor.Voxel
 
                         #region RightFace
 
-                        if (GetNeighbourVoxel(x + ((i + 1) * Engine.VoxelSize), y + (j * Engine.VoxelSize),
-                            z + (k * Engine.VoxelSize)) == 0) //right face
+                        if (GetNeighbourVoxel(x + ((i + 1) * Engine.ChunkInfo.VoxelSize), y + (j * Engine.ChunkInfo.VoxelSize),
+                            z + (k * Engine.ChunkInfo.VoxelSize)) == 0) //right face
                         {
                             Vertices.Add(_pos + CubeVertices[1]);
                             Vertices.Add(_pos + CubeVertices[2]);
@@ -382,8 +382,8 @@ namespace VoxelTerrain.Editor.Voxel
                         #region LeftFace
 
 
-                        if (GetNeighbourVoxel(x + ((i - 1) * Engine.VoxelSize), y + (j * Engine.VoxelSize),
-                            z + (k * Engine.VoxelSize)) == 0) //left face
+                        if (GetNeighbourVoxel(x + ((i - 1) * Engine.ChunkInfo.VoxelSize), y + (j * Engine.ChunkInfo.VoxelSize),
+                            z + (k * Engine.ChunkInfo.VoxelSize)) == 0) //left face
                         {
                             Vertices.Add(_pos + CubeVertices[7]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -401,8 +401,8 @@ namespace VoxelTerrain.Editor.Voxel
                         #region TopFace
 
 
-                        if (GetNeighbourVoxel(x + (i * Engine.VoxelSize), y + ((j + 1) * Engine.VoxelSize),
-                            z + (k * Engine.VoxelSize)) == 0) //top face
+                        if (GetNeighbourVoxel(x + (i * Engine.ChunkInfo.VoxelSize), y + ((j + 1) * Engine.ChunkInfo.VoxelSize),
+                            z + (k * Engine.ChunkInfo.VoxelSize)) == 0) //top face
                         {
                             Vertices.Add(_pos + CubeVertices[3]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -419,8 +419,8 @@ namespace VoxelTerrain.Editor.Voxel
 
                         #region BottomFace
 
-                        if (GetNeighbourVoxel(x + (i * Engine.VoxelSize), y + ((j - 1) * Engine.VoxelSize),
-                            z + (k * Engine.VoxelSize)) == 0) //bottom face
+                        if (GetNeighbourVoxel(x + (i * Engine.ChunkInfo.VoxelSize), y + ((j - 1) * Engine.ChunkInfo.VoxelSize),
+                            z + (k * Engine.ChunkInfo.VoxelSize)) == 0) //bottom face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[1]);
@@ -437,8 +437,8 @@ namespace VoxelTerrain.Editor.Voxel
 
                         #region BackFace
 
-                        if (GetNeighbourVoxel(x + (i * Engine.VoxelSize), y + (j * Engine.VoxelSize),
-                            z + ((k + 1) * Engine.VoxelSize)) == 0) //back face
+                        if (GetNeighbourVoxel(x + (i * Engine.ChunkInfo.VoxelSize), y + (j * Engine.ChunkInfo.VoxelSize),
+                            z + ((k + 1) * Engine.ChunkInfo.VoxelSize)) == 0) //back face
                         {
                             Vertices.Add(_pos + CubeVertices[6]);
                             Vertices.Add(_pos + CubeVertices[5]);
@@ -455,8 +455,8 @@ namespace VoxelTerrain.Editor.Voxel
 
                         #region FrontFace
 
-                        if (GetNeighbourVoxel(x + (i * Engine.VoxelSize), y + (j * Engine.VoxelSize),
-                            z + ((k - 1) * Engine.VoxelSize)) == 0) //front face
+                        if (GetNeighbourVoxel(x + (i * Engine.ChunkInfo.VoxelSize), y + (j * Engine.ChunkInfo.VoxelSize),
+                            z + ((k - 1) * Engine.ChunkInfo.VoxelSize)) == 0) //front face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[3]);
@@ -488,9 +488,9 @@ namespace VoxelTerrain.Editor.Voxel
         {
             var voxelType = VoxelType.Default;
             
-            var posX = Mathf.FloorToInt(x / Engine._chunkSize) * Engine._chunkSize;
-            var posY = Mathf.FloorToInt(y / Engine._chunkHeight) * Engine._chunkHeight;
-            var posZ = Mathf.FloorToInt(z / Engine._chunkSize) * Engine._chunkSize;
+            var posX = Mathf.FloorToInt(x / Engine.ChunkSize) * Engine.ChunkSize;
+            var posY = Mathf.FloorToInt(y / Engine.ChunkHeight) * Engine.ChunkHeight;
+            var posZ = Mathf.FloorToInt(z / Engine.ChunkSize) * Engine.ChunkSize;
 
             var hasVoxel = Engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(posX, posY, posZ));
 

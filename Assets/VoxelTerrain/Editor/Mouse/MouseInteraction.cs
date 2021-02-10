@@ -33,9 +33,9 @@ public class MouseInteraction : MonoBehaviour
 
         var offset = rayDir;
 
-        var posX = Mathf.FloorToInt((hitPos.x + offset.x) / engine._chunkSize) * engine._chunkSize;
-        var posY = Mathf.FloorToInt((hitPos.y + offset.y) / engine._chunkHeight) * engine._chunkHeight;
-        var posZ = Mathf.FloorToInt((hitPos.z + offset.z) / engine._chunkSize) * engine._chunkSize;
+        var posX = Mathf.FloorToInt((hitPos.x + offset.x) / engine.ChunkSize) * engine.ChunkSize;
+        var posY = Mathf.FloorToInt((hitPos.y + offset.y) / engine.ChunkHeight) * engine.ChunkHeight;
+        var posZ = Mathf.FloorToInt((hitPos.z + offset.z) / engine.ChunkSize) * engine.ChunkSize;
 
         // var hasChunk = engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(posX, posY, posZ));
         //
@@ -72,9 +72,9 @@ public class MouseInteraction : MonoBehaviour
 
         var offset = rayDir;
 
-        var x = Mathf.FloorToInt((hitPos.x - offset.x) / engine._chunkSize) * engine._chunkSize;
-        var y = Mathf.FloorToInt((hitPos.y - offset.y) / engine._chunkHeight) * engine._chunkHeight;
-        var z = Mathf.FloorToInt((hitPos.z - offset.z) / engine._chunkSize) * engine._chunkSize;
+        var x = Mathf.FloorToInt((hitPos.x - offset.x) / engine.ChunkSize) * engine.ChunkSize;
+        var y = Mathf.FloorToInt((hitPos.y - offset.y) / engine.ChunkHeight) * engine.ChunkHeight;
+        var z = Mathf.FloorToInt((hitPos.z - offset.z) / engine.ChunkSize) * engine.ChunkSize;
 
         // var hasChunk = engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(x, y, z));
         //
