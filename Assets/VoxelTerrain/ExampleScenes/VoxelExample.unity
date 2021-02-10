@@ -1135,6 +1135,11 @@ PrefabInstance:
       propertyPath: VoxelDebug
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9142162792359760366, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _voxelSize
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 9142162792359760367, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: m_Name

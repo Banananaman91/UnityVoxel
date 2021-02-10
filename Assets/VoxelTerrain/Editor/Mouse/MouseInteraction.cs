@@ -22,7 +22,7 @@ public class MouseInteraction : MonoBehaviour
     {
         var ray = CamMain.ViewportPointToRay(CamMain.ScreenToViewportPoint(Input.mousePosition));
         
-        if (!Physics.Raycast(ray, out RaycastHit hit)) return;
+        if (!Physics.Raycast(ray, out var hit)) return;
 
         var hitPos = hit.point;
         
@@ -37,9 +37,9 @@ public class MouseInteraction : MonoBehaviour
         var posY = Mathf.FloorToInt((hitPos.y + offset.y) / engine._chunkHeight) * engine._chunkHeight;
         var posZ = Mathf.FloorToInt((hitPos.z + offset.z) / engine._chunkSize) * engine._chunkSize;
 
-        var hasChunk = engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(posX, posY, posZ));
-
-        if (!hasChunk) return;
+        // var hasChunk = engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(posX, posY, posZ));
+        //
+        // if (!hasChunk) return;
         
         var chunk = engine.WorldData.Chunks[ChunkId.FromWorldPos(posX, posY, posZ)];
         var voxPosX = Mathf.Floor(hitPos.x + offset.x) - posX;
@@ -76,9 +76,9 @@ public class MouseInteraction : MonoBehaviour
         var y = Mathf.FloorToInt((hitPos.y - offset.y) / engine._chunkHeight) * engine._chunkHeight;
         var z = Mathf.FloorToInt((hitPos.z - offset.z) / engine._chunkSize) * engine._chunkSize;
 
-        var hasChunk = engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(x, y, z));
-
-        if (!hasChunk) return;
+        // var hasChunk = engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(x, y, z));
+        //
+        // if (!hasChunk) return;
         
         var chunk = engine.WorldData.Chunks[ChunkId.FromWorldPos(x, y, z)];
 
