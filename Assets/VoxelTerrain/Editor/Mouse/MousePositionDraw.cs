@@ -1,14 +1,20 @@
 ﻿using System;
 using UnityEngine;
+using VoxelTerrain.Editor.Grid;
 
 namespace VoxelTerrain.Editor.Mouse
 {
     public class MousePositionDraw : MonoBehaviour
     {
-        private float offset = 0.5f;
+        [SerializeField] private VoxelEngine _engine;
+        private float offset => _engine ? _engine.ChunkInfo.VoxelSize / 2 : 0.25f;
+        private float size => _engine ? _engine.ChunkInfo.VoxelSize : 0.5f;
         private Camera CamMain => Camera.main;
-        
-        
+
+        private void Awake()
+        {
+            transform.localScale = new Vector3(size,size,size);
+        }
 
         private void Update()
         {
@@ -16,15 +22,7 @@ namespace VoxelTerrain.Editor.Mouse
             
             if (!Physics.Raycast(ray, out var hit)) return;
 
-            var hitPos = hit.point;
-
-            hitPos.x = (float) Math.Round(hitPos.x) - offset;
-            hitPos.y = (float) Math.Round(hitPos.y) + offset;
-            hitPos.z = (float) Math.Round(hitPos.z) - offset;
-            
-            
-
-            transform.position = hitPos;
+            transform.position = GridSnapper.SnapToGrid(hit.point, size, offset);
         }
     }
 }

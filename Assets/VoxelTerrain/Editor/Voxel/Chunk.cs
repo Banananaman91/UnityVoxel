@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MMesh;
 using UnityEngine;
 using VoxelTerrain.Dependencies;
+using VoxelTerrain.Editor.Noise;
 
 namespace VoxelTerrain.Editor.Voxel
 {
@@ -93,55 +94,85 @@ namespace VoxelTerrain.Editor.Voxel
         //set individual voxel type using noise function
         public VoxelType SetVoxelType(float x, float y, float z)
         {
-            //3D noise for heightmap
-            var simplex1 = Engine._fastNoise.GetNoise(x * 0.3f, z * 0.3f) * Engine.NoiseValues.SimplexOneScale;
-            var simplex2 = Engine._fastNoise.GetNoise(x * 0.8f, z * 0.8f) * Engine.NoiseValues.SimplexTwoScale;
-
-            //3d noise for caves and overhangs and such
-            var caveNoise1 = Engine._fastNoise.GetNoise(x * 0.3f, y * 0.3f, z * 0.3f) * Engine.NoiseValues.CaveNoiseOneScale;
-            var caveNoise2 = Engine._fastNoise.GetNoise(x * 0.8f, y * 0.8f, z * 0.8f) * Engine.NoiseValues.CaveNoiseTwoScale;
-            var caveMask = Engine._fastNoise.GetNoise(x, z) + Engine.NoiseValues.CaveMask;
-            
-            //stone layer heightmap
-            var simplexStone1 = Engine._fastNoise.GetNoise(x * 0.3f, z * 0.3f) * Engine.NoiseValues.SimplexStoneOneScale;
-            var simplexStone2 = Engine._fastNoise.GetNoise(x * 0.8f, z * 0.8f) * Engine.NoiseValues.SimplexStoneTwoScale;
-
-            var treeNoise1 = Engine._fastNoise.GetNoise(x * 0.5f, z * 0.5f) * 5;
-            var treeNoise2 = Engine._fastNoise.GetNoise(x * 0.9f, z * 0.9f) * 50;
-            var treeMask = Engine._fastNoise.GetNoise(x, z) + 8;
-            
-            var heightMap = simplex1 + simplex2;
-            var caveMap = caveNoise1 + caveNoise2;
-            var baseLandHeight = heightMap;
-            var stoneHeightMap = simplexStone1 + simplexStone2;
-            var baseStoneHeight = ChunkSize + stoneHeightMap;
-            var treeMap = treeNoise1 + treeNoise2;
-
             var blockType = VoxelType.Default;
-
-            //under the surface, dirt block
-            if(y <= baseLandHeight)
+            if (Engine.UsePerlin)
             {
-                blockType = VoxelType.Dirt;
+                var noise = PerlinNoise.GenerateNoise((int)VoxelEngine.DataDist, (int)VoxelEngine.DataHeight, 1, UnityEngine.Random.Range(0, 9999), 0, Vector2.zero);
 
-                //just on the surface, use a grass type
-                if (y > baseLandHeight - 1)
+                var heightMap = noise[(int)x, (int)z];
+                
+                if (y <= heightMap)
                 {
-                    if (treeMap > Mathf.Max(treeMask, 0.2f)) blockType = VoxelType.Wood;
-                    else blockType = VoxelType.Grass;
+                    blockType = VoxelType.Dirt;
+
+                    //just on the surface, use a grass type
+                    if (y > heightMap - 1)
+                    { 
+                        blockType = VoxelType.Grass;
+                    }
+
+                    //surface is above snow height, use snow type
+                    if (y > Engine.VoxelTypeHeights.SnowHeight) blockType = VoxelType.Snow;
+                    
+                }
+            }
+            else
+            {
+                //3D noise for heightmap
+                var simplex1 = Engine._fastNoise.GetNoise(x * 0.3f, z * 0.3f) * Engine.NoiseValues.SimplexOneScale;
+                var simplex2 = Engine._fastNoise.GetNoise(x * 0.8f, z * 0.8f) * Engine.NoiseValues.SimplexTwoScale;
+
+                //3d noise for caves and overhangs and such
+                var caveNoise1 = Engine._fastNoise.GetNoise(x * 0.3f, y * 0.3f, z * 0.3f) *
+                                 Engine.NoiseValues.CaveNoiseOneScale;
+                var caveNoise2 = Engine._fastNoise.GetNoise(x * 0.8f, y * 0.8f, z * 0.8f) *
+                                 Engine.NoiseValues.CaveNoiseTwoScale;
+                var caveMask = Engine._fastNoise.GetNoise(x, z) + Engine.NoiseValues.CaveMask;
+
+                //stone layer heightmap
+                var simplexStone1 = Engine._fastNoise.GetNoise(x * 0.3f, z * 0.3f) *
+                                    Engine.NoiseValues.SimplexStoneOneScale;
+                var simplexStone2 = Engine._fastNoise.GetNoise(x * 0.8f, z * 0.8f) *
+                                    Engine.NoiseValues.SimplexStoneTwoScale;
+
+                var treeNoise1 = Engine._fastNoise.GetNoise(x * 0.5f, z * 0.5f) * 5;
+                var treeNoise2 = Engine._fastNoise.GetNoise(x * 0.9f, z * 0.9f) * 50;
+                var treeMask = Engine._fastNoise.GetNoise(x, z) + 8;
+
+                var heightMap = simplex1 + simplex2;
+                var caveMap = caveNoise1 + caveNoise2;
+                var baseLandHeight = heightMap;
+                var stoneHeightMap = simplexStone1 + simplexStone2;
+                var baseStoneHeight = ChunkSize + stoneHeightMap;
+                var treeMap = treeNoise1 + treeNoise2;
+
+                //under the surface, dirt block
+                if (y <= baseLandHeight)
+                {
+                    blockType = VoxelType.Dirt;
+
+                    //just on the surface, use a grass type
+                    if (y > baseLandHeight - 1)
+                    {
+                        if (treeMap > Mathf.Max(treeMask, 0.2f)) blockType = VoxelType.Wood;
+                        else blockType = VoxelType.Grass;
+                    }
+
+                    //surface is above snow height, use snow type
+                    if (y > Engine.VoxelTypeHeights.SnowHeight) blockType = VoxelType.Snow;
+
+                    //too low for dirt, make it stone
+                    if (y <= baseStoneHeight && y < baseLandHeight - Engine.VoxelTypeHeights.StoneDepth)
+                        blockType = VoxelType.Stone;
                 }
 
-                //surface is above snow height, use snow type
-                if (y > Engine.VoxelTypeHeights.SnowHeight) blockType = VoxelType.Snow;
+                //mask for generating caves
 
-                //too low for dirt, make it stone
-                if(y <= baseStoneHeight && y < baseLandHeight - Engine.VoxelTypeHeights.StoneDepth) blockType = VoxelType.Stone;
+                if (caveMap > Mathf.Max(caveMask, .2f) && (y <= Engine.VoxelTypeHeights.CaveStartHeight ||
+                                                           y < baseLandHeight -
+                                                           -Engine.VoxelTypeHeights.CaveStartHeight))
+                    blockType = VoxelType.Default;
             }
-
-            //mask for generating caves
-            
-            if(caveMap > Mathf.Max(caveMask, .2f) && (y <= Engine.VoxelTypeHeights.CaveStartHeight || y < baseLandHeight - -Engine.VoxelTypeHeights.CaveStartHeight))
-               blockType = VoxelType.Default;
 
             return blockType;
         }

@@ -29,7 +29,7 @@ namespace VoxelTerrain
         [SerializeField] private NoiseValues _noiseValues;
         [SerializeField] private ProgressBar _progressBar;
         [SerializeField] private MousePositionDraw _mousePositionDraw;
-        
+
         private Vector3 _start;
         private Vector3 _curChunkPos;
         private List<MonoChunk> _toDestroy = new List<MonoChunk>();
@@ -44,6 +44,8 @@ namespace VoxelTerrain
         public float ChunkHeight => 32 * _chunkInfo.VoxelSize;
         public NoiseValues NoiseValues => _noiseValues;
         public VoxelTypeHeights VoxelTypeHeights => _voxelTypeHeights;
+
+        public bool UsePerlin;
         
         #region Validate Function
         private void OnValidate() 
@@ -204,7 +206,8 @@ namespace VoxelTerrain
             }
         }
 
-        private const float DataDist = 160f;
+        public const float DataDist = 160f;
+        public const float DataHeight = 64f;
 
         private IEnumerator GenerateWorldData()
         {
@@ -212,7 +215,7 @@ namespace VoxelTerrain
 
             for (float x = _start.x - DataDist; x <= _start.x + DataDist; x += ChunkSize)
             {
-                for (float y = _start.y - DataDist; y <= _start.y + DataDist; y += ChunkHeight)
+                for (float y = _start.y - DataHeight; y <= _start.y + DataHeight; y += ChunkHeight)
                 {
                     for (float z = _start.z - DataDist; z <= _start.z + DataDist; z += ChunkSize)
                     {

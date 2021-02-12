@@ -282,6 +282,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: MousePointer
       objectReference: {fileID: 0}
+    - target: {fileID: 1831589574907140677, guid: a11bfa0f202cd184e949e58420e9eee5,
+        type: 3}
+      propertyPath: _engine
+      value: 
+      objectReference: {fileID: 1529356679}
     - target: {fileID: 2225240555663359403, guid: a11bfa0f202cd184e949e58420e9eee5,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -811,6 +816,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &1325300123 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1831589574907140677, guid: a11bfa0f202cd184e949e58420e9eee5,
+    type: 3}
+  m_PrefabInstance: {fileID: 313372972}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec58c09a60b4f9d41af879745005b2cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1529356679 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9142162792359760366, guid: 2b7228255036a30479393ef9a76b8464,
@@ -1238,7 +1255,7 @@ PrefabInstance:
     - target: {fileID: 9142162792359760366, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _chunkInfo._voxelSize
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 9142162792359760366, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -1355,6 +1372,21 @@ PrefabInstance:
       propertyPath: _progressBar._progressText
       value: 
       objectReference: {fileID: 1028957335}
+    - target: {fileID: 9142162792359760366, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _perlinNoise
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9142162792359760366, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _mousePositionDraw
+      value: 
+      objectReference: {fileID: 1325300123}
+    - target: {fileID: 9142162792359760366, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: UsePerlin
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9142162792359760367, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: m_Name
