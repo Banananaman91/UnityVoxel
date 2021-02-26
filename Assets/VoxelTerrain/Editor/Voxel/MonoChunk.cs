@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VoxelTerrain;
@@ -14,6 +15,8 @@ public class MonoChunk : MonoBehaviour
     public MeshRenderer MeshRender => GetComponent<MeshRenderer>();
     public bool IsAvailable { get; set; }
 
+    private Chunk _chunk;
+
     public Vector3 Position => transform.position;
     // Start is called before the first frame update
     void Awake()
@@ -23,8 +26,9 @@ public class MonoChunk : MonoBehaviour
 
     public void UpdateChunk(Chunk chunk)
     {
-        MeshFilter.mesh = chunk.AssignMesh();
-        MeshCollider.sharedMesh = MeshFilter.mesh;
+        _chunk = chunk;
+        MeshFilter.sharedMesh = chunk.AssignMesh();
+        //MeshCollider.sharedMesh = MeshFilter.mesh;
         // if (!chunk.MeshCreated) chunk.AssignMesh();
         //
         // MeshFilter.mesh = chunk.mesh;

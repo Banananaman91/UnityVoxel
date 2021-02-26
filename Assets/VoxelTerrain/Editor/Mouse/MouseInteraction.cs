@@ -6,6 +6,7 @@ using UnityEngine;
 using VoxelTerrain;
 using VoxelTerrain.Dependencies;
 using VoxelTerrain.Editor.Grid;
+using VoxelTerrain.Editor.Voxel;
 using VoxelTerrain.Editor.Voxel.InfoData;
 
 public class MouseInteraction : MonoBehaviour
@@ -73,7 +74,7 @@ public class MouseInteraction : MonoBehaviour
         var voxPosY = hitPos.y - offset - posY;
         var voxPosZ = hitPos.z - offset - posZ;
 
-        chunk[(int) voxPosX, (int) voxPosY, (int) voxPosZ] = voxelType;
+        chunk[(int) voxPosX, (int) voxPosY, (int) voxPosZ] = (float) voxelType;
         chunk.UpdateMesh(posX, posY, posZ);
         
         var hasMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, posY, posZ));

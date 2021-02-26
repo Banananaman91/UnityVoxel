@@ -2,8 +2,7 @@
 
 namespace VoxelTerrain.Editor.Voxel.InfoData
 {
-    [System.Serializable]
-    public struct WorldInfo
+    public class WorldInfo : MonoBehaviour
     {
         [SerializeField] private Material _material;
         [SerializeField] private float _distance;

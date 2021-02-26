@@ -2,8 +2,7 @@
 
 namespace VoxelTerrain.Editor.Voxel.InfoData
 {
-    [System.Serializable]
-    public struct NoiseValues
+    public class NoiseValues : MonoBehaviour
     {
         [SerializeField] private float _simplexOneScale;
         [SerializeField] private float _simplexTwoScale;

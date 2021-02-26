@@ -4,7 +4,7 @@
     {
         Default = 0,
     
-        Grass,
+        Grass = 1,
         Dirt,
         Stone,
         Sand,

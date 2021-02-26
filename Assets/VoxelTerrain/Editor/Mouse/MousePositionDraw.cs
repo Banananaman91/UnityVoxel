@@ -1,14 +1,16 @@
 ﻿using System;
 using UnityEngine;
 using VoxelTerrain.Editor.Grid;
+using VoxelTerrain.Editor.Voxel;
+using VoxelTerrain.Editor.Voxel.InfoData;
 
 namespace VoxelTerrain.Editor.Mouse
 {
     public class MousePositionDraw : MonoBehaviour
     {
         [SerializeField] private VoxelEngine _engine;
-        private float offset => _engine ? _engine.ChunkInfo.VoxelSize / 2 : 0.25f;
-        private float size => _engine ? _engine.ChunkInfo.VoxelSize : 0.5f;
+        private float offset => _engine ? _engine.ChunkInfo.VoxelSize / 2 : GetComponent<ChunkInfo>().VoxelSize / 2;
+        private float size => _engine ? _engine.ChunkInfo.VoxelSize : GetComponent<ChunkInfo>().VoxelSize;
         private Camera CamMain => Camera.main;
 
         private void Awake()

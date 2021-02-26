@@ -3,8 +3,7 @@ using VoxelTerrain.Editor.Noise;
 
 namespace VoxelTerrain.Editor.Voxel.InfoData
 {
-    [System.Serializable]
-    public struct FractalInfo
+    public class FractalInfo : MonoBehaviour
     {
         [SerializeField] private FastNoiseLite.FractalType _fractalType;
         [SerializeField] private int _octaves;

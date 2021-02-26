@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
-using VoxelTerrain.Editor.Voxel;
+using UnityEngine;
+using VoxelTerrain.Dependencies;
 
-namespace VoxelTerrain.Dependencies
+namespace VoxelTerrain.Editor.Voxel.Dependencies
 {
     //If you are here, leave, you're not welcome
     public class World
     {
         public Dictionary<ChunkId, Chunk> Chunks = new Dictionary<ChunkId, Chunk>();
+        public Dictionary<ChunkId, GameObject> ChunkObjects = new Dictionary<ChunkId, GameObject>();
 
-        public VoxelType this[int x, int y, int z]
+        public float this[int x, int y, int z]
         {
             get
             {
