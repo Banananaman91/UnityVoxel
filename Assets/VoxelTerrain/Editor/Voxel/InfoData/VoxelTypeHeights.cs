@@ -2,8 +2,7 @@
 
 namespace VoxelTerrain.Editor.Voxel.InfoData
 {
-    [System.Serializable]
-    public struct VoxelTypeHeights
+    public class VoxelTypeHeights : MonoBehaviour
     {
         [SerializeField] private float _stoneDepth;
         [SerializeField] private float _snowHeight;

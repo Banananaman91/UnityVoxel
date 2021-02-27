@@ -3,8 +3,7 @@ using VoxelTerrain.Editor.Noise;
 
 namespace VoxelTerrain.Editor.Voxel.InfoData
 {
-    [System.Serializable]
-    public struct DomainWarpInfo
+    public class DomainWarpInfo : MonoBehaviour
     {
         [SerializeField] private FastNoiseLite.DomainWarpType _domainWarpType;
         [SerializeField] private FastNoiseLite.TransformType3D _warpTransformType3D;

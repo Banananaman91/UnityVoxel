@@ -3,8 +3,7 @@ using UnityEngine.UI;
 
 namespace VoxelTerrain.Editor.Voxel.InfoData
 {
-    [System.Serializable]
-    public struct ProgressBar
+    public class ProgressBar : MonoBehaviour
     {
         [SerializeField] private Slider _progress;
         [SerializeField] private Text _progressText;

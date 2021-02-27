@@ -2,8 +2,7 @@
 
 namespace VoxelTerrain.Editor.Voxel.InfoData
 {
-    [System.Serializable]
-    public struct ChunkInfo
+    public class ChunkInfo : MonoBehaviour
     {
         [SerializeField] private MonoChunk _chunkPrefab;
         [SerializeField, Range(0.01f, 1.0f), Tooltip("Metre cubed")] private float _voxelSize;
