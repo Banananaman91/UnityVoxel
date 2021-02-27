@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using VoxelTerrain;
 using VoxelTerrain.Editor.Voxel;
+using VoxelTerrain.Editor.Voxel.Dependencies;
 
 namespace MMesh
 {
@@ -16,10 +17,12 @@ namespace MMesh
         private Vector3 _pos;
         private int _numFaces;
         private readonly Vector3[] CubeVertices;
+        private World _world;
 
-        public MeshCreator(Vector3 pos, float size)
+        public MeshCreator(Vector3 pos, float size, World world)
         {
             _pos = pos;
+            _world = world;
             Vertices = new List<Vector3>();
             Triangles = new List<int>();
             Colors = new List<Color>();
@@ -65,7 +68,7 @@ namespace MMesh
 
         public async void SetMesh(float[] Voxels, float x, float y, float z, float size)
         {
-            //Recalculate(16, 1, new Vector3(x, y, z), true);
+            //MarchingCubes( Voxels, 16, 1, new Vector3(x, y, z), true);
             Vertices.Clear();
             Triangles.Clear();
             Colors.Clear();
@@ -75,7 +78,7 @@ namespace MMesh
             //_chunk.CreateMesh();
         }
 
-        private void Recalculate(float[]Voxels, int size, float scale, Vector3 origin, bool interpolate)
+        private void MarchingCubes(float[]voxels, int size, float scale, Vector3 origin, bool interpolate)
         {
             int flagIndex = 0;
             int index = 0;
@@ -92,14 +95,14 @@ namespace MMesh
                     for (int z = 0; z < Chunk.ChunkSize - 1; z++)
                     {
                         //Offsets are same as cornerOffsets[8]
-                        afCubes[0] = Voxels[Chunk.PosToIndex(x, y, z)];
-                        afCubes[1] = Voxels[Chunk.PosToIndex(x + 1, y, z)];
-                        afCubes[2] = Voxels[Chunk.PosToIndex(x + 1, y + 1, z)];
-                        afCubes[3] = Voxels[Chunk.PosToIndex(x, y + 1, z)];
-                        afCubes[4] = Voxels[Chunk.PosToIndex(x, y, z + 1)];
-                        afCubes[5] = Voxels[Chunk.PosToIndex(x + 1, y, z + 1)];
-                        afCubes[6] = Voxels[Chunk.PosToIndex(x + 1, y + 1, z + 1)];
-                        afCubes[7] = Voxels[Chunk.PosToIndex(x, y + 1, z + 1)];
+                        afCubes[0] = voxels[Chunk.PosToIndex(x, y, z)];
+                        afCubes[1] = voxels[Chunk.PosToIndex(x + 1, y, z)];
+                        afCubes[2] = voxels[Chunk.PosToIndex(x + 1, y + 1, z)];
+                        afCubes[3] = voxels[Chunk.PosToIndex(x, y + 1, z)];
+                        afCubes[4] = voxels[Chunk.PosToIndex(x, y, z + 1)];
+                        afCubes[5] = voxels[Chunk.PosToIndex(x + 1, y, z + 1)];
+                        afCubes[6] = voxels[Chunk.PosToIndex(x + 1, y + 1, z + 1)];
+                        afCubes[7] = voxels[Chunk.PosToIndex(x, y + 1, z + 1)];
 
 
                         //Calculate the index of the current cube configuration as follows:
@@ -141,8 +144,8 @@ namespace MMesh
                                 if (interpolate)
                                 {
                                     float ofst;
-                                    float s1 = Voxels[Chunk.PosToIndex(x + (int) edge1.x, y + (int) edge1.y, z + (int) edge1.z)];
-                                    float delta = s1 - Voxels[Chunk.PosToIndex(x + (int) edge2.x, y + (int) edge2.y, z + (int) edge2.z)];
+                                    float s1 = voxels[Chunk.PosToIndex(x + (int) edge1.x, y + (int) edge1.y, z + (int) edge1.z)];
+                                    float delta = s1 - voxels[Chunk.PosToIndex(x + (int) edge2.x, y + (int) edge2.y, z + (int) edge2.z)];
                                     if (delta == 0.0f)
                                         ofst = 0.5f;
                                     else
@@ -163,7 +166,7 @@ namespace MMesh
             }
         }
 
-        private async Task SetMeshData(float[] Voxels, float x, float y, float z, float size)
+        private async Task SetMeshData(float[] voxels, float x, float y, float z, float size)
         {
             for (var i = 0; i < Chunk.ChunkSize; i++)
             {
@@ -171,7 +174,7 @@ namespace MMesh
                 {
                     for (var k = 0; k < Chunk.ChunkSize; k++)
                     {
-                        var voxelType = Voxels[Chunk.PosToIndex(i, j, k)];
+                        var voxelType = voxels[Chunk.PosToIndex(i, j, k)];
                         // If it is air we ignore this block
                         if (voxelType == 0)
                             continue;
@@ -183,10 +186,21 @@ namespace MMesh
                         //works for spaces where voxels don't currently exist
                         //neighbour checks will be required once destruction/construction is added to voxel mechanics
 
+                        float vox;
+                        Chunk chunk;
+                        
                         #region RightFace
 
-                        if (Voxels[Chunk.PosToIndex((int) x + (i + 1), (int) y + j,
-                            (int) z + k)] == 0) //right face
+                        if (i + 1 >= Chunk.ChunkSize)
+                        {
+                            chunk = _world.GetChunkAt(new Vector3(x + Chunk.ChunkSize, y, z));
+                            if (chunk != null) vox = chunk[0, j, k];
+                            else vox = 1;
+                        }
+                            
+                        else vox = voxels[Chunk.PosToIndex((i + 1), j, k)];
+                        
+                        if (vox == 0) //right face
                         {
                             Vertices.Add(_pos + CubeVertices[1]);
                             Vertices.Add(_pos + CubeVertices[2]);
@@ -203,9 +217,19 @@ namespace MMesh
 
                         #region LeftFace
 
+                        if (i - 1 < 0)
+                        {
+                            chunk = _world.GetChunkAt(new Vector3(x - Chunk.ChunkSize, y, z));
+                            if (chunk != null) vox = chunk[Chunk.ChunkSize - 1, j, k];
+                            else vox = 1;
+                        }
+                            
+                        else 
+                        {
+                            vox = voxels[Chunk.PosToIndex(i - 1, j, k)];
+                        }
 
-                        if (Voxels[Chunk.PosToIndex((int)x + (i - 1), (int)y + j,
-                            (int)z + k)] == 0) //left face
+                        if (vox == 0) //left face
                         {
                             Vertices.Add(_pos + CubeVertices[7]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -222,9 +246,11 @@ namespace MMesh
 
                         #region TopFace
 
+                        if (j + 1 >= Chunk.ChunkHeight)
+                            vox = 1;
+                        else vox = voxels[Chunk.PosToIndex(i, j + 1, k)];
 
-                        if (Voxels[Chunk.PosToIndex((int)x + i, (int)y + (j + 1),
-                            (int)z + k)] == 0) //top face
+                        if (vox == 0) //top face
                         {
                             Vertices.Add(_pos + CubeVertices[3]);
                             Vertices.Add(_pos + CubeVertices[4]);
@@ -240,9 +266,12 @@ namespace MMesh
                         #endregion
 
                         #region BottomFace
+                        
+                        if (j - 1 < 0)
+                            vox = 1;
+                        else vox = voxels[Chunk.PosToIndex(i, j - 1, k)];
 
-                        if (Voxels[Chunk.PosToIndex((int)x + i, (int)y + (j - 1),
-                            (int)z + k)] == 0) //bottom face
+                        if (vox == 0) //bottom face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[1]);
@@ -259,8 +288,19 @@ namespace MMesh
 
                         #region BackFace
 
-                        if (Voxels[Chunk.PosToIndex((int)x + i, (int)y + j,
-                            (int)z + (k + 1))] == 0) //back face
+                        if (k + 1 >= Chunk.ChunkSize)
+                        {
+                            chunk = _world.GetChunkAt(new Vector3(x, y, z + Chunk.ChunkSize));
+                            if (chunk != null) vox = chunk[i, j, 0];
+                            else vox = 1;
+                        }
+                            
+                        else 
+                        {
+                            vox = voxels[Chunk.PosToIndex( i, j, k + 1)];
+                        }
+
+                        if (vox == 0) //back face
                         {
                             Vertices.Add(_pos + CubeVertices[6]);
                             Vertices.Add(_pos + CubeVertices[5]);
@@ -277,8 +317,19 @@ namespace MMesh
 
                         #region FrontFace
 
-                        if (Voxels[Chunk.PosToIndex((int)x + i, (int)y + j,
-                            (int)z + (k - 1))] == 0) //front face
+                        if (k - 1 < 0)
+                        {
+                            chunk = _world.GetChunkAt(new Vector3(x, y, z - Chunk.ChunkSize));
+                            if (chunk != null) vox = chunk[i, j, Chunk.ChunkSize - 1];
+                            else vox = 1;
+                        }
+                            
+                        else
+                        {
+                            vox = voxels[Chunk.PosToIndex(i, j, k - 1)];
+                        }
+
+                        if (vox == 0) //front face
                         {
                             Vertices.Add(_pos + CubeVertices[0]);
                             Vertices.Add(_pos + CubeVertices[3]);

@@ -23,14 +23,4 @@ public class MonoChunk : MonoBehaviour
     {
         Engine = FindObjectOfType<VoxelEngine>();
     }
-
-    public void UpdateChunk(Chunk chunk)
-    {
-        _chunk = chunk;
-        MeshFilter.sharedMesh = chunk.AssignMesh();
-        //MeshCollider.sharedMesh = MeshFilter.mesh;
-        // if (!chunk.MeshCreated) chunk.AssignMesh();
-        //
-        // MeshFilter.mesh = chunk.mesh;
-    }
 }

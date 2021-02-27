@@ -1,10 +1,12 @@
-﻿using Unity.Collections;
+﻿using Unity.Burst;
+using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using VoxelTerrain.Editor.Noise;
 
 namespace VoxelTerrain.Editor.Voxel.Jobs
 {
+    [BurstCompile]
     public struct ChunkVoxelSetter : IJob
     {
         [ReadOnly] public int size;

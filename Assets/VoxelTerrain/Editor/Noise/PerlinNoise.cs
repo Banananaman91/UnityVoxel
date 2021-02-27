@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Mathematics;
+using UnityEngine;
 
 //Credit to the creation of this script to Joseph Gallear
 //While this package is created I have copied his code to be used here
@@ -10,9 +13,9 @@ namespace VoxelTerrain.Editor.Noise
     {
 
         // Mostly fixed variables for multiple octaves
-        private static int octaves = 4; // Number of layers of noise
-        private static float dimension = 0.5f; // Amplitude decrease each octave
-        private static float lacunarity = 2; // Frequency increase each octave
+        private static readonly int octaves = 4; // Number of layers of noise
+        private static readonly float dimension = 0.5f; // Amplitude decrease each octave
+        private static readonly float lacunarity = 2; // Frequency increase each octave
 
         /// <summary>
         /// Outputs noise data using PRNG and multiple octaves
@@ -31,7 +34,7 @@ namespace VoxelTerrain.Editor.Noise
             float[,] noiseMap = new float[width, height];
 
             // Randomise a value for each octave so that the noise is different for each layer
-            Vector3[] rngValues = GenerateSeed(seed);
+            float3[] rngValues = GenerateSeed(seed);
 
             // Nested loop through coordinates
             for (int y = 0; y < height; y++)
@@ -39,7 +42,7 @@ namespace VoxelTerrain.Editor.Noise
                 for (int x = 0; x < width; x++)
                 {
                     // Generate a singular noise sample for this coordinate
-                    noiseMap[x, y] = Generate2DSample(x, y, scale, groundLevel, viewPos, rngValues);
+                    //noiseMap[x, y] = Generate2DSample(x, y, scale, groundLevel, viewPos, rngValues);
                 }
             }
 
@@ -57,7 +60,7 @@ namespace VoxelTerrain.Editor.Noise
         /// <returns>Singular 2D noise value</returns>
         public static float Generate2DNoiseValue(float x, float y, float scale, int seed, float groundLevel)
         {
-            return Generate2DSample(x, y, scale, groundLevel, new Vector2(0, 0), GenerateSeed(seed));
+            return Generate2DSample(x, y, scale, groundLevel, new Vector2(0, 0), seed);
         }
 
         /// <summary>
@@ -85,7 +88,7 @@ namespace VoxelTerrain.Editor.Noise
         /// <param name="rngValues">Seeded PRNG values</param>
         /// <returns>Singular 2D noise sample</returns>
         private static float Generate2DSample(float x, float y, float scale, float groundLevel, Vector2 viewPos,
-            Vector3[] rngValues)
+            int seed)
         {
             float noiseReturn = 0;
 
@@ -95,9 +98,13 @@ namespace VoxelTerrain.Editor.Noise
 
             for (int i = 0; i < octaves; i++)
             {
+                //System.Random numGen = new System.Random(seed);
+                Unity.Mathematics.Random numGen = new Unity.Mathematics.Random((uint) seed);
+                var rngValues = new float3(numGen.NextInt(-100000, 100000), numGen.NextInt(-100000, 100000),
+                    numGen.NextInt(-100000, 100000));
                 // Find the sample coordinates to use in the noise function
-                float xSample = x / scale * frequency + rngValues[i].x + viewPos.x;
-                float ySample = y / scale * frequency + rngValues[i].y + viewPos.y;
+                float xSample = x / scale * frequency + rngValues.x + viewPos.x;
+                float ySample = y / scale * frequency + rngValues.y + viewPos.y;
 
                 // Generate noise value from Perlin noise function and make it between -1 and 1
                 float noiseValue = Mathf.PerlinNoise(xSample, ySample);
@@ -131,7 +138,7 @@ namespace VoxelTerrain.Editor.Noise
         /// <param name="scale">Zoom level of the noise when displayed</param>
         /// <param name="rngValues">Seeded PRNG values</param>
         /// <returns>Singular noise sample</returns>
-        private static float Generate3DSample(float x, float y, float z, float scale, Vector3[] rngValues)
+        private static float Generate3DSample(float x, float y, float z, float scale, IList<float3> rngValues)
         {
             float noiseReturn = 0;
 
@@ -186,13 +193,13 @@ namespace VoxelTerrain.Editor.Noise
         /// </summary>
         /// <param name="seed">Seed of the generation</param>
         /// <returns>Array of random values</returns>
-        private static Vector3[] GenerateSeed(int seed)
+        private static float3[] GenerateSeed(int seed)
         {
             // Create random number generator with seed
             System.Random numGen = new System.Random(seed);
 
             // Randomise a value for each octave so that the noise is different for each layer
-            Vector3[] rngValues = new Vector3[octaves];
+            var rngValues = new float3[octaves];
             for (int i = 0; i < rngValues.Length; i++)
             {
                 rngValues[i] = new Vector3(numGen.Next(-100000, 100000), numGen.Next(-100000, 100000),

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MMesh;
+using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using VoxelTerrain.Dependencies;
@@ -26,7 +27,7 @@ namespace VoxelTerrain.Editor.Voxel
             {
                 var chunk = LoadChunkAt(worldOrigin);
                 
-                var job = chunk.CreateJob(worldOrigin);
+                var job = CreateJob(worldOrigin);
                 var handle = job.Schedule();
 
                 if (handle.IsCompleted)
@@ -34,16 +35,6 @@ namespace VoxelTerrain.Editor.Voxel
                     handle.Complete();
 
                     chunk.VoxelsFromJob(job);
-                    
-                    var go = new GameObject();
-
-                    go.transform.position = worldOrigin;
-                    go.name = worldOrigin.ToString();
-                    go.AddComponent<MonoChunk>();
-                    
-                    chunk.AddEntity(go);
-                    
-                    chunk.SetMesh(worldOrigin);
 
                     _jobs.Remove(worldOrigin);
 
@@ -71,16 +62,6 @@ namespace VoxelTerrain.Editor.Voxel
                     
                     chunk.VoxelsFromJob(holder.job);
 
-                    var go = new GameObject();
-
-                    go.transform.position = worldOrigin;
-                    go.name = worldOrigin.ToString();
-                    go.AddComponent<MonoChunk>();
-                    
-                    chunk.AddEntity(go);
-                    
-                    chunk.SetMesh(worldOrigin);
-
                     _jobs.Remove(worldOrigin);
 
                     return chunk;
@@ -90,17 +71,8 @@ namespace VoxelTerrain.Editor.Voxel
             return null;
         }
         
-        private Chunk LoadChunkAt(Vector3 worldOrigin)
-        {
-            if (engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(worldOrigin.x, worldOrigin.y, worldOrigin.z))) 
-                return engine.WorldData.Chunks[ChunkId.FromWorldPos(worldOrigin.x, worldOrigin.y, worldOrigin.z)];
-            
-            
-            var chunk = new Chunk(worldOrigin.x, worldOrigin.y, worldOrigin.z, engine.ChunkInfo.VoxelSize, engine);
-            engine.WorldData.Chunks.Add(new ChunkId(worldOrigin.x, worldOrigin.y, worldOrigin.z), chunk);
-            return chunk;
-        }
-
+        private Chunk LoadChunkAt(Vector3 worldOrigin) => engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(worldOrigin.x, worldOrigin.y, worldOrigin.z)) ? engine.WorldData.Chunks[ChunkId.FromWorldPos(worldOrigin.x, worldOrigin.y, worldOrigin.z)] : new Chunk(worldOrigin.x, worldOrigin.y, worldOrigin.z, engine.ChunkInfo.VoxelSize, engine);
+        
         private void OnDestroy()
         {
             foreach (var key in _jobs.Keys)
@@ -109,6 +81,24 @@ namespace VoxelTerrain.Editor.Voxel
                 holder.handle.Complete();
                 holder.job.voxels.Dispose();
             }
+        }
+        
+        public ChunkVoxelSetter CreateJob(Vector3 origin)
+        {
+            float resolution = engine.ChunkInfo.VoxelSize;
+            float scale = engine.NoiseValues.SimplexOneScale;
+
+            return new ChunkVoxelSetter
+            {
+                size = Chunk.ChunkSize,
+                height = Chunk.ChunkHeight,
+                heightMultiplier = 1,
+                scale = scale,
+                resolution = resolution,
+                origin = origin,
+                voxels = new NativeArray<float>((Chunk.ChunkSize + 1) * (Chunk.ChunkHeight + 1) * (Chunk.ChunkSize + 1), Allocator.Persistent),
+                seed = 1
+            };
         }
     }
 }

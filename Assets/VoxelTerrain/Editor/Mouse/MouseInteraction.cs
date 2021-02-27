@@ -74,80 +74,80 @@ public class MouseInteraction : MonoBehaviour
         var voxPosY = hitPos.y - offset - posY;
         var voxPosZ = hitPos.z - offset - posZ;
 
-        chunk[(int) voxPosX, (int) voxPosY, (int) voxPosZ] = (float) voxelType;
-        chunk.UpdateMesh(posX, posY, posZ);
-        
-        var hasMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, posY, posZ));
-
-        if (!hasMonoChunk) return;
-
-        var monoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(posX, posY, posZ)];
-        monoChunk.UpdateChunk(chunk);
-
-        if (leftChunk != chunk)
-        {
-            leftChunk.UpdateMesh(leftPos, posY, posZ);
-            var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(leftPos, posY, posZ));
-
-            if (!hasNearMonoChunk) return;
-
-            var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(leftPos, posY, posZ)];
-            nearMonoChunk.UpdateChunk(leftChunk);
-        }
-
-        if (rightChunk != chunk)
-        {
-            rightChunk.UpdateMesh(rightPos, posY, posZ);
-            var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(rightPos, posY, posZ));
-
-            if (!hasNearMonoChunk) return;
-
-            var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(rightPos, posY, posZ)];
-            nearMonoChunk.UpdateChunk(rightChunk);
-        }
-
-        if (topChunk != chunk)
-        {
-            topChunk.UpdateMesh(posX, topPos, posZ);
-            var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, topPos, posZ));
-
-            if (!hasNearMonoChunk) return;
-
-            var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(posX, topPos, posZ)];
-            nearMonoChunk.UpdateChunk(topChunk);
-        }
-
-        if (bottomChunk != chunk)
-        {
-            bottomChunk.UpdateMesh(posX, bottomPos, posZ);
-            var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, bottomPos, posZ));
-
-            if (!hasNearMonoChunk) return;
-
-            var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(posX, bottomPos, posZ)];
-            nearMonoChunk.UpdateChunk(bottomChunk);
-        }
-
-        if (frontChunk != chunk)
-        {
-            frontChunk.UpdateMesh(posX, posY, frontPos);
-            var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, posY, frontPos));
-
-            if (!hasNearMonoChunk) return;
-
-            var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(posX, posY, frontPos)];
-            nearMonoChunk.UpdateChunk(frontChunk);
-        }
-
-        if (backChunk != chunk)
-        {
-            backChunk.UpdateMesh(posX, posY, backPos);
-            var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, posY, backPos));
-
-            if (!hasNearMonoChunk) return;
-
-            var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(posX, posY, backPos)];
-            nearMonoChunk.UpdateChunk(backChunk);
-        }
+        // chunk[(int) voxPosX, (int) voxPosY, (int) voxPosZ] = (float) voxelType;
+        // chunk.UpdateMesh(posX, posY, posZ);
+        //
+        // var hasMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, posY, posZ));
+        //
+        // if (!hasMonoChunk) return;
+        //
+        // var monoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(posX, posY, posZ)];
+        // monoChunk.UpdateChunk(chunk);
+        //
+        // if (leftChunk != chunk)
+        // {
+        //     leftChunk.UpdateMesh(leftPos, posY, posZ);
+        //     var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(leftPos, posY, posZ));
+        //
+        //     if (!hasNearMonoChunk) return;
+        //
+        //     var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(leftPos, posY, posZ)];
+        //     nearMonoChunk.UpdateChunk(leftChunk);
+        // }
+        //
+        // if (rightChunk != chunk)
+        // {
+        //     rightChunk.UpdateMesh(rightPos, posY, posZ);
+        //     var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(rightPos, posY, posZ));
+        //
+        //     if (!hasNearMonoChunk) return;
+        //
+        //     var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(rightPos, posY, posZ)];
+        //     nearMonoChunk.UpdateChunk(rightChunk);
+        // }
+        //
+        // if (topChunk != chunk)
+        // {
+        //     topChunk.UpdateMesh(posX, topPos, posZ);
+        //     var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, topPos, posZ));
+        //
+        //     if (!hasNearMonoChunk) return;
+        //
+        //     var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(posX, topPos, posZ)];
+        //     nearMonoChunk.UpdateChunk(topChunk);
+        // }
+        //
+        // if (bottomChunk != chunk)
+        // {
+        //     bottomChunk.UpdateMesh(posX, bottomPos, posZ);
+        //     var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, bottomPos, posZ));
+        //
+        //     if (!hasNearMonoChunk) return;
+        //
+        //     var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(posX, bottomPos, posZ)];
+        //     nearMonoChunk.UpdateChunk(bottomChunk);
+        // }
+        //
+        // if (frontChunk != chunk)
+        // {
+        //     frontChunk.UpdateMesh(posX, posY, frontPos);
+        //     var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, posY, frontPos));
+        //
+        //     if (!hasNearMonoChunk) return;
+        //
+        //     var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(posX, posY, frontPos)];
+        //     nearMonoChunk.UpdateChunk(frontChunk);
+        // }
+        //
+        // if (backChunk != chunk)
+        // {
+        //     backChunk.UpdateMesh(posX, posY, backPos);
+        //     var hasNearMonoChunk = engine._chunkPoolDictionary.ContainsKey(ChunkId.FromWorldPos(posX, posY, backPos));
+        //
+        //     if (!hasNearMonoChunk) return;
+        //
+        //     var nearMonoChunk = engine._chunkPoolDictionary[ChunkId.FromWorldPos(posX, posY, backPos)];
+        //     nearMonoChunk.UpdateChunk(backChunk);
+        // }
     }
 }
