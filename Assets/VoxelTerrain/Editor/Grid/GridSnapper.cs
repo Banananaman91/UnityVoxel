@@ -2,7 +2,7 @@
 
 namespace VoxelTerrain.Editor.Grid
 {
-    public class GridSnapper
+    public static class GridSnapper
     {
         public static Vector3 SnapToGrid(Vector3 position, float size = 1f, float offset = 0.5f)
         {

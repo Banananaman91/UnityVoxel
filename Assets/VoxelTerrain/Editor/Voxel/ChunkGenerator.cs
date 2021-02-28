@@ -1,22 +1,21 @@
 ﻿using System.Collections.Generic;
-using MMesh;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
-using VoxelTerrain.Dependencies;
+using VoxelTerrain.Editor.Voxel.Dependencies;
 using VoxelTerrain.Editor.Voxel.Jobs;
 
 namespace VoxelTerrain.Editor.Voxel
 {
     public class ChunkGenerator : MonoBehaviour
     {
-        public VoxelEngine engine { get; set; }
+        public VoxelEngine Engine { get; set; }
 
         struct JobHolder
         {
-            public ChunkVoxelSetter job;
-            public JobHandle handle;
-            public float startTime;
+            public ChunkVoxelSetter Job;
+            public JobHandle Handle;
+            public float StartTime;
         }
 
         private Dictionary<Vector3, JobHolder> _jobs = new Dictionary<Vector3, JobHolder>();
@@ -43,9 +42,9 @@ namespace VoxelTerrain.Editor.Voxel
 
                 var holder = new JobHolder()
                 {
-                    job = job,
-                    handle = handle,
-                    startTime = Time.time
+                    Job = job,
+                    Handle = handle,
+                    StartTime = Time.time
                 };
                 
                 _jobs.Add(worldOrigin, holder);
@@ -56,11 +55,11 @@ namespace VoxelTerrain.Editor.Voxel
                 var holder = _jobs[worldOrigin];
                 var chunk = LoadChunkAt(worldOrigin);
 
-                if (holder.handle.IsCompleted)
+                if (holder.Handle.IsCompleted)
                 {
-                    holder.handle.Complete();
+                    holder.Handle.Complete();
                     
-                    chunk.VoxelsFromJob(holder.job);
+                    chunk.VoxelsFromJob(holder.Job);
 
                     _jobs.Remove(worldOrigin);
 
@@ -71,22 +70,25 @@ namespace VoxelTerrain.Editor.Voxel
             return null;
         }
         
-        private Chunk LoadChunkAt(Vector3 worldOrigin) => engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(worldOrigin.x, worldOrigin.y, worldOrigin.z)) ? engine.WorldData.Chunks[ChunkId.FromWorldPos(worldOrigin.x, worldOrigin.y, worldOrigin.z)] : new Chunk(worldOrigin.x, worldOrigin.y, worldOrigin.z, engine.ChunkInfo.VoxelSize, engine);
+        private Chunk LoadChunkAt(Vector3 worldOrigin) => Engine.WorldData.Chunks.ContainsKey(ChunkId.FromWorldPos(worldOrigin.x, worldOrigin.y, worldOrigin.z)) ? Engine.WorldData.Chunks[ChunkId.FromWorldPos(worldOrigin.x, worldOrigin.y, worldOrigin.z)] : new Chunk(worldOrigin.x, worldOrigin.y, worldOrigin.z, Engine.ChunkInfo.VoxelSize, Engine);
         
         private void OnDestroy()
         {
             foreach (var key in _jobs.Keys)
             {
                 var holder = _jobs[key];
-                holder.handle.Complete();
-                holder.job.voxels.Dispose();
+                holder.Handle.Complete();
+                holder.Job.voxels.Dispose();
             }
         }
-        
-        public ChunkVoxelSetter CreateJob(Vector3 origin)
+
+        private ChunkVoxelSetter CreateJob(Vector3 origin)
         {
-            float resolution = engine.ChunkInfo.VoxelSize;
-            float scale = engine.NoiseValues.SimplexOneScale;
+            var resolution = Engine.ChunkInfo.VoxelSize;
+            var scale = Engine.NoiseScale;
+            var stoneDepth = Engine.VoxelTypeHeights.StoneDepth;
+            var snowHeight = Engine.VoxelTypeHeights.SnowHeight;
+            var caveStartHeight = Engine.VoxelTypeHeights.CaveStartHeight;
 
             return new ChunkVoxelSetter
             {
@@ -97,7 +99,10 @@ namespace VoxelTerrain.Editor.Voxel
                 resolution = resolution,
                 origin = origin,
                 voxels = new NativeArray<float>((Chunk.ChunkSize + 1) * (Chunk.ChunkHeight + 1) * (Chunk.ChunkSize + 1), Allocator.Persistent),
-                seed = 1
+                seed = 1,
+                StoneDepth = stoneDepth,
+                SnowHeight = snowHeight,
+                CaveStartHeight = caveStartHeight
             };
         }
     }

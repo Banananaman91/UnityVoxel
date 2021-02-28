@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VoxelTerrain.Dependencies
+namespace VoxelTerrain.Editor.Voxel.Dependencies
 {
     //If you are here, leave, you're not welcome
     public readonly struct ChunkId

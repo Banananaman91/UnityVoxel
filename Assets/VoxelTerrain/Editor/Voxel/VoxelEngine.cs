@@ -1,78 +1,32 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using UnityEngine;
-using VoxelTerrain.Dependencies;
-using VoxelTerrain.Editor.Mouse;
-using VoxelTerrain.Editor.Noise;
+﻿using UnityEngine;
 using VoxelTerrain.Editor.Voxel.Dependencies;
 using VoxelTerrain.Editor.Voxel.InfoData;
 
 namespace VoxelTerrain.Editor.Voxel
 {
     [RequireComponent(typeof(WorldInfo), typeof(ChunkInfo), typeof(VoxelTypeHeights))]
-    [RequireComponent(typeof(NoiseInfo), typeof(NoiseValues), typeof(CellularInfo))]
-    [RequireComponent(typeof(DomainWarpInfo), typeof(FractalInfo), typeof(ProgressBar))]
     public class VoxelEngine : MonoBehaviour
     {
-        public FastNoiseLite _fastNoise = new FastNoiseLite();
         public World WorldData = new World();
-        public Dictionary<ChunkId, MonoChunk> _chunkPoolDictionary = new Dictionary<ChunkId, MonoChunk>();
-        
+
         [SerializeField] private WorldInfo _worldInfo;
         [SerializeField] private ChunkInfo _chunkInfo;
-        [SerializeField] private NoiseInfo _noiseInfo;
-        [SerializeField] private FractalInfo _fractalInfo;
-        [SerializeField] private CellularInfo _cellularInfo;
-        [SerializeField] private DomainWarpInfo _domainWarpInfo;
         [SerializeField] private VoxelTypeHeights _voxelTypeHeights;
-        [SerializeField] private NoiseValues _noiseValues;
-        [SerializeField] private ProgressBar _progressBar;
-        [SerializeField] private MousePositionDraw _mousePositionDraw;
         [SerializeField] private WorldGenerationFunctions _worldGeneration;
-
-        private Vector3 _start;
-        private Vector3 _curChunkPos;
-        private List<MonoChunk> _toDestroy = new List<MonoChunk>();
-        private List<Task> _taskPool = new List<Task>();
-        private MonoChunk _currentChunk { get; set; }
-        private bool _chunksloaded;
-        private bool _worldLoaded;
+        [SerializeField] private float _noiseScale;
+        
         private float _maxMagnitude;
 
-        public Vector3 Position => _worldInfo.Origin != null ? new Vector3(_worldInfo.Origin.position.x, 0, _worldInfo.Origin.position.z) : Vector3.zero;
+        private Vector3 Position => _worldInfo.Origin != null ? new Vector3(_worldInfo.Origin.position.x, 0, _worldInfo.Origin.position.z) : Vector3.zero;
         public ChunkInfo ChunkInfo => _chunkInfo;
-        public float ChunkSize => 16 * _chunkInfo.VoxelSize;
-        public float ChunkHeight => 32 * _chunkInfo.VoxelSize;
-        public NoiseValues NoiseValues => _noiseValues;
+        private float ChunkSize => Chunk.ChunkSize * _chunkInfo.VoxelSize;
         public VoxelTypeHeights VoxelTypeHeights => _voxelTypeHeights;
-        public WorldInfo WorldInfo => _worldInfo;
-
-        public bool UsePerlin;
+        public float NoiseScale => _noiseScale;
 
         #region Unity Functions
         private void Awake()
         {
-            _start = transform.position;
-            if (_noiseInfo.RandomSeed) _fastNoise.SetSeed(UnityEngine.Random.Range(0, 9999));
-            else if (_noiseInfo.SetCustomSeed) _fastNoise.SetSeed(_noiseInfo.SeedValue);
-            _fastNoise.SetNoiseType(_noiseInfo.NoiseType);
-            _fastNoise.SetFrequency(_noiseInfo.NoiseFrequency);
-            _fastNoise.SetRotationType3D(_noiseInfo.RotationType3D);
-            _fastNoise.SetFractalType(_fractalInfo.FractalType);
-            _fastNoise.SetFractalOctaves(_fractalInfo.Octaves);
-            _fastNoise.SetFractalLacunarity(_fractalInfo.Lacunarity);
-            _fastNoise.SetFractalGain(_fractalInfo.Gain);
-            _fastNoise.SetFractalWeightedStrength(_fractalInfo.WeightedStrength);
-            _fastNoise.SetFractalPingPongStrength(_fractalInfo.PingPongStrength);
-            _fastNoise.SetCellularDistanceFunction(_cellularInfo.CellularDistanceFunction);
-            _fastNoise.SetCellularReturnType(_cellularInfo.CellularReturnType);
-            _fastNoise.SetCellularJitter(_cellularInfo.CellularJitterModifier);
-            _fastNoise.SetDomainWarpType(_domainWarpInfo.DomainWarpType);
-            _fastNoise.SetDomainWarpAmp(_domainWarpInfo.DomainWarpAmp);
-            _worldGeneration.GenerateWorld(_start, _worldInfo.Distance, _chunkInfo.VoxelSize);
+            _worldGeneration.GenerateWorld(transform.position, _worldInfo.Distance, _chunkInfo.VoxelSize);
         }
 
         private void Start()
@@ -170,12 +124,6 @@ namespace VoxelTerrain.Editor.Voxel
                 }
             }
         }
-        #endregion
-
-        #region Chunk Object Handling
-
-        private void ReturnChunkToPool(MonoChunk target) => target.IsAvailable = true;
-        
         #endregion
     }
 }

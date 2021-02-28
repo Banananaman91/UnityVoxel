@@ -1,12 +1,10 @@
 ﻿using System;
 using UnityEngine;
-using VoxelTerrain.Dependencies;
 
 namespace VoxelTerrain.Editor.Voxel.Dependencies
 {
     public class WorldGenerationFunctions : MonoBehaviour
     {
-        [SerializeField] private World _world;
         [SerializeField] private VoxelEngine _engine;
         [SerializeField] private ChunkGenerator _chunkGenerator;
 
@@ -14,7 +12,7 @@ namespace VoxelTerrain.Editor.Voxel.Dependencies
 
         public void GenerateWorld(Vector3 origin, float distance, float size)
         {
-            _chunkGenerator.engine = _engine;
+            _chunkGenerator.Engine = _engine;
             for (float x = origin.x - distance; x <= origin.x + distance; x += Chunk.ChunkSize)
             {
                 for (float z = origin.z - distance; z <= origin.z + distance; z += Chunk.ChunkSize)

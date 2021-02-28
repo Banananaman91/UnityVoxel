@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Threading.Tasks;
-using MMesh;
-using Unity.Collections;
-using UnityEngine;
-using UnityEngine.UIElements;
-using VoxelTerrain.Dependencies;
-using VoxelTerrain.Editor.Noise;
+﻿using UnityEngine;
+using VoxelTerrain.Editor.MMesh;
 using VoxelTerrain.Editor.Voxel.Jobs;
-using Color = UnityEngine.Color;
 
 namespace VoxelTerrain.Editor.Voxel
 {

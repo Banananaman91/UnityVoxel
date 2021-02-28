@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using VoxelTerrain;
 using VoxelTerrain.Editor.Voxel;
 using VoxelTerrain.Editor.Voxel.Dependencies;
 
-namespace MMesh
+namespace VoxelTerrain.Editor.MMesh
 {
     public struct MeshCreator
     {

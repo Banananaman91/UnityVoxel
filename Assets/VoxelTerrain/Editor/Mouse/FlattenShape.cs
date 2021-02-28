@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public enum FlattenShape
+﻿namespace VoxelTerrain.Editor.Mouse
 {
-    Single,
-    Square,
-    Circular
+    public enum FlattenShape
+    {
+        Single,
+        Square,
+        Circular
+    }
 }

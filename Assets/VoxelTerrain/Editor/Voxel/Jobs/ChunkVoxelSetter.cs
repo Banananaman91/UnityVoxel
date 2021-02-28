@@ -14,6 +14,9 @@ namespace VoxelTerrain.Editor.Voxel.Jobs
         [ReadOnly] public int heightMultiplier;
         [ReadOnly] public float scale;
         [ReadOnly] public float resolution;
+        [ReadOnly] public float StoneDepth;
+        [ReadOnly] public float SnowHeight;
+        [ReadOnly] public float CaveStartHeight;
 
         public Vector3 origin;
         public NativeArray<float> voxels;

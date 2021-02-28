@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using VoxelTerrain;
-using VoxelTerrain.Dependencies;
-using VoxelTerrain.Editor.Voxel;
+﻿using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class MonoChunk : MonoBehaviour
+namespace VoxelTerrain.Editor.Voxel
 {
-    [HideInInspector] public VoxelEngine Engine;
-    public MeshCollider MeshCollider => GetComponent<MeshCollider>();
-    public MeshFilter MeshFilter => GetComponent<MeshFilter>();
-    public MeshRenderer MeshRender => GetComponent<MeshRenderer>();
-    public bool IsAvailable { get; set; }
-
-    public Vector3 Position => new Vector3(transform.position.x, 0, transform.position.z);
-    // Start is called before the first frame update
-    void Awake()
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+    public class MonoChunk : MonoBehaviour
     {
-        Engine = FindObjectOfType<VoxelEngine>();
-    }
+        [HideInInspector] public VoxelEngine _engine;
+        public MeshCollider MeshCollider => GetComponent<MeshCollider>();
+        public MeshFilter MeshFilter => GetComponent<MeshFilter>();
+        private Vector3 Position => new Vector3(transform.position.x, 0, transform.position.z);
+        // Start is called before the first frame update
+        void Awake()
+        {
+            _engine = FindObjectOfType<VoxelEngine>();
+        }
 
-    private void Update()
-    {
-        if (Engine.WithinRange(Position)) return;
+        private void Update()
+        {
+            if (_engine.WithinRange(Position)) return;
         
-        Engine.RemoveChunkAt(Position);
+            _engine.RemoveChunkAt(Position);
+        }
     }
 }

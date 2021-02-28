@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using VoxelTerrain.Dependencies;
 
 namespace VoxelTerrain.Editor.Voxel.Dependencies
 {
