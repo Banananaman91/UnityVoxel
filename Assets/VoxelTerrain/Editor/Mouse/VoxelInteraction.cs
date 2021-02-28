@@ -5,23 +5,39 @@ using VoxelTerrain.Editor.Voxel;
 
 namespace VoxelTerrain.Editor.Mouse
 {
-    public class MouseInteraction : MonoBehaviour
+    public class VoxelInteraction : MonoBehaviour
     {
         [SerializeField] private VoxelEngine engine;
         [SerializeField] private VoxelType _setVoxelType;
         [SerializeField] private float _xRadius = 5;
         [SerializeField] private float _zRadius = 5;
+        [SerializeField] private float _circleRadius = 5;
         [SerializeField] private float _flattenHeight = 2;
         [SerializeField] private FlattenShape _shape = FlattenShape.Single;
         private Camera CamMain => Camera.main;
-        private float offset => engine ? engine.ChunkInfo.VoxelSize / 2 : 0.5f;
-        private float size => engine ? engine.ChunkInfo.VoxelSize : 1;
+        private float offset => engine.ChunkInfo.VoxelSize / 2;
+        private float size => engine.ChunkInfo.VoxelSize;
 
         // Update is called once per frame
         void Update()
         {
-            if (Input.GetMouseButton(0)) DestroyVoxel();
-            else if (Input.GetMouseButton(1)) CreateVoxel();
+            switch (_shape)
+            {
+                case FlattenShape.Single:
+                    if (Input.GetMouseButton(0)) DestroyVoxel();
+                    else if (Input.GetMouseButton(1)) CreateVoxel();
+                    break;
+                case FlattenShape.Square:
+                    if (Input.GetMouseButtonDown(0)) DestroyVoxel();
+                    else if (Input.GetMouseButtonDown(1)) CreateVoxel();
+                    break;
+                case FlattenShape.Circular:
+                    if (Input.GetMouseButtonDown(0)) DestroyVoxel();
+                    else if (Input.GetMouseButtonDown(1)) CreateVoxel();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void DestroyVoxel()
@@ -111,7 +127,7 @@ namespace VoxelTerrain.Editor.Mouse
             }
         }
 
-        private bool InRange(Vector3 pos, Vector3 origin) => origin.x - pos.x <= _xRadius && origin.z - pos.z <= _zRadius;
+        private bool InRange(Vector3 pos, Vector3 origin) => Vector3.Distance(origin, pos) < _circleRadius;
 
         private void Flatten(Vector3 pos, VoxelType voxelType, Chunk chunk)
         {
@@ -124,7 +140,7 @@ namespace VoxelTerrain.Editor.Mouse
             } while (Vector3.Distance(pos, newPos) <= _flattenHeight);
 
             newPos = pos;
-        
+
             do
             {
                 if (chunk[newPos.x, newPos.y, newPos.z] == (float)VoxelType.Default) chunk.SetVoxel(newPos, voxelType);

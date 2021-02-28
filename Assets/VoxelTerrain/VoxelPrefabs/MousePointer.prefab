@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2225240555663359403}
   - component: {fileID: 1831589574907140677}
+  - component: {fileID: 1498735670}
   m_Layer: 0
   m_Name: MousePointer
   m_TagString: Untagged
@@ -45,6 +46,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec58c09a60b4f9d41af879745005b2cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _engine: {fileID: 0}
+--- !u!114 &1498735670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561188667314874129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 556f6ca82f1010c4690204222eac8792, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  engine: {fileID: 0}
+  _setVoxelType: 1
+  _xRadius: 5
+  _zRadius: 5
+  _circleRadius: 5
+  _flattenHeight: 2
+  _shape: 1
 --- !u!1 &1831589575071434308
 GameObject:
   m_ObjectHideFlags: 0
