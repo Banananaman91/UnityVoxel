@@ -15,12 +15,17 @@ public class MonoChunk : MonoBehaviour
     public MeshRenderer MeshRender => GetComponent<MeshRenderer>();
     public bool IsAvailable { get; set; }
 
-    private Chunk _chunk;
-
-    public Vector3 Position => transform.position;
+    public Vector3 Position => new Vector3(transform.position.x, 0, transform.position.z);
     // Start is called before the first frame update
     void Awake()
     {
         Engine = FindObjectOfType<VoxelEngine>();
+    }
+
+    private void Update()
+    {
+        if (Engine.WithinRange(Position)) return;
+        
+        Engine.RemoveChunkAt(Position);
     }
 }

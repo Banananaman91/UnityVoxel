@@ -26,5 +26,6 @@ namespace VoxelTerrain.Editor.Voxel.Dependencies
         }
 
         public Chunk GetChunkAt(Vector3 pos) => Chunks.ContainsKey(ChunkId.FromWorldPos(pos.x, pos.y, pos.z)) ? Chunks[ChunkId.FromWorldPos(pos.x, pos.y, pos.z)] : null;
+        
     }
 }

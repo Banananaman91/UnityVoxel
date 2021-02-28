@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,13 +40,15 @@ namespace VoxelTerrain.Editor.Voxel
         private MonoChunk _currentChunk { get; set; }
         private bool _chunksloaded;
         private bool _worldLoaded;
+        private float _maxMagnitude;
 
-        private Vector3 Position => _worldInfo.Origin != null ? _worldInfo.Origin.position : Vector3.zero;
+        public Vector3 Position => _worldInfo.Origin != null ? new Vector3(_worldInfo.Origin.position.x, 0, _worldInfo.Origin.position.z) : Vector3.zero;
         public ChunkInfo ChunkInfo => _chunkInfo;
         public float ChunkSize => 16 * _chunkInfo.VoxelSize;
         public float ChunkHeight => 32 * _chunkInfo.VoxelSize;
         public NoiseValues NoiseValues => _noiseValues;
         public VoxelTypeHeights VoxelTypeHeights => _voxelTypeHeights;
+        public WorldInfo WorldInfo => _worldInfo;
 
         public bool UsePerlin;
 
@@ -72,13 +75,18 @@ namespace VoxelTerrain.Editor.Voxel
             _worldGeneration.GenerateWorld(_start, _worldInfo.Distance, _chunkInfo.VoxelSize);
         }
 
-        private Vector3 NearestChunk(Vector3 position)
+        private void Start()
         {
-            var curChunkPosX = Mathf.FloorToInt(Position.x / ChunkSize) * ChunkSize;
-            var curChunkPosY = Mathf.FloorToInt(Position.y / ChunkHeight) * ChunkHeight;
-            var curChunkPosZ = Mathf.FloorToInt(Position.z / ChunkSize) * ChunkSize;
+            var corner = new Vector3(-_worldInfo.Distance, 0, -_worldInfo.Distance);
+            _maxMagnitude = (Position - corner).magnitude;
+        }
 
-            return new Vector3(curChunkPosX, curChunkPosY, curChunkPosZ);
+        public Vector3 NearestChunk(Vector3 pos)
+        {
+            var curChunkPosX = Mathf.FloorToInt(pos.x / ChunkSize) * ChunkSize;
+            var curChunkPosZ = Mathf.FloorToInt(pos.z / ChunkSize) * ChunkSize;
+
+            return new Vector3(curChunkPosX, 0, curChunkPosZ);
         }
 
         private Chunk ChunkAt(ChunkId point, bool forceLoad = true)
@@ -115,14 +123,39 @@ namespace VoxelTerrain.Editor.Voxel
             
             WorldData.ChunkObjects.Add(chunkId, go);
         }
+        
+        public void RemoveChunkAt(Vector3 pos)
+        {
+            var point = new ChunkId(pos.x, pos.y, pos.z);
+            if (WorldData.ChunkObjects.ContainsKey(point))
+            {
+                var go = WorldData.ChunkObjects[point];
+                Destroy(go);
+                WorldData.ChunkObjects.Remove(point);
+            }
+
+            if (WorldData.Chunks.ContainsKey(point))
+            {
+                WorldData.Chunks.Remove(point);
+            }
+        }
+
+        public bool WithinRange(Vector3 pos)
+        {
+            var position = NearestChunk(pos);
+            
+            var difference = position - pos;
+
+            return difference.magnitude <= _maxMagnitude;
+        }
 
         private void Update()
         {
             var point = NearestChunk(Position);
 
-            for (var x = -_worldInfo.Distance; x <= _worldInfo.Distance; x += Chunk.ChunkSize)
+            for (var x = -_worldInfo.Distance; x < _worldInfo.Distance; x += Chunk.ChunkSize)
             {
-                for (var z = -_worldInfo.Distance; z <= _worldInfo.Distance; z += Chunk.ChunkSize)
+                for (var z = -_worldInfo.Distance; z < _worldInfo.Distance; z += Chunk.ChunkSize)
                 {
                     var pointToCheck = new ChunkId(point.x + x, 0, point.z + z);
 

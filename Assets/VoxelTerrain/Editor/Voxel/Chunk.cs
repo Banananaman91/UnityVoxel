@@ -24,13 +24,15 @@ namespace VoxelTerrain.Editor.Voxel
         private GameObject Entity;
 
         //Used to find voxel at position
-        public float this[int x, int y, int z]
+        public float this[float x, float y, float z]
         {
-            get => Voxels[PosToIndex(x, y, z)];
-            set => Voxels[PosToIndex(x, y, z)] = value;
+            get => Voxels[PosToIndex((int)x, (int)y, (int)z)];
+            set => Voxels[PosToIndex((int)x, (int)y, (int)z)] = value;
         }
 
         public void AddEntity(GameObject entity) => Entity = entity;
+
+        public void SetVoxel(Vector3 pos, VoxelType vox) => this[(int) pos.x, (int) pos.y, (int) pos.z] = (float) vox;
 
         public void VoxelsFromJob(ChunkVoxelSetter job)
         {
@@ -52,13 +54,14 @@ namespace VoxelTerrain.Editor.Voxel
             mesh.vertices = meshCreator.Vertices.ToArray();
             mesh.triangles = meshCreator.Triangles.ToArray();
             mesh.uv = new Vector2[mesh.vertices.Length];
-            //mesh.SetColors(Colors);
+            mesh.SetColors(meshCreator.Colors);
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
             
             mesh.name = ChunkName;
 
             monoGo.MeshFilter.sharedMesh = mesh;
+            monoGo.MeshCollider.sharedMesh = mesh;
         }
 
         public static int PosToIndex(int x, int y, int z) => z * (ChunkSize) * (ChunkHeight) + y * (ChunkSize) + x;

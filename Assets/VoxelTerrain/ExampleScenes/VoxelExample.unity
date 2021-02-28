@@ -360,12 +360,36 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 313372972}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1498735668}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec58c09a60b4f9d41af879745005b2cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1498735668 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1561188667314874129, guid: a11bfa0f202cd184e949e58420e9eee5,
+    type: 3}
+  m_PrefabInstance: {fileID: 313372972}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1498735670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498735668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 556f6ca82f1010c4690204222eac8792, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  engine: {fileID: 1529356679}
+  _setVoxelType: 1
+  _xRadius: 5
+  _zRadius: 2
+  _flattenHeight: 2
+  _shape: 1
 --- !u!114 &1529356679 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9142162792359760366, guid: 2b7228255036a30479393ef9a76b8464,
@@ -491,15 +515,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   engine: {fileID: 1529356679}
   _setVoxelType: 1
+  _xRadius: 5
+  _zRadius: 5
+  _flattenHeight: 2
+  _shape: 0
 --- !u!1 &1893848297 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9142162792359760367, guid: 2b7228255036a30479393ef9a76b8464,
-    type: 3}
-  m_PrefabInstance: {fileID: 9142162792514292347}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1893848298 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 9142162792359760365, guid: 2b7228255036a30479393ef9a76b8464,
     type: 3}
   m_PrefabInstance: {fileID: 9142162792514292347}
   m_PrefabAsset: {fileID: 0}
@@ -648,7 +670,7 @@ MonoBehaviour:
   _material: {fileID: 2100000, guid: 07a6c4bab4ac7e44cab965e02712bc17, type: 2}
   _distance: 64
   _height: 0
-  _origin: {fileID: 1893848298}
+  _origin: {fileID: 1562540283}
 --- !u!114 &1893848308
 MonoBehaviour:
   m_ObjectHideFlags: 0

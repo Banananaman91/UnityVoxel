@@ -195,7 +195,7 @@ namespace MMesh
                         {
                             chunk = _world.GetChunkAt(new Vector3(x + Chunk.ChunkSize, y, z));
                             if (chunk != null) vox = chunk[0, j, k];
-                            else vox = 1;
+                            else vox = 0;
                         }
                             
                         else vox = voxels[Chunk.PosToIndex((i + 1), j, k)];
@@ -221,7 +221,7 @@ namespace MMesh
                         {
                             chunk = _world.GetChunkAt(new Vector3(x - Chunk.ChunkSize, y, z));
                             if (chunk != null) vox = chunk[Chunk.ChunkSize - 1, j, k];
-                            else vox = 1;
+                            else vox = 0;
                         }
                             
                         else 
@@ -247,7 +247,7 @@ namespace MMesh
                         #region TopFace
 
                         if (j + 1 >= Chunk.ChunkHeight)
-                            vox = 1;
+                            vox = 0;
                         else vox = voxels[Chunk.PosToIndex(i, j + 1, k)];
 
                         if (vox == 0) //top face
@@ -268,7 +268,7 @@ namespace MMesh
                         #region BottomFace
                         
                         if (j - 1 < 0)
-                            vox = 1;
+                            vox = 0;
                         else vox = voxels[Chunk.PosToIndex(i, j - 1, k)];
 
                         if (vox == 0) //bottom face
@@ -292,7 +292,7 @@ namespace MMesh
                         {
                             chunk = _world.GetChunkAt(new Vector3(x, y, z + Chunk.ChunkSize));
                             if (chunk != null) vox = chunk[i, j, 0];
-                            else vox = 1;
+                            else vox = 0;
                         }
                             
                         else 
@@ -321,7 +321,7 @@ namespace MMesh
                         {
                             chunk = _world.GetChunkAt(new Vector3(x, y, z - Chunk.ChunkSize));
                             if (chunk != null) vox = chunk[i, j, Chunk.ChunkSize - 1];
-                            else vox = 1;
+                            else vox = 0;
                         }
                             
                         else
