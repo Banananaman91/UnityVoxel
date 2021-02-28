@@ -7,59 +7,40 @@ namespace VoxelTerrain.Editor.Mouse
 {
     public class VoxelInteraction : MonoBehaviour
     {
-        [SerializeField] private VoxelEngine engine;
+        [SerializeField] private VoxelEngine _engine;
         [SerializeField] private VoxelType _setVoxelType;
         [SerializeField] private float _xRadius = 5;
         [SerializeField] private float _zRadius = 5;
         [SerializeField] private float _circleRadius = 5;
         [SerializeField] private float _flattenHeight = 2;
         [SerializeField] private FlattenShape _shape = FlattenShape.Single;
+
+        public FlattenShape Shape => _shape;
+
         private Camera CamMain => Camera.main;
-        private float offset => engine.ChunkInfo.VoxelSize / 2;
-        private float size => engine.ChunkInfo.VoxelSize;
+        private float Offset => _engine.ChunkInfo.VoxelSize / 2;
+        private float Size => _engine.ChunkInfo.VoxelSize;
 
-        // Update is called once per frame
-        void Update()
-        {
-            switch (_shape)
-            {
-                case FlattenShape.Single:
-                    if (Input.GetMouseButton(0)) DestroyVoxel();
-                    else if (Input.GetMouseButton(1)) CreateVoxel();
-                    break;
-                case FlattenShape.Square:
-                    if (Input.GetMouseButtonDown(0)) DestroyVoxel();
-                    else if (Input.GetMouseButtonDown(1)) CreateVoxel();
-                    break;
-                case FlattenShape.Circular:
-                    if (Input.GetMouseButtonDown(0)) DestroyVoxel();
-                    else if (Input.GetMouseButtonDown(1)) CreateVoxel();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private void DestroyVoxel()
+        public void DestroyVoxel()
         {
             var ray = CamMain.ViewportPointToRay(CamMain.ScreenToViewportPoint(Input.mousePosition));
         
             if (!Physics.Raycast(ray, out var hit)) return;
 
-            var hitPos = GridSnapper.SnapToGrid(hit.point, size, offset);
+            var hitPos = GridSnapper.SnapToGrid(hit.point, Size, Offset);
 
-            hitPos.y -= size;
+            hitPos.y -= Size;
         
             UpdateChunks(hitPos, VoxelType.Default);
         }
     
-        private void CreateVoxel()
+        public void CreateVoxel()
         {
             var ray = CamMain.ViewportPointToRay(CamMain.ScreenToViewportPoint(Input.mousePosition));
         
             if (!Physics.Raycast(ray, out RaycastHit hit)) return;
 
-            var hitPos = GridSnapper.SnapToGrid(hit.point, size, offset);
+            var hitPos = GridSnapper.SnapToGrid(hit.point, Size, Offset);
         
             UpdateChunks(hitPos, _setVoxelType);
         }
@@ -73,8 +54,8 @@ namespace VoxelTerrain.Editor.Mouse
             switch (_shape)
             {
                 case FlattenShape.Single:
-                    chunkPos = engine.NearestChunk(hitPos);
-                    chunk = engine.WorldData.GetChunkAt(chunkPos);
+                    chunkPos = _engine.NearestChunk(hitPos);
+                    chunk = _engine.WorldData.GetChunkAt(chunkPos);
 
                     if (chunk == null) return;
 
@@ -88,8 +69,8 @@ namespace VoxelTerrain.Editor.Mouse
                         for (float j = hitPos.z - _zRadius; j < hitPos.z + _zRadius; j++)
                         {
                             newPos = new Vector3(i, hitPos.y, j);
-                            chunkPos = engine.NearestChunk(newPos);
-                            chunk = engine.WorldData.GetChunkAt(chunkPos);
+                            chunkPos = _engine.NearestChunk(newPos);
+                            chunk = _engine.WorldData.GetChunkAt(chunkPos);
 
                             if (chunk == null) continue;
 
@@ -108,8 +89,8 @@ namespace VoxelTerrain.Editor.Mouse
                         for (float j = hitPos.z - _zRadius; j < hitPos.z + _zRadius; j++)
                         {
                             newPos = new Vector3(i, hitPos.y, j);
-                            chunkPos = engine.NearestChunk(newPos);
-                            chunk = engine.WorldData.GetChunkAt(chunkPos);
+                            chunkPos = _engine.NearestChunk(newPos);
+                            chunk = _engine.WorldData.GetChunkAt(chunkPos);
 
                             if (chunk == null) continue;
 
