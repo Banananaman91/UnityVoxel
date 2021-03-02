@@ -191,7 +191,7 @@ namespace VoxelTerrain.Editor.MMesh
 
                         if (i + 1 >= Chunk.ChunkSize)
                         {
-                            chunk = _world.GetChunkAt(new Vector3(x + Chunk.ChunkSize, y, z));
+                            chunk = _world.GetChunkAt(new Vector3(x + (Chunk.ChunkSize * size), y, z));
                             if (chunk != null) vox = chunk[0, j, k];
                             else vox = 0;
                         }
@@ -217,7 +217,7 @@ namespace VoxelTerrain.Editor.MMesh
 
                         if (i - 1 < 0)
                         {
-                            chunk = _world.GetChunkAt(new Vector3(x - Chunk.ChunkSize, y, z));
+                            chunk = _world.GetChunkAt(new Vector3(x - (Chunk.ChunkSize * size), y, z));
                             if (chunk != null) vox = chunk[Chunk.ChunkSize - 1, j, k];
                             else vox = 0;
                         }
@@ -288,7 +288,7 @@ namespace VoxelTerrain.Editor.MMesh
 
                         if (k + 1 >= Chunk.ChunkSize)
                         {
-                            chunk = _world.GetChunkAt(new Vector3(x, y, z + Chunk.ChunkSize));
+                            chunk = _world.GetChunkAt(new Vector3(x, y, z + (Chunk.ChunkSize * size)));
                             if (chunk != null) vox = chunk[i, j, 0];
                             else vox = 0;
                         }
@@ -317,7 +317,7 @@ namespace VoxelTerrain.Editor.MMesh
 
                         if (k - 1 < 0)
                         {
-                            chunk = _world.GetChunkAt(new Vector3(x, y, z - Chunk.ChunkSize));
+                            chunk = _world.GetChunkAt(new Vector3(x, y, z - (Chunk.ChunkSize * size)));
                             if (chunk != null) vox = chunk[i, j, Chunk.ChunkSize - 1];
                             else vox = 0;
                         }

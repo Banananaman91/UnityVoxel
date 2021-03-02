@@ -11,6 +11,7 @@ namespace VoxelTerrain.Editor.Voxel
         public float[] Voxels;
         private VoxelEngine Engine;
         private string ChunkName;
+        private float voxelSize;
 
         private GameObject Entity;
 
@@ -62,6 +63,7 @@ namespace VoxelTerrain.Editor.Voxel
             Engine = engine;
             Voxels = new float[ChunkSize * ChunkHeight * ChunkSize];
             ChunkName = "Chunk: " + x + ", " + y + ", " + z;
+            voxelSize = size;
         }
     }
 }

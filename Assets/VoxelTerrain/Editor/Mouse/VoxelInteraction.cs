@@ -59,14 +59,14 @@ namespace VoxelTerrain.Editor.Mouse
 
                     if (chunk == null) return;
 
-                    voxPos = hitPos - chunkPos;
+                    voxPos = (hitPos - chunkPos) / Size;
                     chunk.SetVoxel(voxPos, voxelType);
                     chunk.SetMesh(chunkPos);
                     break;
                 case FlattenShape.Square:
-                    for (float i = hitPos.x - _xRadius; i < hitPos.x + _xRadius; i++)
+                    for (float i = hitPos.x - _xRadius; i < hitPos.x + _xRadius; i += Size)
                     {
-                        for (float j = hitPos.z - _zRadius; j < hitPos.z + _zRadius; j++)
+                        for (float j = hitPos.z - _zRadius; j < hitPos.z + _zRadius; j += Size)
                         {
                             newPos = new Vector3(i, hitPos.y, j);
                             chunkPos = _engine.NearestChunk(newPos);
@@ -74,7 +74,7 @@ namespace VoxelTerrain.Editor.Mouse
 
                             if (chunk == null) continue;
 
-                            voxPos = newPos - chunkPos;
+                            voxPos = (newPos - chunkPos) / Size;
 
                             if (voxelType == VoxelType.Default) chunk.SetVoxel(voxPos, voxelType);
                             else Flatten(voxPos, voxelType, chunk);
@@ -84,9 +84,9 @@ namespace VoxelTerrain.Editor.Mouse
 
                     break;
                 case FlattenShape.Circular:
-                    for (float i = hitPos.x - _xRadius; i < hitPos.x + _xRadius; i++)
+                    for (float i = hitPos.x - _xRadius; i < hitPos.x + _xRadius; i += Size)
                     {
-                        for (float j = hitPos.z - _zRadius; j < hitPos.z + _zRadius; j++)
+                        for (float j = hitPos.z - _zRadius; j < hitPos.z + _zRadius; j += Size)
                         {
                             newPos = new Vector3(i, hitPos.y, j);
                             chunkPos = _engine.NearestChunk(newPos);
@@ -96,7 +96,7 @@ namespace VoxelTerrain.Editor.Mouse
 
                             if (!InRange(newPos, hitPos)) continue;
                         
-                            voxPos = newPos - chunkPos;
+                            voxPos = (newPos - chunkPos) / Size;
                             if (voxelType == VoxelType.Default) chunk.SetVoxel(voxPos, voxelType);
                             else Flatten(voxPos, voxelType, chunk);
                             chunk.SetMesh(chunkPos);

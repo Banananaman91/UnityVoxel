@@ -96,9 +96,7 @@ namespace VoxelTerrain.Editor.Voxel
 
         public bool WithinRange(Vector3 pos)
         {
-            var position = NearestChunk(pos);
-            
-            var difference = position - pos;
+            var difference = Position - pos;
 
             return difference.magnitude <= _maxMagnitude;
         }
@@ -107,11 +105,13 @@ namespace VoxelTerrain.Editor.Voxel
         {
             var point = NearestChunk(Position);
 
-            for (var x = -_worldInfo.Distance; x < _worldInfo.Distance; x += Chunk.ChunkSize)
+            for (var x = -_worldInfo.Distance; x < _worldInfo.Distance; x += ChunkSize)
             {
-                for (var z = -_worldInfo.Distance; z < _worldInfo.Distance; z += Chunk.ChunkSize)
+                for (var z = -_worldInfo.Distance; z < _worldInfo.Distance; z += ChunkSize)
                 {
                     var pointToCheck = new ChunkId(point.x + x, 0, point.z + z);
+                    if (Vector3.Distance(new Vector3(pointToCheck.X, 0, pointToCheck.Z), Position) >
+                        _worldInfo.Distance) continue;
 
                     var c = ChunkAt(pointToCheck, false);
 
