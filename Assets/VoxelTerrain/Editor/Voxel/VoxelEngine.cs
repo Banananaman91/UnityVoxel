@@ -41,7 +41,7 @@ namespace VoxelTerrain.Editor.Voxel
             var curChunkPosX = Mathf.FloorToInt(pos.x / ChunkSize) * ChunkSize;
             var curChunkPosZ = Mathf.FloorToInt(pos.z / ChunkSize) * ChunkSize;
 
-            return new Vector3(curChunkPosX, 0, curChunkPosZ);
+            return new Vector3(curChunkPosX, -ChunkHeight / 2, curChunkPosZ);
         }
 
         private Chunk ChunkAt(ChunkId point, bool forceLoad = true)
