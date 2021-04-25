@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7941170911782372762}
   - component: {fileID: 7941170911782372765}
   - component: {fileID: 7941170911782372764}
+  - component: {fileID: 1219288309642976020}
   m_Layer: 0
   m_Name: VoxelEngine
   m_TagString: Untagged
@@ -52,7 +53,7 @@ MonoBehaviour:
   _chunkInfo: {fileID: 7941170911782372763}
   _voxelTypeHeights: {fileID: 7941170911782372760}
   _worldGeneration: {fileID: 7941170911782372765}
-  _noiseScale: 0
+  _noiseScale: 30
 --- !u!114 &7941170911782372760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,10 +96,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99accc2e46a2126489cb11755851112f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _material: {fileID: 2100000, guid: 07a6c4bab4ac7e44cab965e02712bc17, type: 2}
   _distance: 64
-  _height: 0
   _origin: {fileID: 0}
+  _groundLevel: 1
+  _seed: 1
 --- !u!114 &7941170911782372765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,6 +114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _engine: {fileID: 1219288309473230983}
   _chunkGenerator: {fileID: 7941170911782372764}
+  _chunkLoader: {fileID: 1219288309642976020}
 --- !u!114 &7941170911782372764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,3 +127,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2561c33dc29b8d4b84f55457f7f718f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _chunkLoader: {fileID: 1219288309642976020}
+--- !u!114 &1219288309642976020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219288309473230982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a53ef923e2a61e47be103ca2eeee4e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _chunkDirectoryName: IansLand
+  _enableSaving: 1

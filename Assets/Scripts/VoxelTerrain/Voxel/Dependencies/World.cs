@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using TerrainData;
 using UnityEngine;
-using VoxelTerrain.Noise;
 
 namespace VoxelTerrain.Voxel.Dependencies
 {
@@ -11,7 +11,7 @@ namespace VoxelTerrain.Voxel.Dependencies
         public Dictionary<ChunkId, GameObject> ChunkObjects = new Dictionary<ChunkId, GameObject>();
         public VoxelEngine Engine { get; set; }
 
-        public float this[int x, int y, int z]
+        public byte this[int x, int y, int z]
         {
             get
             {
@@ -28,18 +28,28 @@ namespace VoxelTerrain.Voxel.Dependencies
 
         public Chunk GetChunkAt(Vector3 pos) => Chunks.ContainsKey(ChunkId.FromWorldPos(pos.x, pos.y, pos.z)) ? Chunks[ChunkId.FromWorldPos(pos.x, pos.y, pos.z)] : null;
         
-        public int GetVoxelAt(float x, float y, float z, float scale)
+        public Chunk GetNonNullChunkAt(Vector3 pos) => Chunks.ContainsKey(ChunkId.FromWorldPos(pos.x, pos.y, pos.z)) ? Chunks[ChunkId.FromWorldPos(pos.x, pos.y, pos.z)] : Engine.LoadChunkAt(new ChunkId(pos.x, pos.y, pos.z));
+        
+        public float GetVoxelAt(float x, float y, float z, Vector3 chunkPos, float scale, Chunk currentChunk = null, Chunk rightChunk = null, Chunk forwardChunk = null, Chunk rightForwardChunk = null)
         {
-            var chunkPos = NearestChunk(new Vector3(x, y, z), scale);
-            var chunk = GetChunkAt(chunkPos);
+            //var chunkPos = new Vector3(); //NearestChunk(new Vector3(x, y, z), scale);
+            Chunk chunk = null;
+            
+            //Neighbour checking for chunks
+            if (currentChunk != null && x != Chunk.ChunkSize && z != Chunk.ChunkSize) chunk = currentChunk;
+            else if (rightChunk != null && x == Chunk.ChunkSize && z != Chunk.ChunkSize) chunk = rightChunk;
+            else if (forwardChunk != null && x != Chunk.ChunkSize && z == Chunk.ChunkSize) chunk = forwardChunk;
+            else if (rightForwardChunk != null && x == Chunk.ChunkSize && z == Chunk.ChunkSize) chunk = rightForwardChunk;
 
-            if (chunk == null) return SetVoxelType(x, y, z); 
+            if (chunk == null) return BiomeGenerator.GenerateVoxelType(chunkPos.x + x * scale, chunkPos.y + y * scale, chunkPos.z + z * scale, Engine.NoiseScale, Engine.WorldInfo.Seed, Engine.WorldInfo.GroundLevel);
 
-            var voxPos = new Vector3(x, y, z) - chunkPos;
-            return (int) chunk[voxPos.x, voxPos.y, voxPos.z];
+            if (x == Chunk.ChunkSize) x = 0;
+            if (z == Chunk.ChunkSize) z = 0;
+            //var voxPos = (new Vector3(x, y, z) - chunkPos) / scale;
+            return chunk[x, y, z];
         }
         
-        public Vector3 NearestChunk(Vector3 pos, float scale)
+        private Vector3 NearestChunk(Vector3 pos, float scale)
         {
             var curChunkPosX = Mathf.FloorToInt(pos.x / (Chunk.ChunkSize * scale)) * (Chunk.ChunkSize * scale);
             var curChunkPosZ = Mathf.FloorToInt(pos.z / (Chunk.ChunkSize * scale)) * (Chunk.ChunkSize * scale);
@@ -47,12 +57,13 @@ namespace VoxelTerrain.Voxel.Dependencies
             return new Vector3(curChunkPosX, -(Chunk.ChunkHeight * scale) / 2, curChunkPosZ);
         }
         
-        public int SetVoxelType(float x, float y, float z)
+        /*
+        private int SetVoxelType(float x, float y, float z)
         {
             var blockType = VoxelType.Default;
 
             // noise for heightmap
-            var simplex1 = PerlinNoise.Generate2DNoiseValue( x, z, Engine.NoiseScale, Engine.Seed, Engine.WorldInfo.GroundLevel);
+            var simplex1 = Noise.Generate2DNoiseValue( x, z, Engine.NoiseScale, Engine.WorldInfo.NumGen, Engine.WorldInfo.GroundLevel);
 
             //under the surface, dirt block
             if (y <= simplex1)
@@ -69,5 +80,6 @@ namespace VoxelTerrain.Voxel.Dependencies
 
             return (int) blockType;
         }
+        */
     }
 }

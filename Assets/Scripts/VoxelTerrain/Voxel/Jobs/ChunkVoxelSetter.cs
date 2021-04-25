@@ -1,8 +1,8 @@
-﻿using Unity.Burst;
+﻿using TerrainData;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
-using VoxelTerrain.Noise;
 
 namespace VoxelTerrain.Voxel.Jobs
 {
@@ -14,12 +14,9 @@ namespace VoxelTerrain.Voxel.Jobs
         [ReadOnly] public float groundLevel;
         [ReadOnly] public float scale;
         [ReadOnly] public float resolution;
-        [ReadOnly] public float StoneDepth;
-        [ReadOnly] public float SnowHeight;
-        [ReadOnly] public float CaveStartHeight;
 
         public Vector3 origin;
-        public NativeArray<float> voxels;
+        public NativeArray<byte> voxels;
         public int seed;
 
         public void Execute()
@@ -30,20 +27,22 @@ namespace VoxelTerrain.Voxel.Jobs
                 {
                     for (var j = 0; j < height; j++)
                     {
-                        voxels[Chunk.PosToIndex(i, j, k)] = SetVoxelType(origin.x + i * resolution, origin.y + j * resolution,
-                            origin.z + k * resolution);
+                        //set voxel based on noise world position
+                        voxels[Chunk.PosToIndex(i, j, k)] = BiomeGenerator.GenerateVoxelType(origin.x + i * resolution, origin.y + j * resolution, origin.z + k * resolution, scale, seed, groundLevel);
                     }
                 }
             }
         }
 
+        /*
         //set individual voxel type using noise function
-        public float SetVoxelType(float x, float y, float z)
+        //eventually this will be replaced by Josephs noise types
+        public byte SetVoxelType(float x, float y, float z)
         {
             var blockType = VoxelType.Default;
 
             //3D noise for heightmap
-            var simplex1 = PerlinNoise.Generate2DNoiseValue( x, z, scale, seed, groundLevel);
+            var simplex1 = Noise.Generate2DNoiseValue( x, z, scale, numGen, groundLevel);
 
             //under the surface, dirt block
             if (y <= simplex1)
@@ -58,7 +57,8 @@ namespace VoxelTerrain.Voxel.Jobs
                 }
             }
 
-            return (float) blockType;
+            return (byte) blockType;
         }
+        */
     }
 }

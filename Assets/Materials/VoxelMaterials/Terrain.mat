@@ -8,18 +8,30 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Terrain
-  m_Shader: {fileID: 4800000, guid: 8516d7a69675844a7a0b7095af7c46af, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 10b5e4537020294408c07c201dbace98,
+    type: 3}
   m_ShaderKeywords: 
-  m_LightmapFlags: 6
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2050
-  stringTagMap:
-    RenderType: Opaque
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2DArray_A38C3B56:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2DArray_D188B942:
+        m_Texture: {fileID: 18700000, guid: 209a89d9007e68c4f81ea52c1e9d5918, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaryCentric_64295CC2_Texture2DArray853723BB_695160517:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -64,7 +76,19 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Triplanar_99DCFEB2_Texture_1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Triplanar_9D3363B_Texture_1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Vector1_2F69B1E5: 1
+    - Vector1_71CEF9D4: 0
+    - Vector1_A2A26A18: -3.19
+    - Vector1_B18A437A: 0.1
     - _AlphaClip: 0
     - _Blend: 0
     - _BlendOp: 0
@@ -106,6 +130,11 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
+    - Color_2B09D76F: {r: 0.0157394, g: 0.57547164, b: 0, a: 1}
+    - Color_45C3BD9: {r: 0.06862745, g: 0.02058824, b: 0, a: 1}
+    - Color_756EDD54: {r: 0.30188674, g: 0.110218175, b: 0, a: 1}
+    - Color_AC0BCE7B: {r: 0.166462, g: 0.4627451, b: 0, a: 1}
+    - Vector3_BCEDB9BD: {r: 1.03, g: -0.11, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}

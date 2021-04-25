@@ -3,7 +3,7 @@ using VoxelTerrain.Grid;
 using VoxelTerrain.Voxel;
 using VoxelTerrain.Voxel.InfoData;
 
-namespace VoxelTerrain.Mouse
+namespace VoxelTerrain.Interactions
 {
     public class MousePositionDraw : MonoBehaviour
     {
