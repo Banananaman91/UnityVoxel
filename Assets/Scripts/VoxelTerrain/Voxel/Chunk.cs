@@ -11,8 +11,8 @@ namespace VoxelTerrain.Voxel
 {
     public class Chunk
     {
-        public const int ChunkSize = 16; //Leave at this size
-        public const int ChunkHeight = 512; //This should be 16 too, but I wanted taller chunks
+        public const int ChunkSize = 32; //Leave at this size
+        public const int ChunkHeight = 128; //This should be 16 too, but I wanted taller chunks
         public byte[] Voxels;
         private VoxelEngine Engine;
         private GameObject Entity;
@@ -41,13 +41,9 @@ namespace VoxelTerrain.Voxel
             //So don't waste time making a mesh
             if (!Entity) return;
             
-            var meshCreator = new MeshCreator(origin, Engine.ChunkInfo.VoxelSize, Engine.WorldData);
+            var mesh = new Mesh();
 
-            //Build mesh data
-            meshCreator.SetMesh(Voxels, origin.x, origin.y, origin.z,
-                Engine.ChunkInfo.VoxelSize);
-            
-            //Jobs
+            #region Jobs
             // var rightPos = new Vector3(origin.x + (ChunkSize * Engine.ChunkInfo.VoxelSize), origin.y, origin.z);
             // var forwardPos = new Vector3(origin.x, origin.y, origin.z + (ChunkSize * Engine.ChunkInfo.VoxelSize));
             // var forwardRight = new Vector3(rightPos.x, origin.y, forwardPos.z);
@@ -68,10 +64,10 @@ namespace VoxelTerrain.Voxel
             //
             // var meshJob = new MeshJob
             // {
-            //     vertices = new NativeArray<Vector3>(0, Allocator.Persistent),
-            //     triangles = new NativeArray<int>(0, Allocator.Persistent),
-            //     uv0 = new NativeArray<Vector4>(0, Allocator.Persistent),
-            //     uv1 = new NativeArray<Vector4>(0, Allocator.Persistent),
+            //     vertices = new NativeList<Vector3>(Allocator.Persistent),
+            //     triangles = new NativeList<int>(Allocator.Persistent),
+            //     voxelUv = new NativeList<Vector4>(Allocator.Persistent),
+            //     baryUv = new NativeList<Vector4>(Allocator.Persistent),
             //     currentVoxels = new NativeArray<byte>(Voxels, Allocator.Persistent),
             //     rightVoxels = rVox,
             //     forwardVoxels = forVox,
@@ -84,34 +80,19 @@ namespace VoxelTerrain.Voxel
             //     groundLevel = Engine.WorldInfo.GroundLevel
             // };
             // meshJob.Schedule().Complete();
-
-            var monoGo = Entity.GetComponent<MonoChunk>();
             
-            var mesh = new Mesh();
-            //Update mesh
-            mesh.vertices = meshCreator.Vertices.ToArray();
-            mesh.triangles = meshCreator.Triangles.ToArray();            
-            
-            //Jobs
             // mesh.vertices = meshJob.vertices.ToArray();
             // meshJob.vertices.Dispose();
             // mesh.triangles = meshJob.triangles.ToArray();
             // meshJob.triangles.Dispose();
             
-            mesh.SetUVs(0, new List<Vector2>(mesh.vertices.Length));
-            //Set uv channel to contain voxel uv data
-            mesh.SetUVs(1, meshCreator.uv0);
-            //Set uv channel to contain barycentric uv data
-            mesh.SetUVs(2, meshCreator.uv1);
-            
-            //Jobs
             // mesh.SetUVs(0, new List<Vector2>(mesh.vertices.Length));
             // //Set uv channel to contain voxel uv data
-            // mesh.SetUVs(1, meshJob.uv0);
-            // meshJob.uv0.Dispose();
+            // mesh.SetUVs(1, meshJob.voxelUv.ToArray());
+            // meshJob.voxelUv.Dispose();
             // //Set uv channel to contain barycentric uv data
-            // mesh.SetUVs(2, meshJob.uv1);
-            // meshJob.uv1.Dispose();
+            // mesh.SetUVs(2, meshJob.baryUv.ToArray());
+            // meshJob.baryUv.Dispose();
             //
             // rVox.Dispose();
             // forVox.Dispose();
@@ -121,7 +102,28 @@ namespace VoxelTerrain.Voxel
             // meshJob.rightVoxels.Dispose();
             // meshJob.rightForwardVoxels.Dispose();
             // meshJob.forwardVoxels.Dispose();
+            #endregion
+
+            var monoGo = Entity.GetComponent<MonoChunk>();
+
+            #region NotJobs
+            var meshCreator = new MeshCreator(origin, Engine.ChunkInfo.VoxelSize, Engine.WorldData);
             
+            //Build mesh data
+            meshCreator.SetMesh(Voxels, origin.x, origin.y, origin.z,
+                Engine.ChunkInfo.VoxelSize);
+
+            //Update mesh
+            mesh.vertices = meshCreator.Vertices.ToArray();
+            mesh.triangles = meshCreator.Triangles.ToArray();            
+            
+            mesh.SetUVs(0, new List<Vector2>(mesh.vertices.Length));
+            //Set uv channel to contain voxel uv data
+            mesh.SetUVs(1, meshCreator.uv0);
+            //Set uv channel to contain barycentric uv data
+            mesh.SetUVs(2, meshCreator.uv1);
+            #endregion
+
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
             

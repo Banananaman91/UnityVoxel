@@ -10,10 +10,10 @@ namespace VoxelTerrain.MMesh
 {
     public struct MeshJob : IJob
     {
-        internal NativeArray<Vector3> vertices;
-        internal NativeArray<int> triangles;
-        internal NativeArray<Vector4> uv0;
-        internal NativeArray<Vector4> uv1;
+        internal NativeList<Vector3> vertices;
+        internal NativeList<int> triangles;
+        internal NativeList<Vector4> voxelUv;
+        internal NativeList<Vector4> baryUv;
         public NativeArray<byte> currentVoxels;
         public NativeArray<byte> rightVoxels;
         public NativeArray<byte> forwardVoxels;
@@ -37,10 +37,10 @@ namespace VoxelTerrain.MMesh
             int flagIndex = 0;
             int index = 0;
 
-            var Vertices = new List<Vector3>();
-            var Triangles = new List<int>();
-            var voxelUv = new List<Vector4>();
-            var baryUv = new List<Vector4>();
+            // var Vertices = new List<Vector3>();
+            // var Triangles = new List<int>();
+            // var voxelUv = new List<Vector4>();
+            // var baryUv = new List<Vector4>();
 
             float[] afCubes = new float[8];
 
@@ -186,8 +186,8 @@ namespace VoxelTerrain.MMesh
                                     voxelTypes.z = voxelValue;
                                 }
 
-                                Vertices.Add(offset + middle);
-                                Triangles.Add(index++);
+                                vertices.Add(offset + middle);
+                                triangles.Add(index++);
                             }
 
                             for (int i = 0; i < 3; i++)
@@ -200,10 +200,10 @@ namespace VoxelTerrain.MMesh
                 }
             }
 
-            vertices = new NativeArray<Vector3>(Vertices.ToArray(), Allocator.Persistent);
-            triangles = new NativeArray<int>(Triangles.ToArray(), Allocator.Persistent);
-            uv0 = new NativeArray<Vector4>(voxelUv.ToArray(), Allocator.Persistent);
-            uv1 = new NativeArray<Vector4>(baryUv.ToArray(), Allocator.Persistent);
+            // vertices = new NativeArray<Vector3>(Vertices.ToArray(), Allocator.Persistent);
+            // triangles = new NativeArray<int>(Triangles.ToArray(), Allocator.Persistent);
+            // uv0 = new NativeArray<Vector4>(voxelUv.ToArray(), Allocator.Persistent);
+            // uv1 = new NativeArray<Vector4>(baryUv.ToArray(), Allocator.Persistent);
         }
         
         private float GetVoxelAt(float x, float y, float z, Vector3 chunkPos, float scale)
