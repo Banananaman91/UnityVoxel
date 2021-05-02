@@ -43,8 +43,8 @@ namespace VoxelTerrain.Voxel.Dependencies
 
             if (chunk == null) return BiomeGenerator.GenerateVoxelType(chunkPos.x + x * scale, chunkPos.y + y * scale, chunkPos.z + z * scale, Engine.NoiseScale, Engine.WorldInfo.Seed, Engine.WorldInfo.GroundLevel);
 
-            if (x == Chunk.ChunkSize) x = 0;
-            if (z == Chunk.ChunkSize) z = 0;
+            if (x >= Chunk.ChunkSize) x = 0;
+            if (z >= Chunk.ChunkSize) z = 0;
             //var voxPos = (new Vector3(x, y, z) - chunkPos) / scale;
             return chunk[x, y, z];
         }

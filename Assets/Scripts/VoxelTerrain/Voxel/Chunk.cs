@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 using VoxelTerrain.MMesh;
 using VoxelTerrain.Voxel.Dependencies;
@@ -10,7 +12,7 @@ namespace VoxelTerrain.Voxel
     public class Chunk
     {
         public const int ChunkSize = 16; //Leave at this size
-        public const int ChunkHeight = 64; //This should be 16 too, but I wanted taller chunks
+        public const int ChunkHeight = 512; //This should be 16 too, but I wanted taller chunks
         public byte[] Voxels;
         private VoxelEngine Engine;
         private GameObject Entity;
@@ -45,18 +47,80 @@ namespace VoxelTerrain.Voxel
             meshCreator.SetMesh(Voxels, origin.x, origin.y, origin.z,
                 Engine.ChunkInfo.VoxelSize);
             
+            //Jobs
+            // var rightPos = new Vector3(origin.x + (ChunkSize * Engine.ChunkInfo.VoxelSize), origin.y, origin.z);
+            // var forwardPos = new Vector3(origin.x, origin.y, origin.z + (ChunkSize * Engine.ChunkInfo.VoxelSize));
+            // var forwardRight = new Vector3(rightPos.x, origin.y, forwardPos.z);
+            //
+            // var rightChunk = Engine.WorldData.GetNonNullChunkAt(rightPos);
+            // var forwardChunk = Engine.WorldData.GetNonNullChunkAt(forwardPos);
+            // var rightForwardChunk = Engine.WorldData.GetNonNullChunkAt(forwardRight);
+            // //var currentChunk = Engine.WorldData.GetNonNullChunkAt(origin);
+            //
+            // NativeArray<byte> rVox = default;
+            // NativeArray<byte> forVox = default;
+            // NativeArray<byte> rForVox = default;
+            //
+            // if (rightChunk != null) rVox = new NativeArray<byte>(rightChunk.Voxels, Allocator.Persistent);
+            // if (forwardChunk != null) forVox = new NativeArray<byte>(forwardChunk.Voxels, Allocator.Persistent);
+            // if (rightForwardChunk != null)
+            //     rForVox = new NativeArray<byte>(rightForwardChunk.Voxels, Allocator.Persistent);
+            //
+            // var meshJob = new MeshJob
+            // {
+            //     vertices = new NativeArray<Vector3>(0, Allocator.Persistent),
+            //     triangles = new NativeArray<int>(0, Allocator.Persistent),
+            //     uv0 = new NativeArray<Vector4>(0, Allocator.Persistent),
+            //     uv1 = new NativeArray<Vector4>(0, Allocator.Persistent),
+            //     currentVoxels = new NativeArray<byte>(Voxels, Allocator.Persistent),
+            //     rightVoxels = rVox,
+            //     forwardVoxels = forVox,
+            //     rightForwardVoxels = rForVox,
+            //     scale = Engine.ChunkInfo.VoxelSize,
+            //     origin = origin,
+            //     interpolate = true,
+            //     noiseScale = Engine.NoiseScale,
+            //     seed = Engine.WorldInfo.Seed,
+            //     groundLevel = Engine.WorldInfo.GroundLevel
+            // };
+            // meshJob.Schedule().Complete();
+
             var monoGo = Entity.GetComponent<MonoChunk>();
             
             var mesh = new Mesh();
             //Update mesh
             mesh.vertices = meshCreator.Vertices.ToArray();
-            mesh.triangles = meshCreator.Triangles.ToArray();
+            mesh.triangles = meshCreator.Triangles.ToArray();            
+            
+            //Jobs
+            // mesh.vertices = meshJob.vertices.ToArray();
+            // meshJob.vertices.Dispose();
+            // mesh.triangles = meshJob.triangles.ToArray();
+            // meshJob.triangles.Dispose();
             
             mesh.SetUVs(0, new List<Vector2>(mesh.vertices.Length));
             //Set uv channel to contain voxel uv data
             mesh.SetUVs(1, meshCreator.uv0);
             //Set uv channel to contain barycentric uv data
             mesh.SetUVs(2, meshCreator.uv1);
+            
+            //Jobs
+            // mesh.SetUVs(0, new List<Vector2>(mesh.vertices.Length));
+            // //Set uv channel to contain voxel uv data
+            // mesh.SetUVs(1, meshJob.uv0);
+            // meshJob.uv0.Dispose();
+            // //Set uv channel to contain barycentric uv data
+            // mesh.SetUVs(2, meshJob.uv1);
+            // meshJob.uv1.Dispose();
+            //
+            // rVox.Dispose();
+            // forVox.Dispose();
+            // rForVox.Dispose();
+            //
+            // meshJob.currentVoxels.Dispose();
+            // meshJob.rightVoxels.Dispose();
+            // meshJob.rightForwardVoxels.Dispose();
+            // meshJob.forwardVoxels.Dispose();
             
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();

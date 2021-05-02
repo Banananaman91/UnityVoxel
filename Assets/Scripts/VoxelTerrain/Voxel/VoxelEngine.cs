@@ -162,12 +162,8 @@ namespace VoxelTerrain.Voxel
         }
 
         //Check if position is within range
-        public bool WithinRange(Vector3 pos)
-        {
-            var difference = Position - pos;
-
-            return difference.magnitude <= _maxMagnitude;
-        }
+        public bool WithinRange(Vector3 pos) => Vector3.Distance(Position, pos) <= WorldInfo.Distance;
+        
         #endregion
     }
 }
