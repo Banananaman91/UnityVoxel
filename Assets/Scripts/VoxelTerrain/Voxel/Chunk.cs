@@ -108,7 +108,7 @@ namespace VoxelTerrain.Voxel
             var monoGo = Entity.GetComponent<MonoChunk>();
 
             #region NotJobs
-            var meshCreator = new MeshCreator(origin, Engine.ChunkInfo.VoxelSize, Engine.WorldData);
+            var meshCreator = new MeshCreator(Engine.WorldData);
             
             //Build mesh data
             meshCreator.SetMesh(Voxels, origin.x, origin.y, origin.z,
