@@ -3,6 +3,7 @@ using TerrainData;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using VoxelTerrain.DataConversion;
 using VoxelTerrain.Voxel;
 using VoxelTerrain.Voxel.Dependencies;
 
@@ -65,14 +66,14 @@ namespace VoxelTerrain.MMesh
                         else
                         {
                             //Offsets are same as cornerOffsets[8]
-                            afCubes[0] = currentVoxels[Chunk.PosToIndex(x, y, z)];
-                            afCubes[1] = currentVoxels[Chunk.PosToIndex(x + 1, y, z)];
-                            afCubes[2] = currentVoxels[Chunk.PosToIndex(x + 1, y + 1, z)];
-                            afCubes[3] = currentVoxels[Chunk.PosToIndex(x, y + 1, z)];
-                            afCubes[4] = currentVoxels[Chunk.PosToIndex(x, y, z + 1)];
-                            afCubes[5] = currentVoxels[Chunk.PosToIndex(x + 1, y, z + 1)];
-                            afCubes[6] = currentVoxels[Chunk.PosToIndex(x + 1, y + 1, z + 1)];
-                            afCubes[7] = currentVoxels[Chunk.PosToIndex(x, y + 1, z + 1)];
+                            afCubes[0] = currentVoxels[Converter.PosToIndex(x, y, z)];
+                            afCubes[1] = currentVoxels[Converter.PosToIndex(x + 1, y, z)];
+                            afCubes[2] = currentVoxels[Converter.PosToIndex(x + 1, y + 1, z)];
+                            afCubes[3] = currentVoxels[Converter.PosToIndex(x, y + 1, z)];
+                            afCubes[4] = currentVoxels[Converter.PosToIndex(x, y, z + 1)];
+                            afCubes[5] = currentVoxels[Converter.PosToIndex(x + 1, y, z + 1)];
+                            afCubes[6] = currentVoxels[Converter.PosToIndex(x + 1, y + 1, z + 1)];
+                            afCubes[7] = currentVoxels[Converter.PosToIndex(x, y + 1, z + 1)];
                         }
 
                         //Calculate the index of the current cube configuration as follows:
@@ -128,9 +129,9 @@ namespace VoxelTerrain.MMesh
                                     }
                                     else
                                     {
-                                        s1 = currentVoxels[Chunk.PosToIndex(x + (int) edge1.x, y + (int) edge1.y,
+                                        s1 = currentVoxels[Converter.PosToIndex(x + (int) edge1.x, y + (int) edge1.y,
                                             z + (int) edge1.z)];
-                                        delta = s1 - currentVoxels[Chunk.PosToIndex(x + (int) edge2.x,
+                                        delta = s1 - currentVoxels[Converter.PosToIndex(x + (int) edge2.x,
                                             y + (int) edge2.y, z + (int) edge2.z)];
                                     }
 
@@ -158,9 +159,9 @@ namespace VoxelTerrain.MMesh
                                 }
                                 else
                                 {
-                                    voxel1 = currentVoxels[Chunk.PosToIndex(x + (int)edge1.x, y + (int)edge1.y,
+                                    voxel1 = currentVoxels[Converter.PosToIndex(x + (int)edge1.x, y + (int)edge1.y,
                                         z + (int)edge1.z)];
-                                    voxel2 = currentVoxels[Chunk.PosToIndex(x + (int)edge2.x,
+                                    voxel2 = currentVoxels[Converter.PosToIndex(x + (int)edge2.x,
                                         y + (int)edge2.y, z + (int)edge2.z)];
                                 }
 
@@ -226,7 +227,7 @@ namespace VoxelTerrain.MMesh
             if (x == Chunk.ChunkSize) x = 0;
             if (z == Chunk.ChunkSize) z = 0;
 
-            var index = Chunk.PosToIndex((int) x, (int) y, (int) z);
+            var index = Converter.PosToIndex((int) x, (int) y, (int) z);
             return toCheck[index];
         }
     }

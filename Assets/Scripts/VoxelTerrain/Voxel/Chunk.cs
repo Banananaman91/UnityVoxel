@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using VoxelTerrain.DataConversion;
 using VoxelTerrain.MMesh;
 using VoxelTerrain.Voxel.Dependencies;
 using VoxelTerrain.Voxel.Jobs;
@@ -21,8 +22,8 @@ namespace VoxelTerrain.Voxel
         //Used to find voxel at position
         public byte this[float x, float y, float z]
         {
-            get => Voxels[PosToIndex((int)x, (int)y, (int)z)];
-            set => Voxels[PosToIndex((int)x, (int)y, (int)z)] = value;
+            get => Voxels[Converter.PosToIndex((int)x, (int)y, (int)z)];
+            set => Voxels[Converter.PosToIndex((int)x, (int)y, (int)z)] = value;
         }
 
         //Add the game object this chunk is connected to
@@ -133,9 +134,6 @@ namespace VoxelTerrain.Voxel
             monoGo.MeshFilter.sharedMesh = mesh;
             monoGo.MeshCollider.sharedMesh = mesh;
         }
-        
-        //convert world position to index position of the voxel array
-        public static int PosToIndex(int x, int y, int z) => z * (ChunkSize) * (ChunkHeight) + y * (ChunkSize) + x;
 
         //Constructor, for constructioning
         public Chunk(VoxelEngine engine)

@@ -3,6 +3,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using VoxelTerrain.DataConversion;
 
 namespace VoxelTerrain.Voxel.Jobs
 {
@@ -28,7 +29,7 @@ namespace VoxelTerrain.Voxel.Jobs
                     for (var j = 0; j < height; j++)
                     {
                         //set voxel based on noise world position
-                        voxels[Chunk.PosToIndex(i, j, k)] = BiomeGenerator.GenerateVoxelType(origin.x + i * resolution, origin.y + j * resolution, origin.z + k * resolution, scale, seed, groundLevel);
+                        voxels[Converter.PosToIndex(i, j, k)] = BiomeGenerator.GenerateVoxelType(origin.x + i * resolution, origin.y + j * resolution, origin.z + k * resolution, scale, seed, groundLevel);
                     }
                 }
             }

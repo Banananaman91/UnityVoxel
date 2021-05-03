@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using VoxelTerrain.DataConversion;
 using VoxelTerrain.Grid;
 using VoxelTerrain.Voxel.Dependencies;
 
@@ -28,18 +29,6 @@ namespace VoxelTerrain.Voxel
             _engine.RemoveChunkAt(Position);
         }
 
-        private static int to1D(int x, int y, int z) =>
-            ((z * Chunk.ChunkSize * Chunk.ChunkHeight) + (y * Chunk.ChunkSize) + x);
-
-        private static Vector3 to3D(int idx)
-        {
-            int z = idx / (Chunk.ChunkSize * Chunk.ChunkHeight);
-            idx -= (z * Chunk.ChunkSize * Chunk.ChunkHeight);
-            int y = idx / Chunk.ChunkSize;
-            int x = idx % Chunk.ChunkSize;
-            return new Vector3(x, y, z);
-        }
-
         private IEnumerator UpdateWater()
         {
             while (Application.isPlaying)
@@ -51,7 +40,7 @@ namespace VoxelTerrain.Voxel
                     var pos = transform.position;
                     
                     //convert loop to 3D position
-                    var coord = to3D(i);
+                    var coord = Converter.IndexToPos(i);
 
                     //get current position in world
                     var curPos = pos + coord;
