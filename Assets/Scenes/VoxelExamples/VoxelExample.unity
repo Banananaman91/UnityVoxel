@@ -151,7 +151,7 @@ PrefabInstance:
       objectReference: {fileID: 1219288309642976020}
     - target: {fileID: 1498735670, guid: a11bfa0f202cd184e949e58420e9eee5, type: 3}
       propertyPath: _shape
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1498735670, guid: a11bfa0f202cd184e949e58420e9eee5, type: 3}
       propertyPath: _interactionSettings._dig
@@ -176,6 +176,10 @@ PrefabInstance:
     - target: {fileID: 1498735670, guid: a11bfa0f202cd184e949e58420e9eee5, type: 3}
       propertyPath: _interactionSettings._sphereRadius
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1498735670, guid: a11bfa0f202cd184e949e58420e9eee5, type: 3}
+      propertyPath: _setVoxelType
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1561188667314874129, guid: a11bfa0f202cd184e949e58420e9eee5,
         type: 3}
@@ -329,6 +333,7 @@ GameObject:
   - component: {fileID: 677353612}
   - component: {fileID: 677353611}
   - component: {fileID: 677353610}
+  - component: {fileID: 677353616}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -440,12 +445,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 677353609}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.238733, y: 26.56673, z: 135.46092}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &677353616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 677353609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8671e9c083200d949b37db78a2451df0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _engine: {fileID: 201202581}
 --- !u!1 &1135717846
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,10 +766,15 @@ PrefabInstance:
       propertyPath: _meshResolution
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _updateWater
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1219288309642976020, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _enableSaving
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7941170911782372762, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -766,7 +789,7 @@ PrefabInstance:
     - target: {fileID: 7941170911782372762, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _distance
-      value: 190
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 7941170911782372763, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}

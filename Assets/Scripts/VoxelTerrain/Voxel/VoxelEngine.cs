@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
+using VoxelTerrain.Grid;
 using VoxelTerrain.Voxel.Dependencies;
 using VoxelTerrain.Voxel.InfoData;
 
@@ -17,13 +21,19 @@ namespace VoxelTerrain.Voxel
         [SerializeField] private VoxelTypeHeights _voxelTypeHeights;
         [SerializeField] private WorldGenerationFunctions _worldGeneration;
         [SerializeField] private float _noiseScale;
+        [SerializeField] private bool _updateWater;
+
+        public bool UpdateWater => _updateWater;
 
         private float _maxMagnitude;
+        
+        //Water update pool
+        public Dictionary<ChunkId, Chunk> _waterPool = new Dictionary<ChunkId, Chunk>();
 
         private Vector3 Position => _worldInfo.Origin != null ? new Vector3(_worldInfo.Origin.position.x, -ChunkHeight / 2, _worldInfo.Origin.position.z) : Vector3.zero;
         public ChunkInfo ChunkInfo => _chunkInfo;
-        private float ChunkSize => Chunk.ChunkSize * _chunkInfo.VoxelSize;
-        private float ChunkHeight => Chunk.ChunkHeight * _chunkInfo.VoxelSize;
+        public float ChunkSize => Chunk.ChunkSize * _chunkInfo.VoxelSize;
+        public float ChunkHeight => Chunk.ChunkHeight * _chunkInfo.VoxelSize;
         public VoxelTypeHeights VoxelTypeHeights => _voxelTypeHeights;
         public float NoiseScale => _noiseScale;
 
@@ -61,7 +71,26 @@ namespace VoxelTerrain.Voxel
             var corner = new Vector3(-_worldInfo.Distance, 0, -_worldInfo.Distance);
             _maxMagnitude = (Position - corner).magnitude;
         }
-        
+
+        private Dictionary<ChunkId, Chunk> _chunkPool = new Dictionary<ChunkId, Chunk>();
+
+        private void FixedUpdate()
+        {
+            if (_chunkPool.Count > 0)
+            {
+                var chunk = _chunkPool.First();
+                SpawnChunk(chunk.Value, new Vector3(chunk.Key.X, chunk.Key.Y, chunk.Key.Z));
+                _chunkPool.Remove(chunk.Key);
+            }
+
+            if (_waterPool.Count > 0)
+            {
+                var chunk = _waterPool.First();
+                chunk.Value.SetMesh(new Vector3(chunk.Key.X, chunk.Key.Y, chunk.Key.Z));
+                _waterPool.Remove(chunk.Key);
+            }
+        }
+
         private void Update()
         {
             var point = NearestChunk(Position);
@@ -71,6 +100,10 @@ namespace VoxelTerrain.Voxel
                 for (var z = -_worldInfo.Distance; z <= _worldInfo.Distance; z += ChunkSize)
                 {
                     var pointToCheck = new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z);
+                    
+                    //Check chunk pool doesn't already have object
+                    if (_chunkPool.ContainsKey(pointToCheck)) continue;
+                    
                     //check position is within distance, rounds off view area.
                     if (Vector3.Distance(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z), Position) >
                         _worldInfo.Distance) continue;
@@ -84,7 +117,7 @@ namespace VoxelTerrain.Voxel
                     {
                         c = LoadChunkAt(pointToCheck);
                         
-                        if (c != null) SpawnChunk(c, new Vector3(point.x + x, -(ChunkHeight / 2), point.z + z));
+                        if (c != null) _chunkPool.Add(new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z), c);//  SpawnChunk(c, new Vector3(point.x + x, -(ChunkHeight / 2), point.z + z));
                     }
                 }
             }
@@ -131,9 +164,9 @@ namespace VoxelTerrain.Voxel
             var chunkId = new ChunkId(pos.x, pos.y, pos.z);
             WorldData.Chunks.Add(chunkId, nonNullChunk);
 
-            var go = Instantiate(_chunkInfo.ChunkPrefab.gameObject);
+            var go = Instantiate(_chunkInfo.ChunkPrefab.gameObject, pos, Quaternion.identity);
 
-            go.transform.position = pos;
+            //go.transform.position = pos;
             go.name = pos.ToString();
 
             nonNullChunk.AddEntity(go);
@@ -163,7 +196,7 @@ namespace VoxelTerrain.Voxel
 
         //Check if position is within range
         public bool WithinRange(Vector3 pos) => Vector3.Distance(Position, pos) <= WorldInfo.Distance;
-        
+
         #endregion
     }
 }
