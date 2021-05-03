@@ -74,7 +74,7 @@ namespace VoxelTerrain.Voxel
 
         private Dictionary<ChunkId, Chunk> _chunkPool = new Dictionary<ChunkId, Chunk>();
 
-        private void FixedUpdate()
+        private void LateUpdate()
         {
             if (_chunkPool.Count > 0)
             {
@@ -91,36 +91,67 @@ namespace VoxelTerrain.Voxel
             }
         }
 
+        private static float GetXPos(float i, float distance, float size) => Mathf.Floor(i / distance) * size - distance / 2 * size;
+        
+        private static float GetZPos(float i, float distance, float size) => i % distance * size - distance / 2 * size;
+        
         private void Update()
         {
             var point = NearestChunk(Position);
 
-            for (var x = -_worldInfo.Distance; x <= _worldInfo.Distance; x += ChunkSize)
+            for (var i = 0; i <= Math.Pow(_worldInfo.Distance, 2); i++)
             {
-                for (var z = -_worldInfo.Distance; z <= _worldInfo.Distance; z += ChunkSize)
+                var x = GetXPos(i, _worldInfo.Distance, ChunkSize);
+                var z = GetZPos(i, _worldInfo.Distance, ChunkSize);
+
+                var pointToCheck = new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z);
+                
+                //Check chunk pool doesn't already have object
+                if (_chunkPool.ContainsKey(pointToCheck)) continue;
+                    
+                //check position is within distance, rounds off view area.
+                if (!WithinRange(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z))) continue;
+            
+                //check for chunk in the world data, in case it has already been spawned
+                var c = ChunkAt(pointToCheck, false);
+            
+                //if chunk is not found, attempt to load one
+                //Update repeatedly checks until we have a chunk
+                if (c == null)
                 {
-                    var pointToCheck = new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z);
-                    
-                    //Check chunk pool doesn't already have object
-                    if (_chunkPool.ContainsKey(pointToCheck)) continue;
-                    
-                    //check position is within distance, rounds off view area.
-                    if (Vector3.Distance(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z), Position) >
-                        _worldInfo.Distance) continue;
-
-                    //check for chunk in the world data, in case it has already been spawned
-                    var c = ChunkAt(pointToCheck, false);
-
-                    //if chunk is not found, attempt to load one
-                    //Update repeatedly checks until we have a chunk
-                    if (c == null)
-                    {
-                        c = LoadChunkAt(pointToCheck);
+                    c = LoadChunkAt(pointToCheck);
                         
-                        if (c != null) _chunkPool.Add(new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z), c);//  SpawnChunk(c, new Vector3(point.x + x, -(ChunkHeight / 2), point.z + z));
-                    }
+                    if (c != null) _chunkPool.Add(new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z), c);
+                    
                 }
             }
+
+            // for (var x = -_worldInfo.Distance; x <= _worldInfo.Distance; x += ChunkSize)
+            // {
+            //     for (var z = -_worldInfo.Distance; z <= _worldInfo.Distance; z += ChunkSize)
+            //     {
+            //         var pointToCheck = new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z);
+            //         
+            //         //Check chunk pool doesn't already have object
+            //         if (_chunkPool.ContainsKey(pointToCheck)) continue;
+            //         
+            //         //check position is within distance, rounds off view area.
+            //         if (Vector3.Distance(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z), Position) >
+            //             _worldInfo.Distance) continue;
+            //
+            //         //check for chunk in the world data, in case it has already been spawned
+            //         var c = ChunkAt(pointToCheck, false);
+            //
+            //         //if chunk is not found, attempt to load one
+            //         //Update repeatedly checks until we have a chunk
+            //         if (c == null)
+            //         {
+            //             c = LoadChunkAt(pointToCheck);
+            //             
+            //             if (c != null) _chunkPool.Add(new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z), c);//  SpawnChunk(c, new Vector3(point.x + x, -(ChunkHeight / 2), point.z + z));
+            //         }
+            //     }
+            // }
         }
         #endregion
 
@@ -195,7 +226,7 @@ namespace VoxelTerrain.Voxel
         }
 
         //Check if position is within range
-        public bool WithinRange(Vector3 pos) => Vector3.Distance(Position, pos) <= WorldInfo.Distance;
+        public bool WithinRange(Vector3 pos) => Vector3.Distance(Position, pos) <= WorldInfo.Distance / 2 * ChunkSize;
 
         #endregion
     }
