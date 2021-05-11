@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using VoxelTerrain.DataConversion;
 using VoxelTerrain.Engine;
@@ -126,21 +127,21 @@ namespace VoxelTerrain.MMesh
                                     float delta;
                                     if (x == Chunk.ChunkSize - 1 || z == Chunk.ChunkSize - 1)
                                     {
-                                        s1 = _world.GetVoxelAt(x + (int) edge1.x, y + (int) edge1.y,
-                                            z + (int) edge1.z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
+                                        s1 = Math.Abs(_world.GetVoxelAt(x + (int) edge1.x, y + (int) edge1.y,
+                                            z + (int) edge1.z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value);
                                         delta = s1 - _world.GetVoxelAt(x + (int) edge2.x,
                                             y + (int) edge2.y, z + (int) edge2.z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
                                     }
                                     else
                                     {
-                                        s1 = voxels[Converter.PosToIndex(x + (int) edge1.x, y + (int) edge1.y,
-                                            z + (int) edge1.z)].Value;
+                                        s1 = Math.Abs(voxels[Converter.PosToIndex(x + (int) edge1.x, y + (int) edge1.y,
+                                            z + (int) edge1.z)].Value);
                                         delta = s1 - voxels[Converter.PosToIndex(x + (int) edge2.x,
                                             y + (int) edge2.y, z + (int) edge2.z)].Value;
                                     }
 
-                                    if (delta == 0.0f) ofst = 0.5f;
-                                    else ofst = s1 / delta;
+                                    if (delta <= 0.0f) ofst = 0.5f;
+                                    else ofst = s1 * delta;
                                     middle = edge1 + ofst * (edge2 - edge1);
                                 }
                                 else

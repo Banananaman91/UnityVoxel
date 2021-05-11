@@ -62,9 +62,9 @@ namespace TerrainData
         /// <param name="scale">Zoom level of the noise when displayed</param>
         /// <param name="seed">Seed of the generation</param>
         /// <returns>Singular 3D noise value</returns>
-        public static float Generate3DNoiseValue(float x, float y, float z, float scale, int octaves, float lacunarity, int seed)
+        public static float Generate3DNoiseValue(float x, float y, float z, float scale, int octaves, float lacunarity, int seed, float groundLevel)
         {
-            return GenerateSample(new float3(x, y, z), scale, seed, 0, Vector2.zero, octaves, lacunarity, true);
+            return GenerateSample(new float3(x, y, z), scale, seed, groundLevel, Vector2.zero, octaves, lacunarity, true);
         }
 
         /// <summary>
@@ -88,14 +88,14 @@ namespace TerrainData
             for (int i = 0; i < octaves; i++)
             {
                 // Find the sample coordinates to use in the noise function
-                float xSample = coords.x / scale * frequency;
-                float ySample = coords.y / scale * frequency;
+                float xSample = coords.x * frequency;
+                float ySample = coords.y * frequency;
 
                 // Specific dimension requirements
                 if (threeDimensions)
                 {
                     // Find z sample
-                    float zSample = coords.z / scale * frequency;
+                    float zSample = coords.z * frequency;
 
                     // Generate 3D noise value
                     noiseReturn += FastNoiseLite.SingleOpenSimplex2S(seed + i, xSample, ySample, zSample) * amplitude;
@@ -130,7 +130,7 @@ namespace TerrainData
             }
             */
 
-            return noiseReturn * scale;
+            return noiseReturn;
         }
 
         /*
