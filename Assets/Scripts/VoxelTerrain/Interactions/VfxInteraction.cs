@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
-using VoxelTerrain.Voxel;
 
 namespace VoxelTerrain.Interactions
 {
@@ -11,6 +10,7 @@ namespace VoxelTerrain.Interactions
     {
         private VisualEffect _vfx;
 
+#pragma warning disable 0649
         [SerializeField] private string _spawnRateStringId = "Enter ID";
         [SerializeField] private int _spawnRate;
 
@@ -30,14 +30,12 @@ namespace VoxelTerrain.Interactions
         [SerializeField] private string _boxRadiusZStringId = "Enter ID";
         [SerializeField] private float _boxRadiusZ;
 
-        [SerializeField] private string _planeRadiusStringId = "Enter ID";
-        [SerializeField] private float _planeRadius;
-
         [SerializeField] private string _particleRingCountStringId;
         [SerializeField] private float _particleRingCount;
 
         [SerializeField] private string _sparkSpawnRateStringId;
         [SerializeField] private int _sparkSpawnRate;
+#pragma warning restore 0649
 
         public VisualEffect[] Vfx = new VisualEffect[10];
 
@@ -100,12 +98,23 @@ namespace VoxelTerrain.Interactions
             get => _boxRadiusXStringId;
             set => _boxRadiusXStringId = value;
         }
-
-
+        
         public float BoxRadiusX
         {
             get => _boxRadiusX;
             set => _boxRadiusX = value;
+        }
+        
+        public string BoxRadiusZStringId
+        {
+            get => _boxRadiusZStringId;
+            set => _boxRadiusZStringId = value;
+        }
+        
+        public float BoxRadiusZ
+        {
+            get => _boxRadiusZ;
+            set => _boxRadiusZ = value;
         }
 
         #endregion

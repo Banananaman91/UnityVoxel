@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using VoxelTerrain.Grid;
-using VoxelTerrain.Voxel.Dependencies;
-using VoxelTerrain.Voxel.InfoData;
+using VoxelTerrain.Engine.Dependencies;
+using VoxelTerrain.Engine.InfoData;
 
-namespace VoxelTerrain.Voxel
+namespace VoxelTerrain.Engine
 {
     [RequireComponent(typeof(WorldInfo), typeof(ChunkInfo), typeof(VoxelTypeHeights))]
     [RequireComponent(typeof(WorldGenerationFunctions))]
@@ -16,12 +14,14 @@ namespace VoxelTerrain.Voxel
     {
         public World WorldData = new World();
 
+#pragma warning disable 0649
         [SerializeField] private WorldInfo _worldInfo;
         [SerializeField] private ChunkInfo _chunkInfo;
         [SerializeField] private VoxelTypeHeights _voxelTypeHeights;
         [SerializeField] private WorldGenerationFunctions _worldGeneration;
         [SerializeField] private float _noiseScale;
         [SerializeField] private bool _updateWater;
+#pragma warning restore 0649
 
         public bool UpdateWater => _updateWater;
 

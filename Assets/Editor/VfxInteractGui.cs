@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.VFX;
+using VoxelTerrain.Engine;
 using VoxelTerrain.Interactions;
-using VoxelTerrain.Voxel;
 
 namespace Editor
 {
@@ -172,9 +172,16 @@ namespace Editor
 
                     EditorGUILayout.BeginHorizontal();
                     //Set box radius ID and value
-                    EditorGUILayout.LabelField("Box Radius", GUILayout.MinWidth(60f), GUILayout.MaxWidth(100f));
+                    EditorGUILayout.LabelField("Box X Radius", GUILayout.MinWidth(60f), GUILayout.MaxWidth(100f));
                     vi.VFXInteraction.BoxRadiusXStringId = EditorGUILayout.TextField(vi.VFXInteraction.BoxRadiusXStringId, GUILayout.Width(100f));
                     vi.VFXInteraction.BoxRadiusX = EditorGUILayout.FloatField(vi.VFXInteraction.BoxRadiusX, GUILayout.Width(60f));
+                    EditorGUILayout.EndHorizontal();
+                    
+                    EditorGUILayout.BeginHorizontal();
+                    //Set box radius ID and value
+                    EditorGUILayout.LabelField("Box Z Radius", GUILayout.MinWidth(60f), GUILayout.MaxWidth(100f));
+                    vi.VFXInteraction.BoxRadiusZStringId = EditorGUILayout.TextField(vi.VFXInteraction.BoxRadiusZStringId, GUILayout.Width(100f));
+                    vi.VFXInteraction.BoxRadiusZ = EditorGUILayout.FloatField(vi.VFXInteraction.BoxRadiusZ, GUILayout.Width(60f));
                     EditorGUILayout.EndHorizontal();
                     
                     #endregion

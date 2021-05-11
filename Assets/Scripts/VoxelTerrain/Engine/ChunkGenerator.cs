@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using VoxelTerrain.Engine.Dependencies;
+using VoxelTerrain.Engine.Jobs;
 using VoxelTerrain.SaveLoad;
-using VoxelTerrain.Voxel.Dependencies;
-using VoxelTerrain.Voxel.Jobs;
 
-namespace VoxelTerrain.Voxel
+namespace VoxelTerrain.Engine
 {
     public class ChunkGenerator : MonoBehaviour
     {
@@ -121,7 +121,7 @@ namespace VoxelTerrain.Voxel
                 scale = scale,
                 resolution = resolution,
                 origin = origin,
-                voxels = new NativeArray<byte>((Chunk.ChunkSize) * (Chunk.ChunkHeight) * (Chunk.ChunkSize), Allocator.Persistent),
+                voxels = new NativeArray<Voxel>((Chunk.ChunkSize) * (Chunk.ChunkHeight) * (Chunk.ChunkSize), Allocator.Persistent),
                 seed = seed,
                 groundLevel = groundLevel,
             };

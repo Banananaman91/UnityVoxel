@@ -1,14 +1,15 @@
 ﻿using System.Collections;
 using UnityEngine;
-using VoxelTerrain.Interactions;
-using VoxelTerrain.Voxel;
-using VoxelTerrain.Voxel.Dependencies;
+using VoxelTerrain.Engine;
+using VoxelTerrain.Engine.Dependencies;
 
 namespace VoxelTerrain
 {
     public class PlayerPlacement : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField] private VoxelEngine _engine;
+#pragma warning restore 0649
 
         private void Awake()
         {
@@ -38,13 +39,13 @@ namespace VoxelTerrain
             int yCounter = 0;
 
             //get the current voxel at the centre, lowest point
-            byte voxel = chunk[xz, yCounter, xz];
+            byte voxel = chunk[xz, yCounter, xz].Type;
 
             //continuously move up until we find an empty space to set the object position
             while (voxel != 0)
             {
                 yCounter++;
-                voxel = chunk[xz, yCounter, xz];
+                voxel = chunk[xz, yCounter, xz].Type;
                 yield return null;
             }
 

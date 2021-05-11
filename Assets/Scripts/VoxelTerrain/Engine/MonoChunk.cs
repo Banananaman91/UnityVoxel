@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using VoxelTerrain.DataConversion;
-using VoxelTerrain.Grid;
-using VoxelTerrain.Voxel.Dependencies;
+using VoxelTerrain.Engine.Dependencies;
 
-namespace VoxelTerrain.Voxel
+namespace VoxelTerrain.Engine
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class MonoChunk : MonoBehaviour

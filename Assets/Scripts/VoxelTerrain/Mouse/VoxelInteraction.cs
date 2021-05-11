@@ -3,17 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.VFX;
+using VoxelTerrain.Engine;
+using VoxelTerrain.Engine.Dependencies;
 using VoxelTerrain.Grid;
+using VoxelTerrain.Interactions;
 using VoxelTerrain.SaveLoad;
-using VoxelTerrain.Voxel;
-using VoxelTerrain.Voxel.Dependencies;
 
-namespace VoxelTerrain.Interactions
+namespace VoxelTerrain.Mouse
 {
     public class VoxelInteraction : MonoBehaviour
     {
+        #pragma warning disable 0649
         [SerializeField] private VoxelEngine _engine;
         [SerializeField] private ChunkLoader _chunkLoader;
         [SerializeField] private ScriptableVfxInteract _interactionEvents;
@@ -22,6 +23,7 @@ namespace VoxelTerrain.Interactions
         [SerializeField] private bool _destroyAboveGround;
         [SerializeField] private InteractionSettings _interactionSettings;
         [SerializeField] private FlattenShape _shape = FlattenShape.Single;
+#pragma warning restore 0649
 
         private float _offset = 0;
         
@@ -164,7 +166,7 @@ namespace VoxelTerrain.Interactions
                 chunkPos = _engine.NearestChunk(newChunkPos);
                 chunk = _engine.WorldData.GetNonNullChunkAt(chunkPos);
                 voxPos = (newChunkPos - chunkPos) / Size;
-                _interactionEvents.VFXInteraction.VfxPlaya(hitPos, chunk[voxPos.x, voxPos.y, voxPos.z], _interactionSettings, Shape);
+                _interactionEvents.VFXInteraction.VfxPlaya(hitPos, chunk[voxPos.x, voxPos.y, voxPos.z].Type, _interactionSettings, Shape);
             }
             
             //Pick the shape type
@@ -418,7 +420,7 @@ namespace VoxelTerrain.Interactions
         private void Flatten(Vector3 pos, VoxelType voxelType, float flattenHeight, float digDepth, Chunk chunk)
         {
             Vector3 voxPos = pos;
-            if (InteractionBan.BanList.Contains((VoxelType)chunk[voxPos.x, voxPos.y - 1, voxPos.z])) return;
+            if (InteractionBan.BanList.Contains((VoxelType)chunk[voxPos.x, voxPos.y - 1, voxPos.z].Type)) return;
             var voxType = voxelType;
 
             //For all voxels above the y position, update them
@@ -429,7 +431,7 @@ namespace VoxelTerrain.Interactions
                 chunk.SetVoxel(voxPos, voxType);
                 if (_destroyAboveGround) voxType = VoxelType.Default;
                 voxPos.y++;
-                if (InteractionBan.BanList.Contains((VoxelType)chunk[voxPos.x, voxPos.y, voxPos.z])) break;
+                if (InteractionBan.BanList.Contains((VoxelType)chunk[voxPos.x, voxPos.y, voxPos.z].Type)) break;
             } while (Vector3.Distance(pos, voxPos) <= flattenHeight);
 
             voxPos = pos;
@@ -438,7 +440,7 @@ namespace VoxelTerrain.Interactions
             do
             {
                 voxPos.y--;
-                if (InteractionBan.BanList.Contains((VoxelType)chunk[voxPos.x, voxPos.y, voxPos.z])) break;
+                if (InteractionBan.BanList.Contains((VoxelType)chunk[voxPos.x, voxPos.y, voxPos.z].Type)) break;
                 chunk.SetVoxel(voxPos, voxelType);
             } while (Vector3.Distance(voxPos, pos) <= digDepth && voxPos.y > 1);
         }

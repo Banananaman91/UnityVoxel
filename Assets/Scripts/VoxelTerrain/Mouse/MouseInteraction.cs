@@ -1,12 +1,15 @@
 ﻿using System;
 using UnityEngine;
-using VoxelTerrain.Voxel;
+using VoxelTerrain.Engine;
+using VoxelTerrain.Mouse;
 
 namespace VoxelTerrain.Interactions
 {
     public class MouseInteraction : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField] private VoxelInteraction _voxelInteraction;
+#pragma warning restore 0649
         
         //Basic mouse input for destroying and creating voxels
         //Switch case used to prevent certain methods running continuously

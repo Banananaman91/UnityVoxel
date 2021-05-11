@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using VoxelTerrain.Voxel;
-using VoxelTerrain.Voxel.Dependencies;
+using VoxelTerrain.Engine;
+using VoxelTerrain.Engine.Dependencies;
+using VoxelTerrain.Mouse;
 
 namespace VoxelTerrain.Interactions
 {
     [RequireComponent(typeof(VoxelInteraction))]
     public class HeadquartersPlacer : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField] private VoxelEngine _engine;
         [SerializeField] private VoxelInteraction _interaction;
+#pragma warning restore 0649
 
         private void Awake()
         {
@@ -40,13 +43,13 @@ namespace VoxelTerrain.Interactions
             int yCounter = 0;
 
             //get the current voxel at the centre, lowest point
-            byte voxel = chunk[xz, yCounter, xz];
+            byte voxel = chunk[xz, yCounter, xz].Type;
 
             //continuously move up until we find an empty space to set the object position
             while (voxel != 0)
             {
                 yCounter++;
-                voxel = chunk[xz, yCounter, xz];
+                voxel = chunk[xz, yCounter, xz].Type;
                 yield return null;
             }
 

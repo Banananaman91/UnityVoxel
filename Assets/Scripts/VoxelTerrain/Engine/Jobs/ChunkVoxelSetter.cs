@@ -5,7 +5,7 @@ using Unity.Jobs;
 using UnityEngine;
 using VoxelTerrain.DataConversion;
 
-namespace VoxelTerrain.Voxel.Jobs
+namespace VoxelTerrain.Engine.Jobs
 {
     [BurstCompile]
     public struct ChunkVoxelSetter : IJob
@@ -17,7 +17,7 @@ namespace VoxelTerrain.Voxel.Jobs
         [ReadOnly] public float resolution;
 
         public Vector3 origin;
-        public NativeArray<byte> voxels;
+        public NativeArray<Voxel> voxels;
         public int seed;
 
         public void Execute()

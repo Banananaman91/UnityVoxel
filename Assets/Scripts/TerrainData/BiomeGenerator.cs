@@ -1,17 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VoxelTerrain.Engine;
 
 namespace TerrainData
 {
     public class BiomeGenerator : MonoBehaviour
     {
-        public static byte GenerateVoxelType(float x, float y, float z, float scale, int seed, float groundLevel)
+        public static Voxel GenerateVoxelType(float x, float y, float z, float scale, int seed, float groundLevel)
         {
             float altitude = Noise.Generate2DNoiseValue(x * 0.5f, z * 0.5f, scale, 4, 2f, seed, groundLevel);
             float moisture = Noise.Generate2DNoiseValue(x * 0.025f, z * 0.025f, scale, 6, 3f, seed + 1000, 0);
 
-            VoxelTerrain.Voxel.VoxelType voxelType = new VoxelTerrain.Voxel.VoxelType();
+            VoxelType voxelType = new VoxelType();
 
             float heightScale = 5;
 
@@ -29,42 +30,42 @@ namespace TerrainData
                 // Ice
                 if (moisture > 6.5 && altitude <= -0.8 * heightScale)
                 {
-                    voxelType = VoxelTerrain.Voxel.VoxelType.Ice;
+                    voxelType = VoxelType.Ice;
                 }
                 // Grass Water
                 else if (moisture > 3 && moisture <= 6.5 && altitude <= -0.8 * heightScale)
                 {
-                    voxelType = VoxelTerrain.Voxel.VoxelType.Water;
+                    voxelType = VoxelType.Water;
                 }
                 // Swamp Water
                 else if (moisture > 0 && moisture <= 3 && altitude <= -1.4 * heightScale)
                 {
-                    voxelType = VoxelTerrain.Voxel.VoxelType.Water;
+                    voxelType = VoxelType.Water;
                 }
                 // Swamp Water
                 else if (moisture > 0 && moisture <= 3 && altitude > -0.6 * heightScale && altitude <= -0.2 * heightScale)
                 {
-                    voxelType = VoxelTerrain.Voxel.VoxelType.Water;
+                    voxelType = VoxelType.Water;
                 }
                 // Jungle Water
                 else if (moisture > -3 && moisture <= 0 && altitude <= -0.8 * heightScale)
                 {
-                    voxelType = VoxelTerrain.Voxel.VoxelType.Water;
+                    voxelType = VoxelType.Water;
                 }
                 // Savannah Water
                 else if (moisture > -6.5 && moisture <= -3 && altitude <= -1.4 * heightScale)
                 {
-                    voxelType = VoxelTerrain.Voxel.VoxelType.Water;
+                    voxelType = VoxelType.Water;
                 }
                 // Desert Canyons
                 else if (moisture <= -6.5 && altitude <= -0.6 * heightScale && altitude > -1 * heightScale && y > -20)
                 {
-                    voxelType = VoxelTerrain.Voxel.VoxelType.Default;
+                    voxelType = VoxelType.Default;
                 }
                 // Dirt
                 else
                 {
-                    voxelType = VoxelTerrain.Voxel.VoxelType.Dirt;
+                    voxelType = VoxelType.Dirt;
                 }
 
                 if (y > groundAltitude - 1)
@@ -74,27 +75,27 @@ namespace TerrainData
                     {
                         if (altitude > 1.6 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Snow;
+                            voxelType = VoxelType.Snow;
                         }
                         else if (altitude > 1 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Stone;
+                            voxelType = VoxelType.Stone;
                         }
                         else if (altitude > 0.6 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Snow;
+                            voxelType = VoxelType.Snow;
                         }
                         else if (altitude > 0 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.PineForest;
+                            voxelType = VoxelType.PineForest;
                         }
                         else if (altitude > -0.8 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Snow;
+                            voxelType = VoxelType.Snow;
                         }
                         else
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Default;
+                            voxelType = VoxelType.Default;
                         }
                     }
                     // Grass
@@ -102,31 +103,31 @@ namespace TerrainData
                     {
                         if (altitude > 1.8 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Snow;
+                            voxelType = VoxelType.Snow;
                         }
                         else if (altitude > 1 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Stone;
+                            voxelType = VoxelType.Stone;
                         }
                         else if (altitude > 0.6 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Grass;
+                            voxelType = VoxelType.Grass;
                         }
                         else if (altitude > 0 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Forest;
+                            voxelType = VoxelType.Forest;
                         }
                         else if (altitude > -0.75 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Grass;
+                            voxelType = VoxelType.Grass;
                         }
                         else if (altitude > -0.8 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Beach;
+                            voxelType = VoxelType.Beach;
                         }
                         else
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Default;
+                            voxelType = VoxelType.Default;
                         }
                     }
                     // Swamp
@@ -134,43 +135,43 @@ namespace TerrainData
                     {
                         if (altitude > 1.8 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Snow;
+                            voxelType = VoxelType.Snow;
                         }
                         else if (altitude > 1 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Stone;
+                            voxelType = VoxelType.Stone;
                         }
                         else if (altitude > 0.2 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Grass;
+                            voxelType = VoxelType.Grass;
                         }
                         else if (altitude > 0 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.SwampForest;
+                            voxelType = VoxelType.SwampForest;
                         }
                         else if (altitude > -0.2 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Mud;
+                            voxelType = VoxelType.Mud;
                         }
                         else if (altitude > -0.6 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Default;
+                            voxelType = VoxelType.Default;
                         }
                         else if (altitude > -0.7 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Mud;
+                            voxelType = VoxelType.Mud;
                         }
                         else if (altitude > -1.1 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.SwampForest;
+                            voxelType = VoxelType.SwampForest;
                         }
                         else if (altitude > -1.4 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Mud;
+                            voxelType = VoxelType.Mud;
                         }
                         else
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Default;
+                            voxelType = VoxelType.Default;
                         }
                     }
                     // Jungle
@@ -178,23 +179,23 @@ namespace TerrainData
                     {
                         if (altitude > 1.8 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Snow;
+                            voxelType = VoxelType.Snow;
                         }
                         else if (altitude > 1 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Stone;
+                            voxelType = VoxelType.Stone;
                         }
                         else if (altitude > -0.6 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.JungleForest;
+                            voxelType = VoxelType.JungleForest;
                         }
                         else if (altitude > -0.8 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Beach;
+                            voxelType = VoxelType.Beach;
                         }
                         else
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Default;
+                            voxelType = VoxelType.Default;
                         }
                     }
                     // Savannah
@@ -202,27 +203,27 @@ namespace TerrainData
                     {
                         if (altitude > 1.8 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Snow;
+                            voxelType = VoxelType.Snow;
                         }
                         else if (altitude > 1 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Stone;
+                            voxelType = VoxelType.Stone;
                         }
                         else if (altitude > 0.2 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.SavannahGrass;
+                            voxelType = VoxelType.SavannahGrass;
                         }
                         else if (altitude > -1 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Plains;
+                            voxelType = VoxelType.Plains;
                         }
                         else if (altitude > -1.4 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.SavannahForest;
+                            voxelType = VoxelType.SavannahForest;
                         }
                         else
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Default;
+                            voxelType = VoxelType.Default;
                         }
                     }
                     // Desert
@@ -230,25 +231,25 @@ namespace TerrainData
                     {
                         if (altitude > 1 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Sandstone;
+                            voxelType = VoxelType.Sandstone;
                         }
                         else if (altitude > -0.6 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Sand;
+                            voxelType = VoxelType.Sand;
                         }
                         else if (altitude > -1 * heightScale)
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Default;
+                            voxelType = VoxelType.Default;
                         }
                         else
                         {
-                            voxelType = VoxelTerrain.Voxel.VoxelType.Sand;
+                            voxelType = VoxelType.Sand;
                         }
                     }
                 }
             }
 
-            return (byte) voxelType;
+            return new Voxel((byte) voxelType, altitude);
         }
 
         // Start is called before the first frame update

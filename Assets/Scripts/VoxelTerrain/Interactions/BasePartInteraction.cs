@@ -1,13 +1,16 @@
 ﻿using System;
 using UnityEngine;
 using VoxelTerrain.Grid;
+using VoxelTerrain.Mouse;
 
 namespace VoxelTerrain.Interactions
 {
     [RequireComponent(typeof(VoxelInteraction))]
     public class BasePartInteraction : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField] private VoxelInteraction _interaction;
+#pragma warning restore 0649
 
         private void Awake()
         {

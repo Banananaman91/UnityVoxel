@@ -10,6 +10,7 @@ namespace VoxelTerrain.SaveLoad
 {
     public class MenuWorldLoader : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField] private GameObject _newGame;
         [SerializeField] private GameObject _playfabField;
         [SerializeField] private GameObject _input;
@@ -18,6 +19,7 @@ namespace VoxelTerrain.SaveLoad
         [SerializeField] private List<TMP_Text> _buttonTexts;
         [SerializeField] private List<GameObject> _buttons;
         [SerializeField] private List<GameObject> _deleteButtons;
+#pragma warning restore 0649
         
         private List<string> _directories = new List<string>();
         private string _worldName;

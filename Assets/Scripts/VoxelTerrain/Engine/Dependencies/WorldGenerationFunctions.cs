@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
 using VoxelTerrain.SaveLoad;
 
-namespace VoxelTerrain.Voxel.Dependencies
+namespace VoxelTerrain.Engine.Dependencies
 {
     [RequireComponent(typeof(ChunkGenerator), typeof(ChunkLoader))]
     public class WorldGenerationFunctions : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField] private VoxelEngine _engine;
         [SerializeField] private ChunkGenerator _chunkGenerator;
         [SerializeField] private ChunkLoader _chunkLoader;
+#pragma warning restore 0649
 
         public ChunkLoader ChunkLoader => _chunkLoader;
 

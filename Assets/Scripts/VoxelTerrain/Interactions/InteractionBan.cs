@@ -1,4 +1,4 @@
-﻿using VoxelTerrain.Voxel;
+﻿using VoxelTerrain.Engine;
 
 namespace VoxelTerrain.Interactions
 {

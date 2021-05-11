@@ -2,7 +2,7 @@
 using TerrainData;
 using UnityEngine;
 
-namespace VoxelTerrain.Voxel.Dependencies
+namespace VoxelTerrain.Engine.Dependencies
 {
     //If you are here, leave, you're not welcome
     public class World
@@ -21,7 +21,7 @@ namespace VoxelTerrain.Voxel.Dependencies
                 if (!Chunks.ContainsKey(new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z))) return 0;
                 var chunk = Chunks[new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z)];
                 var voxPos = new Vector3(x, y, z) - chunkPos;
-                return chunk[voxPos.x, voxPos.y, voxPos.z];
+                return chunk[voxPos.x, voxPos.y, voxPos.z].Type;
             }
 
             set
@@ -32,7 +32,8 @@ namespace VoxelTerrain.Voxel.Dependencies
                 if (!Chunks.ContainsKey(new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z))) return;
                 var chunk = Chunks[new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z)];
                 var voxPos = new Vector3(x, y, z) - chunkPos;
-                chunk[voxPos.x, voxPos.y, voxPos.z] = value;
+                var voxel = chunk[voxPos.x, voxPos.y, voxPos.z];
+                voxel.Type = value;
             }
         }
 
@@ -40,7 +41,7 @@ namespace VoxelTerrain.Voxel.Dependencies
         
         public Chunk GetNonNullChunkAt(Vector3 pos) => Chunks.ContainsKey(ChunkId.FromWorldPos(pos.x, pos.y, pos.z)) ? Chunks[ChunkId.FromWorldPos(pos.x, pos.y, pos.z)] : Engine.LoadChunkAt(new ChunkId(pos.x, pos.y, pos.z));
         
-        public float GetVoxelAt(float x, float y, float z, Vector3 chunkPos, float scale, Chunk currentChunk = null, Chunk rightChunk = null, Chunk forwardChunk = null, Chunk rightForwardChunk = null)
+        public Engine.Voxel GetVoxelAt(float x, float y, float z, Vector3 chunkPos, float scale, Chunk currentChunk = null, Chunk rightChunk = null, Chunk forwardChunk = null, Chunk rightForwardChunk = null)
         {
             //var chunkPos = new Vector3(); //NearestChunk(new Vector3(x, y, z), scale);
             Chunk chunk = null;

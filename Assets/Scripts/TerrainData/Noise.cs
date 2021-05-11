@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TerrainData
 {
-    public class Noise
+    public static class Noise
     {
         // Mostly fixed variables for multiple octaves
         //private static readonly int octaves = 4;

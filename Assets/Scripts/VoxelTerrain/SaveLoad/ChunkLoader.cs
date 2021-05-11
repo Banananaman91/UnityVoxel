@@ -3,16 +3,18 @@ using System.IO;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
-using VoxelTerrain.Voxel;
-using VoxelTerrain.Voxel.Dependencies;
+using VoxelTerrain.Engine;
+using VoxelTerrain.Engine.Dependencies;
 
 namespace VoxelTerrain.SaveLoad
 {
     public class ChunkLoader : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField] private string _chunkDirectoryName = "world";
         [SerializeField] private bool _enableSaving;
         [SerializeField] private bool _enableActiveWorld;
+#pragma warning restore 0649
         private string _chunkDirectory;
 
         public string ChunkDirectoryName
