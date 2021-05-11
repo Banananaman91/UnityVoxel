@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TerrainData;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -110,7 +111,7 @@ namespace VoxelTerrain.Engine
         private ChunkVoxelSetter CreateJob(Vector3 origin)
         {
             var resolution = Engine.ChunkInfo.VoxelSize;
-            var scale = Engine.NoiseScale;
+            var scale = Engine.NoiseInfo.NoiseScale;
             var groundLevel = Engine.WorldInfo.GroundLevel;
             var seed = Engine.WorldInfo.Seed;
 
@@ -124,6 +125,10 @@ namespace VoxelTerrain.Engine
                 voxels = new NativeArray<Voxel>((Chunk.ChunkSize) * (Chunk.ChunkHeight) * (Chunk.ChunkSize), Allocator.Persistent),
                 seed = seed,
                 groundLevel = groundLevel,
+                octaves = Engine.NoiseInfo.Octaves,
+                lacunarity = Engine.NoiseInfo.Lacunarity,
+                amplitude = Engine.NoiseInfo.Amplitude,
+                frequency = Engine.NoiseInfo.Frequency
             };
         }
     }

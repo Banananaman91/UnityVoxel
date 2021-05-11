@@ -15,6 +15,10 @@ namespace VoxelTerrain.Engine.Jobs
         [ReadOnly] public float groundLevel;
         [ReadOnly] public float scale;
         [ReadOnly] public float resolution;
+        [ReadOnly] public int octaves;
+        [ReadOnly] public float lacunarity;
+        [ReadOnly] public float amplitude;
+        [ReadOnly] public float frequency;
 
         public Vector3 origin;
         public NativeArray<Voxel> voxels;
@@ -29,7 +33,7 @@ namespace VoxelTerrain.Engine.Jobs
                     for (var j = 0; j < height; j++)
                     {
                         //set voxel based on noise world position
-                        voxels[Converter.PosToIndex(i, j, k)] = BiomeGenerator.GenerateVoxelType(origin.x + i * resolution, origin.y + j * resolution, origin.z + k * resolution, scale, seed, groundLevel);
+                        voxels[Converter.PosToIndex(i, j, k)] = BiomeGenerator.GenerateVoxelType(origin.x + i * resolution, origin.y + j * resolution, origin.z + k * resolution, scale, seed, groundLevel, octaves, lacunarity, amplitude, frequency);
                     }
                 }
             }

@@ -7,10 +7,11 @@ namespace TerrainData
 {
     public class BiomeGenerator : MonoBehaviour
     {
-        public static Voxel GenerateVoxelType(float x, float y, float z, float scale, int seed, float groundLevel)
+        public static Voxel GenerateVoxelType(float x, float y, float z, float scale, int seed, float groundLevel, int octaves, float lacunarity, float amplitude, float frequency)
         {
-            float altitude = Noise.Generate3DNoiseValue(x * 0.5f, y * 0.5f, z * 0.5f, scale, 4, 2f, seed, groundLevel);
-            float moisture = Noise.Generate3DNoiseValue(x * 0.025f, y * 0.025f, z * 0.025f, scale, 6, 3f, seed + 1000, 0);
+            float altitude = Noise.Generate2DNoiseValue(x * 0.5f, z * 0.5f, scale, octaves, lacunarity, amplitude, frequency, seed, groundLevel);
+            float moisture = Noise.Generate2DNoiseValue(x * 0.025f, z * 0.025f, scale, octaves, lacunarity, amplitude, frequency, seed + 1000, 0);
+            
             moisture *= scale;
 
             VoxelType voxelType = new VoxelType();

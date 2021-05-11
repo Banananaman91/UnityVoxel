@@ -8,7 +8,7 @@ using VoxelTerrain.Engine.InfoData;
 
 namespace VoxelTerrain.Engine
 {
-    [RequireComponent(typeof(WorldInfo), typeof(ChunkInfo), typeof(VoxelTypeHeights))]
+    [RequireComponent(typeof(WorldInfo), typeof(ChunkInfo), typeof(NoiseInfo))]
     [RequireComponent(typeof(WorldGenerationFunctions))]
     public class VoxelEngine : MonoBehaviour
     {
@@ -17,9 +17,8 @@ namespace VoxelTerrain.Engine
 #pragma warning disable 0649
         [SerializeField] private WorldInfo _worldInfo;
         [SerializeField] private ChunkInfo _chunkInfo;
-        [SerializeField] private VoxelTypeHeights _voxelTypeHeights;
+        [SerializeField] private NoiseInfo _noiseInfo;
         [SerializeField] private WorldGenerationFunctions _worldGeneration;
-        [SerializeField] private float _noiseScale;
         [SerializeField] private bool _updateWater;
 #pragma warning restore 0649
 
@@ -34,8 +33,7 @@ namespace VoxelTerrain.Engine
         public ChunkInfo ChunkInfo => _chunkInfo;
         public float ChunkSize => Chunk.ChunkSize * _chunkInfo.VoxelSize;
         public float ChunkHeight => Chunk.ChunkHeight * _chunkInfo.VoxelSize;
-        public VoxelTypeHeights VoxelTypeHeights => _voxelTypeHeights;
-        public float NoiseScale => _noiseScale;
+        public NoiseInfo NoiseInfo => _noiseInfo;
 
         public WorldInfo WorldInfo => _worldInfo;
 
