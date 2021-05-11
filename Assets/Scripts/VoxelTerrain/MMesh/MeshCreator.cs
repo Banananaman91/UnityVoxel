@@ -59,26 +59,26 @@ namespace VoxelTerrain.MMesh
                         if (x == Chunk.ChunkSize - 1 || z == Chunk.ChunkSize - 1)
                         {
                             //Offsets are same as cornerOffsets[8]
-                            afCubes[0] = _world.GetVoxelAt(x, y, z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
-                            afCubes[1] = _world.GetVoxelAt(x + 1, y, z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
-                            afCubes[2] = _world.GetVoxelAt(x + 1, y + 1, z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
-                            afCubes[3] = _world.GetVoxelAt(x, y + 1, z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
-                            afCubes[4] = _world.GetVoxelAt(x, y, z + 1, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
-                            afCubes[5] = _world.GetVoxelAt(x + 1, y, z + 1, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
-                            afCubes[6] = _world.GetVoxelAt(x + 1, y + 1, z + 1, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
-                            afCubes[7] = _world.GetVoxelAt(x, y + 1, z + 1, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
+                            afCubes[0] = _world.GetVoxelAt(x, y, z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
+                            afCubes[1] = _world.GetVoxelAt(x + 1, y, z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
+                            afCubes[2] = _world.GetVoxelAt(x + 1, y + 1, z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
+                            afCubes[3] = _world.GetVoxelAt(x, y + 1, z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
+                            afCubes[4] = _world.GetVoxelAt(x, y, z + 1, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
+                            afCubes[5] = _world.GetVoxelAt(x + 1, y, z + 1, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
+                            afCubes[6] = _world.GetVoxelAt(x + 1, y + 1, z + 1, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
+                            afCubes[7] = _world.GetVoxelAt(x, y + 1, z + 1, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
                         }
                         else
                         {
                             //Offsets are same as cornerOffsets[8]
-                            afCubes[0] = voxels[Converter.PosToIndex(x, y, z)].Type;
-                            afCubes[1] = voxels[Converter.PosToIndex(x + 1, y, z)].Type;
-                            afCubes[2] = voxels[Converter.PosToIndex(x + 1, y + 1, z)].Type;
-                            afCubes[3] = voxels[Converter.PosToIndex(x, y + 1, z)].Type;
-                            afCubes[4] = voxels[Converter.PosToIndex(x, y, z + 1)].Type;
-                            afCubes[5] = voxels[Converter.PosToIndex(x + 1, y, z + 1)].Type;
-                            afCubes[6] = voxels[Converter.PosToIndex(x + 1, y + 1, z + 1)].Type;
-                            afCubes[7] = voxels[Converter.PosToIndex(x, y + 1, z + 1)].Type;
+                            afCubes[0] = voxels[Converter.PosToIndex(x, y, z)].Value;
+                            afCubes[1] = voxels[Converter.PosToIndex(x + 1, y, z)].Value;
+                            afCubes[2] = voxels[Converter.PosToIndex(x + 1, y + 1, z)].Value;
+                            afCubes[3] = voxels[Converter.PosToIndex(x, y + 1, z)].Value;
+                            afCubes[4] = voxels[Converter.PosToIndex(x, y, z + 1)].Value;
+                            afCubes[5] = voxels[Converter.PosToIndex(x + 1, y, z + 1)].Value;
+                            afCubes[6] = voxels[Converter.PosToIndex(x + 1, y + 1, z + 1)].Value;
+                            afCubes[7] = voxels[Converter.PosToIndex(x, y + 1, z + 1)].Value;
                         }
 
                         //Calculate the index of the current cube configuration as follows:
@@ -89,7 +89,7 @@ namespace VoxelTerrain.MMesh
                         var flagIndex = 0;
                         for (var vtest = 0; vtest < 8; vtest++)
                         {
-                            if (afCubes[vtest] < 1f)
+                            if (afCubes[vtest] <= 0.0f)
                                 flagIndex |= 1 << vtest;
                         }
 
@@ -127,21 +127,21 @@ namespace VoxelTerrain.MMesh
                                     float delta;
                                     if (x == Chunk.ChunkSize - 1 || z == Chunk.ChunkSize - 1)
                                     {
-                                        s1 = Math.Abs(_world.GetVoxelAt(x + (int) edge1.x, y + (int) edge1.y,
-                                            z + (int) edge1.z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value);
+                                        s1 = _world.GetVoxelAt(x + (int) edge1.x, y + (int) edge1.y,
+                                            z + (int) edge1.z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
                                         delta = s1 - _world.GetVoxelAt(x + (int) edge2.x,
                                             y + (int) edge2.y, z + (int) edge2.z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Value;
                                     }
                                     else
                                     {
-                                        s1 = Math.Abs(voxels[Converter.PosToIndex(x + (int) edge1.x, y + (int) edge1.y,
-                                            z + (int) edge1.z)].Value);
+                                        s1 = voxels[Converter.PosToIndex(x + (int) edge1.x, y + (int) edge1.y,
+                                            z + (int) edge1.z)].Value;
                                         delta = s1 - voxels[Converter.PosToIndex(x + (int) edge2.x,
                                             y + (int) edge2.y, z + (int) edge2.z)].Value;
                                     }
 
                                     if (delta <= 0.0f) ofst = 0.5f;
-                                    else ofst = s1 * delta;
+                                    else ofst = s1 / delta;
                                     middle = edge1 + ofst * (edge2 - edge1);
                                 }
                                 else

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using VoxelTerrain.Engine;
 
@@ -9,25 +10,33 @@ namespace TerrainData
     {
         public static Voxel GenerateVoxelType(float x, float y, float z, float scale, int seed, float groundLevel, int octaves, float lacunarity, float amplitude, float frequency)
         {
-            float altitude = Noise.Generate2DNoiseValue(x * 0.5f, z * 0.5f, scale, octaves, lacunarity, amplitude, frequency, seed, groundLevel);
-            float moisture = Noise.Generate2DNoiseValue(x * 0.025f, z * 0.025f, scale, octaves, lacunarity, amplitude, frequency, seed + 1000, 0);
+            float heightScale = 5;
+            float altitude = Noise.Generate3DNoiseValue(x * 0.5f, y * 0.5f, z * 0.5f, scale, octaves, lacunarity, amplitude, frequency, seed) * scale;
+            float moisture = Noise.Generate3DNoiseValue(x * 0.025f,y * 0.025f, z * 0.025f, scale, octaves, lacunarity, amplitude, frequency, seed + 1000) * scale;
+            
+            var simplex1 = Noise.Generate2DNoiseValue(x * 0.8f,  z * 0.8f, scale, octaves, lacunarity, amplitude, frequency, seed) * scale;
+            var simplex2 = Noise.Generate2DNoiseValue(x * 0.3f,  z * 0.3f, scale, octaves, lacunarity, amplitude, frequency, seed) * scale;
+            var heightMap = (simplex1 + simplex2);
+            var heightSample = heightMap - y;
+            var volumetricSample = Noise.Generate3DNoiseValue(x + math.PI * 0.5f, y + math.PI * 0.5f, z + math.PI * 0.5f, scale, octaves, lacunarity, amplitude, frequency, seed);
+
+            var result = math.min(heightSample, -volumetricSample) + math.clamp(heightMap, 0, 1);
             
             moisture *= scale;
+            altitude *= scale;
 
-            VoxelType voxelType = new VoxelType();
+            VoxelType voxelType = VoxelType.Default;
+            
+            // // Set the value at the current coordinate and subtract ground level
+            // float groundAltitude = altitude * scale - (groundLevel * scale);
+            //
+            // // Anything below ground level is moved up to 0 for flat land
+            // if (groundAltitude < 0)
+            // {
+            //     groundAltitude = 0;
+            // }
 
-            float heightScale = 5;
-
-            // Set the value at the current coordinate and subtract ground level
-            float groundAltitude = altitude * scale - (groundLevel * scale);
-
-            // Anything below ground level is moved up to 0 for flat land
-            if (groundAltitude < 0)
-            {
-                groundAltitude = 0;
-            }
-
-            if (y <= groundAltitude)
+            if (y <= heightMap * scale)
             {
                 // Ice
                 if (moisture > 6.5 && altitude <= -0.8 * heightScale)
@@ -70,7 +79,7 @@ namespace TerrainData
                     voxelType = VoxelType.Dirt;
                 }
 
-                if (y > groundAltitude - 1)
+                if (y < heightMap * scale - 1)
                 {
                     // Snow
                     if (moisture > 6.5)
@@ -251,7 +260,7 @@ namespace TerrainData
                 }
             }
 
-            return new Voxel((byte) voxelType, altitude);
+            return new Voxel((byte) voxelType, result);
         }
 
         // Start is called before the first frame update
