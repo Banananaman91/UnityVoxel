@@ -1,16 +1,15 @@
-﻿using System;
-using TerrainData;
-using Unity.Mathematics;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace VoxelTerrain.Voxel.InfoData
+namespace VoxelTerrain.Engine.InfoData
 {
     public class WorldInfo : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField] private float _distance;
         [SerializeField] private Transform _origin;
         [SerializeField] private float _groundLevel;
         [SerializeField] private int _seed;
+#pragma warning restore 0649
         
         public float Distance => _distance;
         public Transform Origin

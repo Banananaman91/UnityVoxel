@@ -6,14 +6,15 @@ namespace Controller
     [RequireComponent(typeof(Rigidbody))]
     public class PlayerMainController : MainController
     {
+#pragma warning disable 0649
         [Header("Player")]
-        
         [SerializeField] private float _walk;
         [SerializeField, Range(1,5)] private int _run;
         [SerializeField] private int _rotateSpeed;
         [SerializeField] private int _jump;
         [SerializeField] private int _dash;
         [SerializeField] private float _maxSpeed;
+#pragma warning restore 0649
         private Vector3 _moveDirection = Vector3.zero;
         private Vector3 _directionVector = Vector3.zero;
 

@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.Collections;
-using Unity.Jobs;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using VoxelTerrain.DataConversion;
 using VoxelTerrain.MMesh;
-using VoxelTerrain.Voxel.Dependencies;
-using VoxelTerrain.Voxel.Jobs;
 
-namespace VoxelTerrain.Voxel
+namespace VoxelTerrain.Engine
 {
     public class Chunk
     {
         public const int ChunkSize = 32; //Leave at this size
         public const int ChunkHeight = 128; //This should be 16 too, but I wanted taller chunks
-        public byte[] Voxels;
+        public Voxel[] Voxels;
         private VoxelEngine Engine;
         private GameObject Entity;
         public Vector3 Position;
 
         //Used to find voxel at position
-        public byte this[float x, float y, float z]
+        public Engine.Voxel this[float x, float y, float z]
         {
             get => Voxels[Converter.PosToIndex((int)x, (int)y, (int)z)];
             set => Voxels[Converter.PosToIndex((int)x, (int)y, (int)z)] = value;
@@ -33,7 +28,12 @@ namespace VoxelTerrain.Voxel
         //Add the engine
         public void AddEngine(VoxelEngine engine) => Engine = engine;
         //Set voxel at this position
-        public void SetVoxel(Vector3 pos, VoxelType vox) => this[(int) pos.x, (int) pos.y, (int) pos.z] = (byte) vox;
+        public void SetVoxel(Vector3 pos, VoxelType vox)
+        {
+            var voxel = this[(int) pos.x, (int) pos.y, (int) pos.z];
+            voxel.Type = (byte) vox;
+        }
+
         //Create the mesh data and set it to the object
         public void SetMesh(Vector3 origin)
         {
@@ -112,7 +112,7 @@ namespace VoxelTerrain.Voxel
             
             //Build mesh data
             meshCreator.SetMesh(Voxels, origin.x, origin.y, origin.z,
-                Engine.ChunkInfo.VoxelSize);
+                Engine.ChunkInfo.VoxelSize, Engine.ChunkInfo.InterpolateMesh);
 
             //Update mesh
             mesh.vertices = meshCreator.Vertices.ToArray();
@@ -139,7 +139,7 @@ namespace VoxelTerrain.Voxel
         public Chunk(VoxelEngine engine)
         {
             Engine = engine;
-            Voxels = new byte[ChunkSize * ChunkHeight * ChunkSize];
+            Voxels = new Voxel[ChunkSize * ChunkHeight * ChunkSize];
         }
     }
 }

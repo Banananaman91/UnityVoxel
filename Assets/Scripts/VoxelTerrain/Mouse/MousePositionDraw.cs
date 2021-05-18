@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
+using VoxelTerrain.Engine;
+using VoxelTerrain.Engine.InfoData;
 using VoxelTerrain.Grid;
-using VoxelTerrain.Voxel;
-using VoxelTerrain.Voxel.InfoData;
 
 namespace VoxelTerrain.Interactions
 {
     public class MousePositionDraw : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField] private VoxelEngine _engine;
+#pragma warning restore 0649
         private float offset => _engine ? _engine.ChunkInfo.VoxelSize / 2 : GetComponent<ChunkInfo>().VoxelSize / 2;
         private float size => _engine ? _engine.ChunkInfo.VoxelSize : GetComponent<ChunkInfo>().VoxelSize;
         private Camera CamMain => Camera.main;

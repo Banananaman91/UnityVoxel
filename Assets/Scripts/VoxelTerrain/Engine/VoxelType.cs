@@ -1,4 +1,4 @@
-﻿namespace VoxelTerrain.Voxel
+﻿namespace VoxelTerrain.Engine
 {
     public enum VoxelType
     {

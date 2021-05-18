@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace VoxelTerrain.Voxel.Dependencies
+namespace VoxelTerrain.Engine.Dependencies
 {
  public static class VoxelLookUp
  {
