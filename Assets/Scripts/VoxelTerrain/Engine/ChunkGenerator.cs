@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using VoxelTerrain.Engine.Dependencies;
+using VoxelTerrain.Engine.InfoData;
 using VoxelTerrain.Engine.Jobs;
 using VoxelTerrain.SaveLoad;
 
@@ -114,19 +115,11 @@ namespace VoxelTerrain.Engine
             {
                 size = Chunk.ChunkSize,
                 height = Chunk.ChunkHeight,
-                noise1Scale = Engine.NoiseInfo.Noise1Scale,
-                noise2Scale = Engine.NoiseInfo.Noise2Scale,
                 resolution = Engine.ChunkInfo.VoxelSize,
                 origin = origin,
                 voxels = new NativeArray<Voxel>((Chunk.ChunkSize) * (Chunk.ChunkHeight) * (Chunk.ChunkSize), Allocator.Persistent),
-                seed = Engine.WorldInfo.Seed,
-                heightScale = Engine.NoiseInfo.HeightScale,
-                altitudeScale = Engine.NoiseInfo.AltitudeScale,
-                moistureScale = Engine.NoiseInfo.MoistureScale,
-                octaves = Engine.NoiseInfo.Octaves,
-                lacunarity = Engine.NoiseInfo.Lacunarity,
-                amplitude = Engine.NoiseInfo.Amplitude,
-                frequency = Engine.NoiseInfo.Frequency
+                noiseData = new NativeArray<NoiseInfo>(Engine.NoiseInfo, Allocator.TempJob),
+                seed = Engine.WorldInfo.Seed
             };
         }
     }

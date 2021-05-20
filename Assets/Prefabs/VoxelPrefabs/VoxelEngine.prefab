@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1219288309473230980}
   - component: {fileID: 1219288309473230983}
-  - component: {fileID: 7941170911782372760}
   - component: {fileID: 7941170911782372763}
   - component: {fileID: 7941170911782372762}
   - component: {fileID: 7941170911782372765}
@@ -51,24 +50,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _worldInfo: {fileID: 7941170911782372762}
   _chunkInfo: {fileID: 7941170911782372763}
-  _voxelTypeHeights: {fileID: 7941170911782372760}
+  _noiseInfo:
+  - _noiseScale: 10
+    _heightScale: 0
+    _altitudeScale: 0
+    _moistureScale: 0
+    _octaves: 0
+    _lacunarity: 0
+  - _noiseScale: 0
+    _heightScale: 0
+    _altitudeScale: 0
+    _moistureScale: 0
+    _octaves: 0
+    _lacunarity: 0
   _worldGeneration: {fileID: 7941170911782372765}
-  _noiseScale: 30
---- !u!114 &7941170911782372760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219288309473230982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b3abc42d208768438f0c76f50de5335, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stoneDepth: 5
-  _snowHeight: 10
-  _caveStartHeight: -5
+  _updateWater: 0
 --- !u!114 &7941170911782372763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84,6 +80,7 @@ MonoBehaviour:
   _chunkPrefab: {fileID: 5807394119334776112, guid: 9b9ced7c5de5dc94dbe09cac2c11378b,
     type: 3}
   _voxelSize: 1
+  _interpolateMesh: 1
 --- !u!114 &7941170911782372762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,9 +93,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99accc2e46a2126489cb11755851112f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _distance: 64
+  _distance: 10
   _origin: {fileID: 0}
-  _groundLevel: 1
+  _groundLevel: -1
   _seed: 1
 --- !u!114 &7941170911782372765
 MonoBehaviour:
@@ -141,4 +138,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _chunkDirectoryName: IansLand
-  _enableSaving: 1
+  _enableSaving: 0
+  _enableActiveWorld: 0
