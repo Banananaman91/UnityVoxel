@@ -19,12 +19,12 @@ namespace TerrainData
                 if (i == 0)
                 {
                     firstLayerValue = Noise.GenerateSimple2DNoiseValue(x, z, noiseInfo[i].NoiseScale,
-                        noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, seed);
+                        noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, noiseInfo[i].Dimension, seed);
                     heightMap = firstLayerValue;
                     continue;
                 }
                 heightMap += Noise.GenerateSimple2DNoiseValue(x, z, noiseInfo[i].NoiseScale,
-                    noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, seed) * firstLayerValue;
+                    noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, noiseInfo[i].Dimension, seed) * firstLayerValue;
             }
             // var altitude = Noise.GenerateSimple3DNoiseValue(x / altitudeScale, y / altitudeScale, z / altitudeScale, altitudeScale, octaves, lacunarity, seed);
             // var moisture = Noise.GenerateSimple3DNoiseValue(x / moistureScale, y / moistureScale, z / moistureScale, moistureScale, octaves, lacunarity,  seed + 1000);
