@@ -13,7 +13,7 @@ namespace VoxelTerrain.MMesh
         public readonly List<int> Triangles;
         public readonly List<Vector4> uv0;
         public readonly List<Vector4> uv1;
-        static readonly Vector4[] barycentricCoords = new Vector4[] {new Vector4(1, 0, 0, 1), new Vector4(0, 1, 0, 1), new Vector4(0, 0, 1, 1)};
+        private static readonly Vector4[] BarycentricCoords = {new Vector4(1, 0, 0, 1), new Vector4(0, 1, 0, 1), new Vector4(0, 0, 1, 1)};
         private readonly World _world;
 
         public MeshCreator(World world)
@@ -25,9 +25,9 @@ namespace VoxelTerrain.MMesh
             uv1 = new List<Vector4>();
         }
 
-        public void SetMesh(Voxel[] Voxels, float x, float y, float z, float size, bool interpolate)
+        public void SetMesh(Voxel[] voxels, float x, float y, float z, float size, bool interpolate)
         {
-            MarchingCubes(Voxels, size, new Vector3(x, y, z), interpolate);
+            MarchingCubes(voxels, size, new Vector3(x, y, z), interpolate);
         }
 
         private void MarchingCubes(IReadOnlyList<Voxel> voxels, float voxelSize, Vector3 origin, bool interpolate)
@@ -89,7 +89,7 @@ namespace VoxelTerrain.MMesh
                         var flagIndex = 0;
                         for (var vtest = 0; vtest < 8; vtest++)
                         {
-                            if (afCubes[vtest] <= 0.0f)
+                            if (afCubes[vtest] <= 0f)
                                 flagIndex |= 1 << vtest;
                         }
 
@@ -120,11 +120,11 @@ namespace VoxelTerrain.MMesh
                                 edge2 *= voxelSize;
 
                                 Vector3 middle;
+                                float ofst;
+                                float s1;
+                                float delta;
                                 if (interpolate)
                                 {
-                                    float ofst;
-                                    float s1;
-                                    float delta;
                                     if (x == Chunk.ChunkSize - 1 || z == Chunk.ChunkSize - 1)
                                     {
                                         s1 = _world.GetVoxelAt(x + (int) edge1.x, y + (int) edge1.y,
@@ -147,29 +147,20 @@ namespace VoxelTerrain.MMesh
                                 {
                                     middle = (edge1 + edge2) * 0.5f;
                                 }
-                                
-                                edge1 /= voxelSize;
-                                edge2 /= voxelSize;
 
-                                float voxel1;
-                                float voxel2;
+                                byte voxel1;
                                 if (x == Chunk.ChunkSize - 1 || z == Chunk.ChunkSize - 1)
                                 {
-                                    voxel1 = _world.GetVoxelAt(x + (int)edge1.x, y + (int)edge1.y,
-                                        z + (int)edge1.z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
-                                    voxel2 = _world.GetVoxelAt(x + (int)edge2.x,
-                                        y + (int)edge2.y, z + (int)edge2.z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
+                                    voxel1 = _world.GetVoxelAt(x + (int)middle.x, y + (int)middle.y,
+                                        z + (int)middle.z, origin, voxelSize, currentChunk, rightChunk, forwardChunk, rightForwardChunk).Type;
                                 }
                                 else
                                 {
-                                    voxel1 = voxels[Converter.PosToIndex(x + (int)edge1.x, y + (int)edge1.y,
-                                        z + (int)edge1.z)].Type;
-                                    voxel2 = voxels[Converter.PosToIndex(x + (int)edge2.x,
-                                        y + (int)edge2.y, z + (int)edge2.z)].Type;
+                                    voxel1 = voxels[Converter.PosToIndex(x + (int)middle.x, y + (int)middle.y,
+                                        z + (int)middle.z)].Type;
                                 }
-
-                                var voxelValue = voxel1 > 0 ? voxel1 : voxel2;
-
+                                
+                                var voxelValue = voxel1;
                                 switch (triangleCorner)
                                 {
                                     case 0:
@@ -190,7 +181,7 @@ namespace VoxelTerrain.MMesh
                             for (var i = 0; i < 3; i++)
                             {
                                 uv0.Add(voxelTypes);
-                                uv1.Add(barycentricCoords[i]);
+                                uv1.Add(BarycentricCoords[i]);
                             }
                         }
                     }

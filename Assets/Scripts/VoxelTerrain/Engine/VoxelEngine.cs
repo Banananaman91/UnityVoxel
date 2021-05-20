@@ -89,44 +89,13 @@ namespace VoxelTerrain.Engine
             }
         }
 
-        private static float GetXPos(float i, float distance, float size) => Mathf.Floor(i / distance) * size - distance / 2 * size;
-        
-        private static float GetZPos(float i, float distance, float size) => i % distance * size - distance / 2 * size;
-        
         private void Update()
         {
             var point = NearestChunk(Position);
 
-            // for (var i = 0; i <= Math.Pow(_worldInfo.Distance, 2); i++)
-            // {
-            //     var x = GetXPos(i, _worldInfo.Distance, ChunkSize);
-            //     var z = GetZPos(i, _worldInfo.Distance, ChunkSize);
-            //
-            //     var pointToCheck = new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z);
-            //     
-            //     //Check chunk pool doesn't already have object
-            //     if (_chunkPool.ContainsKey(pointToCheck)) continue;
-            //         
-            //     //check position is within distance, rounds off view area.
-            //     if (!WithinRange(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z))) continue;
-            //
-            //     //check for chunk in the world data, in case it has already been spawned
-            //     var c = ChunkAt(pointToCheck, false);
-            //
-            //     //if chunk is not found, attempt to load one
-            //     //Update repeatedly checks until we have a chunk
-            //     if (c == null)
-            //     {
-            //         c = LoadChunkAt(pointToCheck);
-            //             
-            //         if (c != null) _chunkPool.Add(new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z), c);
-            //         
-            //     }
-            // }
-
-            for (var i = -_worldInfo.Distance / 2; i <= _worldInfo.Distance / 2; i++)
+            for (var i = -_worldInfo.Distance; i <= _worldInfo.Distance; i++)
             {
-                for (var j = -_worldInfo.Distance / 2; j <= _worldInfo.Distance / 2; j++)
+                for (var j = -_worldInfo.Distance; j <= _worldInfo.Distance; j++)
                 {
                     var x = i * ChunkSize;
                     var z = j * ChunkSize;

@@ -192,9 +192,11 @@ namespace VoxelTerrain.Mouse
                                 chunk = _engine.WorldData.GetNonNullChunkAt(chunkPos);
                                 yield return null;
                             }
+
+                            var chunkId = new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z);
                             
                             //Add chunk if it isn't one that has been spawned.
-                            if (!_engine.WorldData.Chunks.ContainsValue(chunk)) _engine.WorldData.Chunks.Add(new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z), chunk);
+                            if (!_engine.WorldData.Chunks.ContainsKey(chunkId)) _engine.WorldData.Chunks.Add(chunkId, chunk);
                             
                             //Add to list if we haven't already
                             if (!chunkList.Contains(chunk))

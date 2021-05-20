@@ -33,6 +33,11 @@ namespace VoxelTerrain.Engine
             var voxel = this[(int) pos.x, (int) pos.y, (int) pos.z];
             voxel.Type = (byte) vox;
         }
+        
+        public void SetVoxel(Vector3 pos, Voxel vox)
+        {
+            this[(int) pos.x, (int) pos.y, (int) pos.z] = vox;
+        }
 
         //Create the mesh data and set it to the object
         public void SetMesh(Vector3 origin)
@@ -127,6 +132,7 @@ namespace VoxelTerrain.Engine
 
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
             
             //Name the mesh, because we're not savages
             mesh.name = "Chunk: " + origin;

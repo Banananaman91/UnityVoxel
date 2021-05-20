@@ -11,17 +11,14 @@ namespace VoxelTerrain.Engine.Dependencies
         public Dictionary<ChunkId, GameObject> ChunkObjects = new Dictionary<ChunkId, GameObject>();
         public VoxelEngine Engine { get; set; }
 
-        public byte this[float x, float y, float z]
+        public Chunk this[float x, float y, float z]
         {
             get
             {
                 var curChunkPosX = Mathf.FloorToInt(x / Chunk.ChunkSize) * Chunk.ChunkSize;
                 var curChunkPosZ = Mathf.FloorToInt(z / Chunk.ChunkSize) * Chunk.ChunkSize;
                 var chunkPos = new Vector3(curChunkPosX, -Chunk.ChunkHeight / 2, curChunkPosZ);
-                if (!Chunks.ContainsKey(new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z))) return 0;
-                var chunk = Chunks[new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z)];
-                var voxPos = new Vector3(x, y, z) - chunkPos;
-                return chunk[voxPos.x, voxPos.y, voxPos.z].Type;
+                return !Chunks.ContainsKey(new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z)) ? GetNonNullChunkAt(chunkPos) : Chunks[new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z)];
             }
 
             set
@@ -30,10 +27,7 @@ namespace VoxelTerrain.Engine.Dependencies
                 var curChunkPosZ = Mathf.FloorToInt(z / Chunk.ChunkSize) * Chunk.ChunkSize;
                 var chunkPos = new Vector3(curChunkPosX, -Chunk.ChunkHeight / 2, curChunkPosZ);
                 if (!Chunks.ContainsKey(new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z))) return;
-                var chunk = Chunks[new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z)];
-                var voxPos = new Vector3(x, y, z) - chunkPos;
-                var voxel = chunk[voxPos.x, voxPos.y, voxPos.z];
-                voxel.Type = value;
+                Chunks[new ChunkId(chunkPos.x, chunkPos.y, chunkPos.z)] = value;
             }
         }
 
