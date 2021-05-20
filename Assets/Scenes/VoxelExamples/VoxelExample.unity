@@ -796,7 +796,7 @@ PrefabInstance:
     - target: {fileID: 7941170911782372760, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseScale
-      value: 30
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7941170911782372760, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -817,6 +817,31 @@ PrefabInstance:
         type: 3}
       propertyPath: _lacunarity
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7941170911782372760, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _altitudeScale
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 7941170911782372760, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _moistureScale
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7941170911782372760, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _heightScale
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7941170911782372760, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noise1Scale
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7941170911782372760, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noise2Scale
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7941170911782372762, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
