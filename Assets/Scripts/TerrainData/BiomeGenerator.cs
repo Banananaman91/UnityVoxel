@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -14,17 +15,34 @@ namespace TerrainData
         {
             float firstLayerValue = 0;
             float heightMap = 0;
-            for (int i = 0; i < noiseInfo.Length; i++)
+            for (var i = 0; i < noiseInfo.Length; i++)
             {
+                float v;
+
+                switch (noiseInfo[i].NoiseType)
+                {
+                    case NoiseType.Simple:
+                        v = Noise.GenerateSimple2DNoiseValue(x, z, noiseInfo[i].NoiseScale,
+                                noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, noiseInfo[i].Dimension, seed) *
+                            noiseInfo[i].HeightScale;
+                        break;
+                    case NoiseType.Rigid:
+                        v = Noise.GenerateRigid2DNoiseValue(x, z, noiseInfo[i].NoiseScale,
+                                noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, noiseInfo[i].Dimension, seed) *
+                            noiseInfo[i].HeightScale;
+                        break;
+                    default:
+                        v = 1;
+                        break;
+                }
+                
                 if (i == 0)
                 {
-                    firstLayerValue = Noise.GenerateSimple2DNoiseValue(x, z, noiseInfo[i].NoiseScale,
-                        noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, noiseInfo[i].Dimension, seed);
+                    firstLayerValue = v;
                     heightMap = firstLayerValue;
                     continue;
                 }
-                heightMap += Noise.GenerateSimple2DNoiseValue(x, z, noiseInfo[i].NoiseScale,
-                    noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, noiseInfo[i].Dimension, seed) * firstLayerValue;
+                heightMap += v * firstLayerValue;
             }
             // var altitude = Noise.GenerateSimple3DNoiseValue(x / altitudeScale, y / altitudeScale, z / altitudeScale, altitudeScale, octaves, lacunarity, seed);
             // var moisture = Noise.GenerateSimple3DNoiseValue(x / moistureScale, y / moistureScale, z / moistureScale, moistureScale, octaves, lacunarity,  seed + 1000);

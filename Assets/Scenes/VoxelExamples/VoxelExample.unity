@@ -758,8 +758,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
+      propertyPath: _noiseInfo.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
       propertyPath: _noiseInfo.Array.data[0]._heightScale
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -779,7 +784,7 @@ PrefabInstance:
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[1]._heightScale
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -794,12 +799,77 @@ PrefabInstance:
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[0]._dimension
-      value: 0.5
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[1]._dimension
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2]._noiseScale
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2]._octaves
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2]._lacunarity
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2]._dimension
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3]._noiseScale
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3]._octaves
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3]._lacunarity
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3]._dimension
       value: 0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2]._heightScale
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3]._heightScale
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2]._noiseType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3]._noiseType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[0]._noiseScale
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7941170911782372762, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}

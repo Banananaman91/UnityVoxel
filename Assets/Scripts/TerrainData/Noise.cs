@@ -33,7 +33,7 @@ namespace TerrainData
                 for (int x = 0; x < width; x++)
                 {
                     // Generate a singular noise sample for this coordinate
-                    noiseMap[x, y] = GenerateSample(new float3(x, y, 0), scale, seed,viewPos, octaves, lacunarity, dimension, false);
+                    noiseMap[x, y] = GenerateSimpleSample(new float3(x, y, 0), scale, seed,viewPos, octaves, lacunarity, dimension, false);
                 }
             }
 
@@ -51,7 +51,7 @@ namespace TerrainData
         /// <returns>Singular 2D noise value</returns>
         public static float GenerateSimple2DNoiseValue(float x, float y, float scale, int octaves, float lacunarity, float dimension, int seed)
         {
-            return GenerateSample(new float3(x, y, 0), scale, seed, Vector2.zero, octaves, lacunarity, dimension, false);
+            return GenerateSimpleSample(new float3(x, y, 0), scale, seed, Vector2.zero, octaves, lacunarity, dimension, false);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace TerrainData
         /// <returns>Singular 3D noise value</returns>
         public static float GenerateSimple3DNoiseValue(float x, float y, float z, float scale, int octaves, float lacunarity, float dimension, int seed)
         {
-            return GenerateSample(new float3(x, y, z), scale, seed, Vector2.zero, octaves, lacunarity, dimension, true);
+            return GenerateSimpleSample(new float3(x, y, z), scale, seed, Vector2.zero, octaves, lacunarity, dimension, true);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace TerrainData
         /// <param name="viewPos">Displayed position of the map</param>
         /// <param name="threeDimensions">Is the noise 3D</param>
         /// <returns>Singular 2D noise sample</returns>
-        private static float GenerateSample(float3 coords, float scale, int seed, Vector2 viewPos, int octaves, float lacunarity, float dimension, bool threeDimensions)
+        private static float GenerateSimpleSample(float3 coords, float scale, int seed, Vector2 viewPos, int octaves, float lacunarity, float dimension, bool threeDimensions)
         {
             float noiseReturn = 0;
 
@@ -112,19 +112,63 @@ namespace TerrainData
                 }
             }
 
-            /*
-            if (!threeDimensions)
-            {
-                // Set the value at the current coordinate and subtract ground level
-                noiseReturn -= groundLevel;
+            return noiseReturn;
+        }
+        
+        public static float GenerateRigid2DNoiseValue(float x, float y, float scale, int octaves, float lacunarity, float dimension, int seed)
+        {
+            return GenerateSimpleSample(new float3(x, y, 0), scale, seed, Vector2.zero, octaves, lacunarity, dimension, false);
+        }
+        
+        public static float GenerateRigid3DNoiseValue(float x, float y, float z, float scale, int octaves, float lacunarity, float dimension, int seed)
+        {
+            return GenerateRigidSample(new float3(x, y, z), scale, seed, Vector2.zero, octaves, lacunarity, dimension, true);
+        }
 
-                // Anything below ground level is moved up to 0 for flat land
-                if (noiseReturn < 0)
+        private static float GenerateRigidSample(float3 coords, float scale, int seed, Vector2 viewPos, int octaves, float lacunarity, float dimension, bool threeDimensions)
+        {
+            float noiseReturn = 0;
+            float weight = 1;
+            
+            for (int i = 0; i < octaves; i++)
+            {
+                var amplitude = (float) Math.Pow(dimension, i);
+                var frequency = (float) Math.Pow(lacunarity, i);
+                
+                // Find the sample coordinates to use in the noise function
+                float xSample = coords.x / scale * frequency;
+                float ySample = coords.y / scale * frequency;
+
+                // Specific dimension requirements
+                if (threeDimensions)
                 {
-                    noiseReturn = 0;
+                    // Find z sample
+                    float zSample = coords.z / scale * frequency;
+
+                    var v = 1 - Math.Abs(FastNoiseLite.SingleOpenSimplex2S(seed + i, xSample, ySample, zSample));
+                    v *= v;
+                    v *= weight;
+                    weight = v;
+
+                    // Generate 3D noise value
+                    noiseReturn += v * amplitude;
+                }
+                else
+                {
+                    // Add view position to x and y samples
+                    xSample += viewPos.x;
+                    ySample += viewPos.y;
+
+                    var v = 1 - Math.Abs(FastNoiseLite.SingleOpenSimplex2S(seed + i, xSample, ySample));
+                    v *= v;
+                    v *= weight;
+                    weight = v;
+
+                    // Generate 2D noise value
+                    noiseReturn += v * amplitude;
+
                 }
             }
-            */
 
             return noiseReturn;
         }
