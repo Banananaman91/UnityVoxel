@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using VoxelTerrain.Engine.Dependencies;
+using VoxelTerrain.Engine.InfoData;
 using VoxelTerrain.Engine.Jobs;
 using VoxelTerrain.SaveLoad;
 
@@ -110,25 +111,15 @@ namespace VoxelTerrain.Engine
         //create chunk job for setting voxel data with noise values
         private ChunkVoxelSetter CreateJob(Vector3 origin)
         {
-            var resolution = Engine.ChunkInfo.VoxelSize;
-            var scale = Engine.NoiseInfo.NoiseScale;
-            var groundLevel = Engine.WorldInfo.GroundLevel;
-            var seed = Engine.WorldInfo.Seed;
-
             return new ChunkVoxelSetter
             {
                 size = Chunk.ChunkSize,
                 height = Chunk.ChunkHeight,
-                scale = scale,
-                resolution = resolution,
+                resolution = Engine.ChunkInfo.VoxelSize,
                 origin = origin,
                 voxels = new NativeArray<Voxel>((Chunk.ChunkSize) * (Chunk.ChunkHeight) * (Chunk.ChunkSize), Allocator.Persistent),
-                seed = seed,
-                groundLevel = groundLevel,
-                octaves = Engine.NoiseInfo.Octaves,
-                lacunarity = Engine.NoiseInfo.Lacunarity,
-                amplitude = Engine.NoiseInfo.Amplitude,
-                frequency = Engine.NoiseInfo.Frequency
+                noiseData = new NativeArray<NoiseInfo>(Engine.NoiseInfo, Allocator.TempJob),
+                seed = Engine.WorldInfo.Seed
             };
         }
     }

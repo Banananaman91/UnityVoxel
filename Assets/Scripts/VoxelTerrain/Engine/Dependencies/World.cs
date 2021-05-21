@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using TerrainData;
+using Unity.Collections;
 using UnityEngine;
+using VoxelTerrain.Engine.InfoData;
 
 namespace VoxelTerrain.Engine.Dependencies
 {
@@ -52,7 +54,13 @@ namespace VoxelTerrain.Engine.Dependencies
             else if (forwardChunk != null && x != Chunk.ChunkSize && z == Chunk.ChunkSize) chunk = forwardChunk;
             else if (rightForwardChunk != null && x == Chunk.ChunkSize && z == Chunk.ChunkSize) chunk = rightForwardChunk;
 
-            if (chunk == null) return BiomeGenerator.GenerateVoxelType(chunkPos.x + x * scale, chunkPos.y + y * scale, chunkPos.z + z * scale, Engine.NoiseInfo.NoiseScale, Engine.WorldInfo.Seed, Engine.WorldInfo.GroundLevel, Engine.NoiseInfo.Octaves, Engine.NoiseInfo.Lacunarity, Engine.NoiseInfo.Amplitude, Engine.NoiseInfo.Frequency);
+            if (chunk == null)
+            {
+                var noiseArray = new NativeArray<NoiseInfo>(Engine.NoiseInfo, Allocator.Persistent);
+                var value = BiomeGenerator.GenerateVoxelType(chunkPos.x + x * scale, chunkPos.y + y * scale, chunkPos.z + z * scale, noiseArray, Engine.WorldInfo.Seed);
+                noiseArray.Dispose();
+                return value;
+            }
 
             if (x >= Chunk.ChunkSize) x = 0;
             if (z >= Chunk.ChunkSize) z = 0;

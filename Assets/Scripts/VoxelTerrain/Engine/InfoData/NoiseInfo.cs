@@ -1,21 +1,26 @@
-﻿using UnityEngine;
+﻿using System;
+using TerrainData;
+using UnityEngine;
 
 namespace VoxelTerrain.Engine.InfoData
 {
-    public class NoiseInfo : MonoBehaviour
+    [Serializable]
+    public struct NoiseInfo
     {
-#pragma warning disable 0649
+        [SerializeField] private bool _3dNoise;
         [SerializeField] private float _noiseScale;
-        [SerializeField] private float _frequency;
-        [SerializeField] private float _amplitude;
+        [SerializeField] private float _heightScale;
         [SerializeField] private int _octaves;
         [SerializeField] private float _lacunarity;
-#pragma warning restore 0649
+        [SerializeField] private float _dimension;
+        [SerializeField] private NoiseType _noiseType;
 
+        public bool ThreeDimensional => _3dNoise;
         public float NoiseScale => _noiseScale;
-        public float Frequency => _frequency;
-        public float Amplitude => _amplitude;
+        public float HeightScale => _heightScale;
         public int Octaves => _octaves;
         public float Lacunarity => _lacunarity;
+        public float Dimension => _dimension;
+        public NoiseType NoiseType => _noiseType;
     }
 }

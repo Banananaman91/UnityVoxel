@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TerrainData;
 using UnityEngine;
 using VoxelTerrain.Engine.Dependencies;
 using VoxelTerrain.Engine.InfoData;
@@ -17,7 +18,7 @@ namespace VoxelTerrain.Engine
 #pragma warning disable 0649
         [SerializeField] private WorldInfo _worldInfo;
         [SerializeField] private ChunkInfo _chunkInfo;
-        [SerializeField] private NoiseInfo _noiseInfo;
+        [SerializeField] private NoiseInfo[] _noiseInfo;
         [SerializeField] private WorldGenerationFunctions _worldGeneration;
         [SerializeField] private bool _updateWater;
 #pragma warning restore 0649
@@ -33,8 +34,7 @@ namespace VoxelTerrain.Engine
         public ChunkInfo ChunkInfo => _chunkInfo;
         public float ChunkSize => Chunk.ChunkSize * _chunkInfo.VoxelSize;
         public float ChunkHeight => Chunk.ChunkHeight * _chunkInfo.VoxelSize;
-        public NoiseInfo NoiseInfo => _noiseInfo;
-
+        public NoiseInfo[] NoiseInfo => _noiseInfo;
         public WorldInfo WorldInfo => _worldInfo;
 
         #region Unity Functions
