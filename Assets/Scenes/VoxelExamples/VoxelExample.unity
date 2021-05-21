@@ -764,12 +764,12 @@ PrefabInstance:
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[0]._heightScale
-      value: 0.5
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[0]._octaves
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -784,7 +784,7 @@ PrefabInstance:
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[1]._heightScale
-      value: 3
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -794,7 +794,7 @@ PrefabInstance:
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[1]._lacunarity
-      value: 1.5
+      value: 1.8
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -809,7 +809,7 @@ PrefabInstance:
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[2]._noiseScale
-      value: 15
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -844,12 +844,12 @@ PrefabInstance:
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[3]._dimension
-      value: 0.001
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[2]._heightScale
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -869,7 +869,22 @@ PrefabInstance:
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.data[0]._noiseScale
-      value: 50
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[1]._3dNoise
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3]._3dNoise
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[0]._3dNoise
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7941170911782372762, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}

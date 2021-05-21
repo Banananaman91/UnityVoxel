@@ -22,12 +22,16 @@ namespace TerrainData
                 switch (noiseInfo[i].NoiseType)
                 {
                     case NoiseType.Simple:
-                        v = Noise.GenerateSimple2DNoiseValue(x, z, noiseInfo[i].NoiseScale,
+                        v = noiseInfo[i].ThreeDimensional ? Noise.GenerateSimple3DNoiseValue(x, y, z, noiseInfo[i].NoiseScale,
                                 noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, noiseInfo[i].Dimension, seed) *
-                            noiseInfo[i].HeightScale;
+                            noiseInfo[i].HeightScale : Noise.GenerateSimple2DNoiseValue(x, z, noiseInfo[i].NoiseScale,
+                                                           noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, noiseInfo[i].Dimension, seed) *
+                                                       noiseInfo[i].HeightScale;
                         break;
                     case NoiseType.Rigid:
-                        v = Noise.GenerateRigid2DNoiseValue(x, z, noiseInfo[i].NoiseScale,
+                        v = noiseInfo[i].ThreeDimensional ? Noise.GenerateRigid3DNoiseValue(x, y, z, noiseInfo[i].NoiseScale,
+                                                                noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, noiseInfo[i].Dimension, seed) *
+                                                            noiseInfo[i].HeightScale : Noise.GenerateRigid2DNoiseValue(x, z, noiseInfo[i].NoiseScale,
                                 noiseInfo[i].Octaves, noiseInfo[i].Lacunarity, noiseInfo[i].Dimension, seed) *
                             noiseInfo[i].HeightScale;
                         break;

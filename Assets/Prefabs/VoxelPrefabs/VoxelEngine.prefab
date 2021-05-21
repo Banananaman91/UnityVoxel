@@ -51,18 +51,34 @@ MonoBehaviour:
   _worldInfo: {fileID: 7941170911782372762}
   _chunkInfo: {fileID: 7941170911782372763}
   _noiseInfo:
-  - _noiseScale: 10
-    _heightScale: 0
-    _altitudeScale: 0
-    _moistureScale: 0
-    _octaves: 0
-    _lacunarity: 0
-  - _noiseScale: 0
-    _heightScale: 0
-    _altitudeScale: 0
-    _moistureScale: 0
-    _octaves: 0
-    _lacunarity: 0
+  - _3dNoise: 0
+    _noiseScale: 100
+    _heightScale: 1.1
+    _octaves: 4
+    _lacunarity: 2
+    _dimension: 0.8
+    _noiseType: 0
+  - _3dNoise: 0
+    _noiseScale: 30
+    _heightScale: 1.5
+    _octaves: 4
+    _lacunarity: 1.8
+    _dimension: 0.5
+    _noiseType: 0
+  - _3dNoise: 0
+    _noiseScale: 100
+    _heightScale: 2
+    _octaves: 4
+    _lacunarity: 0.9
+    _dimension: 0.05
+    _noiseType: 1
+  - _3dNoise: 0
+    _noiseScale: 100
+    _heightScale: 10
+    _octaves: 4
+    _lacunarity: 0.4
+    _dimension: 1
+    _noiseType: 1
   _worldGeneration: {fileID: 7941170911782372765}
   _updateWater: 0
 --- !u!114 &7941170911782372763
