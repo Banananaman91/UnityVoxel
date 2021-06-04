@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using VoxelTerrain.DataConversion;
 using VoxelTerrain.MMesh;
@@ -8,11 +10,15 @@ namespace VoxelTerrain.Engine
     public class Chunk
     {
         public const int ChunkSize = 32; //Leave at this size
-        public const int ChunkHeight = 128; //This should be 16 too, but I wanted taller chunks
+        public const int ChunkHeight = 256; //This should be 16 too, but I wanted taller chunks
         public Voxel[] Voxels;
         private VoxelEngine Engine;
         private GameObject Entity;
         public Vector3 Position;
+
+        public ComputeBuffer pointBuffer;
+        public ComputeBuffer triangleBuffer;
+        public ComputeBuffer triCountBuffer;
 
         //Used to find voxel at position
         public Engine.Voxel this[float x, float y, float z]
@@ -35,7 +41,7 @@ namespace VoxelTerrain.Engine
         }
 
         //Create the mesh data and set it to the object
-        public void SetMesh(Vector3 origin)
+        public void SetMesh(Vector3 origin, ComputeShader shader)
         {
             Position = origin;
             //If we don't have an entity then this isn't a chunk being used in the scene
@@ -44,95 +50,66 @@ namespace VoxelTerrain.Engine
             
             var mesh = new Mesh();
 
-            #region Jobs
-            // var rightPos = new Vector3(origin.x + (ChunkSize * Engine.ChunkInfo.VoxelSize), origin.y, origin.z);
-            // var forwardPos = new Vector3(origin.x, origin.y, origin.z + (ChunkSize * Engine.ChunkInfo.VoxelSize));
-            // var forwardRight = new Vector3(rightPos.x, origin.y, forwardPos.z);
-            //
-            // var rightChunk = Engine.WorldData.GetNonNullChunkAt(rightPos);
-            // var forwardChunk = Engine.WorldData.GetNonNullChunkAt(forwardPos);
-            // var rightForwardChunk = Engine.WorldData.GetNonNullChunkAt(forwardRight);
-            // //var currentChunk = Engine.WorldData.GetNonNullChunkAt(origin);
-            //
-            // NativeArray<byte> rVox = default;
-            // NativeArray<byte> forVox = default;
-            // NativeArray<byte> rForVox = default;
-            //
-            // if (rightChunk != null) rVox = new NativeArray<byte>(rightChunk.Voxels, Allocator.Persistent);
-            // if (forwardChunk != null) forVox = new NativeArray<byte>(forwardChunk.Voxels, Allocator.Persistent);
-            // if (rightForwardChunk != null)
-            //     rForVox = new NativeArray<byte>(rightForwardChunk.Voxels, Allocator.Persistent);
-            //
-            // var meshJob = new MeshJob
-            // {
-            //     vertices = new NativeList<Vector3>(Allocator.Persistent),
-            //     triangles = new NativeList<int>(Allocator.Persistent),
-            //     voxelUv = new NativeList<Vector4>(Allocator.Persistent),
-            //     baryUv = new NativeList<Vector4>(Allocator.Persistent),
-            //     currentVoxels = new NativeArray<byte>(Voxels, Allocator.Persistent),
-            //     rightVoxels = rVox,
-            //     forwardVoxels = forVox,
-            //     rightForwardVoxels = rForVox,
-            //     scale = Engine.ChunkInfo.VoxelSize,
-            //     origin = origin,
-            //     interpolate = true,
-            //     noiseScale = Engine.NoiseScale,
-            //     seed = Engine.WorldInfo.Seed,
-            //     groundLevel = Engine.WorldInfo.GroundLevel
-            // };
-            // meshJob.Schedule().Complete();
-            
-            // mesh.vertices = meshJob.vertices.ToArray();
-            // meshJob.vertices.Dispose();
-            // mesh.triangles = meshJob.triangles.ToArray();
-            // meshJob.triangles.Dispose();
-            
-            // mesh.SetUVs(0, new List<Vector2>(mesh.vertices.Length));
-            // //Set uv channel to contain voxel uv data
-            // mesh.SetUVs(1, meshJob.voxelUv.ToArray());
-            // meshJob.voxelUv.Dispose();
-            // //Set uv channel to contain barycentric uv data
-            // mesh.SetUVs(2, meshJob.baryUv.ToArray());
-            // meshJob.baryUv.Dispose();
-            //
-            // rVox.Dispose();
-            // forVox.Dispose();
-            // rForVox.Dispose();
-            //
-            // meshJob.currentVoxels.Dispose();
-            // meshJob.rightVoxels.Dispose();
-            // meshJob.rightForwardVoxels.Dispose();
-            // meshJob.forwardVoxels.Dispose();
-            #endregion
-
             var monoGo = Entity.GetComponent<MonoChunk>();
-
-            #region NotJobs
-            var meshCreator = new MeshCreator(Engine.WorldData);
             
-            //Build mesh data
-            meshCreator.SetMesh(Voxels, origin.x, origin.y, origin.z,
-                Engine.ChunkInfo.VoxelSize, Engine.ChunkInfo.InterpolateMesh);
+            triangleBuffer.SetCounterValue(0);
+            shader.SetBuffer(0, "points", pointBuffer);
+            shader.SetBuffer(0, "triangles", triangleBuffer);
+            shader.SetInt("width", ChunkSize);
+            shader.SetInt("height", ChunkHeight);
 
-            //Update mesh
-            mesh.vertices = meshCreator.Vertices.ToArray();
-            mesh.triangles = meshCreator.Triangles.ToArray();            
+            shader.Dispatch(0, (ChunkSize) / 8, (ChunkHeight) / 8, (ChunkSize) / 8);
             
+            ComputeBuffer.CopyCount(triangleBuffer, triCountBuffer, 0);
+            int[] triCountArray = { 0 };
+            triCountBuffer.GetData(triCountArray);
+            int numTris = triCountArray[0];
+
+            Triangle[] tris = new Triangle[numTris];
+            triangleBuffer.GetData(tris, 0, 0, numTris);
+
+            var vertices = new Vector3[numTris * 3];
+            var meshTriangles = new int[numTris * 3];
+
+            for (int i = 0; i < numTris; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    meshTriangles[i * 3 + j] = i * 3 + j;
+                    vertices[i * 3 + j] = tris[i][j];
+                }
+            }
+
+            mesh.SetVertices(vertices);
+            mesh.SetTriangles(meshTriangles, 0);
+
+            // #region NotJobs
+            // var meshCreator = new MeshCreator(Engine.WorldData);
+            //
+            // //Build mesh data
+            // meshCreator.SetMesh(Voxels, origin.x, origin.y, origin.z,
+            //     Engine.ChunkInfo.VoxelSize, Engine.ChunkInfo.InterpolateMesh);
+            //
+            // //Update mesh
+            // mesh.vertices = meshCreator.Vertices.ToArray();
+            // mesh.triangles = meshCreator.Triangles.ToArray();            
+            //
             mesh.SetUVs(0, new List<Vector2>(mesh.vertices.Length));
-            //Set uv channel to contain voxel uv data
-            mesh.SetUVs(1, meshCreator.uv0);
-            //Set uv channel to contain barycentric uv data
-            mesh.SetUVs(2, meshCreator.uv1);
-            #endregion
-
+            // //Set uv channel to contain voxel uv data
+            // mesh.SetUVs(1, meshCreator.uv0);
+            // //Set uv channel to contain barycentric uv data
+            // mesh.SetUVs(2, meshCreator.uv1);
+            // #endregion
+            
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
             
             //Name the mesh, because we're not savages
             mesh.name = "Chunk: " + origin;
 
             monoGo.MeshFilter.sharedMesh = mesh;
-            monoGo.MeshCollider.sharedMesh = mesh;
+            //monoGo.MeshCollider.sharedMesh = mesh;
         }
 
         //Constructor, for constructioning
@@ -140,6 +117,26 @@ namespace VoxelTerrain.Engine
         {
             Engine = engine;
             Voxels = new Voxel[ChunkSize * ChunkHeight * ChunkSize];
+        }
+        
+        struct Triangle {
+#pragma warning disable 649 // disable unassigned variable warning
+            public Vector3 a;
+            public Vector3 b;
+            public Vector3 c;
+
+            public Vector3 this [int i] {
+                get {
+                    switch (i) {
+                        case 0:
+                            return a;
+                        case 1:
+                            return b;
+                        default:
+                            return c;
+                    }
+                }
+            }
         }
     }
 }

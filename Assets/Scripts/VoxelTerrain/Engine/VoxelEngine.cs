@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using TerrainData;
 using UnityEngine;
 using VoxelTerrain.Engine.Dependencies;
@@ -81,12 +82,12 @@ namespace VoxelTerrain.Engine
                 _chunkPool.Remove(chunk.Key);
             }
 
-            if (_waterPool.Count > 0)
-            {
-                var chunk = _waterPool.First();
-                chunk.Value.SetMesh(new Vector3(chunk.Key.X, chunk.Key.Y, chunk.Key.Z));
-                _waterPool.Remove(chunk.Key);
-            }
+            // if (_waterPool.Count > 0)
+            // {
+            //     var chunk = _waterPool.First();
+            //     chunk.Value.SetMesh(new Vector3(chunk.Key.X, chunk.Key.Y, chunk.Key.Z));
+            //     _waterPool.Remove(chunk.Key);
+            // }
         }
 
         private static float GetXPos(float i, float distance, float size) => Mathf.Floor(i / distance) * size - distance / 2 * size;
@@ -201,8 +202,13 @@ namespace VoxelTerrain.Engine
             go.name = pos.ToString();
 
             nonNullChunk.AddEntity(go);
-                    
-            nonNullChunk.SetMesh(pos);
+            nonNullChunk.triangleBuffer = new ComputeBuffer (nonNullChunk.Voxels.Length * 5, sizeof (float) * 3 * 3, ComputeBufferType.Append);
+            nonNullChunk.pointBuffer = new ComputeBuffer(nonNullChunk.Voxels.Length, Unsafe.SizeOf<Voxel>());
+            nonNullChunk.triCountBuffer = new ComputeBuffer (1, sizeof (int), ComputeBufferType.Raw);
+            //initial write to GPU buffer
+            nonNullChunk.pointBuffer.SetData(nonNullChunk.Voxels, 0, 0, nonNullChunk.Voxels.Length);
+
+            nonNullChunk.SetMesh(pos, _chunkInfo.MarchingShader);
             
             if (WorldData.ChunkObjects.ContainsKey(chunkId)) Debug.Log("Chunk: " + chunkId.X + ", " + chunkId.Y + ", " + chunkId.Z + " Exists");
             WorldData.ChunkObjects.Add(chunkId, go);

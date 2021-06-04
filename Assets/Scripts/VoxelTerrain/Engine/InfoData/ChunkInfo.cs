@@ -6,6 +6,7 @@ namespace VoxelTerrain.Engine.InfoData
     {
 #pragma warning disable 0649
         [SerializeField] private MonoChunk _chunkPrefab;
+        [SerializeField] private ComputeShader _marchingShader;
         [SerializeField, Range(0.01f, 1.0f), Tooltip("Metre cubed")] private float _voxelSize;
         [SerializeField] private bool _interpolateMesh;
 #pragma warning restore 0649
@@ -13,5 +14,7 @@ namespace VoxelTerrain.Engine.InfoData
         public MonoChunk ChunkPrefab => _chunkPrefab;
         public float VoxelSize => _voxelSize;
         public bool InterpolateMesh => _interpolateMesh;
+
+        public ComputeShader MarchingShader => _marchingShader;
     }
 }

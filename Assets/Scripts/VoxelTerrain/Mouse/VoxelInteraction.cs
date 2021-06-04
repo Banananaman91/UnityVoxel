@@ -232,7 +232,7 @@ namespace VoxelTerrain.Mouse
                     //So remove any chunks that were accessed just for their data beyond the render distance
                     for (int i = 0; i < chunkList.Count; i++)
                     {
-                        chunkList[i].SetMesh(posList[i]);
+                        //chunkList[i].SetMesh(posList[i]);
                         if (!chunkList[i].GetEntity()) _engine.RemoveChunkAt(posList[i]);
                         yield return null;
                     }
@@ -293,7 +293,7 @@ namespace VoxelTerrain.Mouse
                     //Set the mesh of all chunks and remove any from the world without an entity object, as they don't exist in the scene
                     for (int i = 0; i < chunkList.Count; i++)
                     {
-                        chunkList[i].SetMesh(posList[i]);
+                        //chunkList[i].SetMesh(posList[i]);
                         if (!chunkList[i].GetEntity()) _engine.RemoveChunkAt(posList[i]);
                         yield return null;
                     }                    
@@ -348,7 +348,7 @@ namespace VoxelTerrain.Mouse
 
                     for (int i = 0; i < chunkList.Count; i++)
                     {
-                        chunkList[i].SetMesh(posList[i]);
+                        //chunkList[i].SetMesh(posList[i]);
                         if (!chunkList[i].GetEntity()) _engine.RemoveChunkAt(posList[i]);
                         yield return null;
                     }
@@ -404,7 +404,7 @@ namespace VoxelTerrain.Mouse
 
                     for (int i = 0; i < chunkList.Count; i++)
                     {
-                        chunkList[i].SetMesh(posList[i]);
+                        //chunkList[i].SetMesh(posList[i]);
                         if (!chunkList[i].GetEntity()) _engine.RemoveChunkAt(posList[i]);
                         yield return null;
                     }

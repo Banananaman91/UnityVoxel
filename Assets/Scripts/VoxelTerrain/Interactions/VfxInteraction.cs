@@ -119,7 +119,7 @@ namespace VoxelTerrain.Interactions
 
         #endregion
         
-        public void VfxPlaya(Vector3 spawnPoint, byte voxelType, InteractionSettings interactionSettings, FlattenShape shape = FlattenShape.Single)
+        public void VfxPlaya(Vector3 spawnPoint, int voxelType, InteractionSettings interactionSettings, FlattenShape shape = FlattenShape.Single)
         {
 
             if (_vfx == null || _vfx != Vfx[voxelType]) _vfx = Vfx[voxelType];
