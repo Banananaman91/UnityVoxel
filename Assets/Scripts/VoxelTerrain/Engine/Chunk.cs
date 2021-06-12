@@ -52,54 +52,54 @@ namespace VoxelTerrain.Engine
 
             var monoGo = Entity.GetComponent<MonoChunk>();
             
-            triangleBuffer.SetCounterValue(0);
-            shader.SetBuffer(0, "points", pointBuffer);
-            shader.SetBuffer(0, "triangles", triangleBuffer);
-            shader.SetInt("width", ChunkSize);
-            shader.SetInt("height", ChunkHeight);
+            // triangleBuffer.SetCounterValue(0);
+            // shader.SetBuffer(0, "points", pointBuffer);
+            // shader.SetBuffer(0, "triangles", triangleBuffer);
+            // shader.SetInt("width", ChunkSize);
+            // shader.SetInt("height", ChunkHeight);
+            //
+            // shader.Dispatch(0, (ChunkSize) / 8, (ChunkHeight) / 8, (ChunkSize) / 8);
+            //
+            // ComputeBuffer.CopyCount(triangleBuffer, triCountBuffer, 0);
+            // int[] triCountArray = { 0 };
+            // triCountBuffer.GetData(triCountArray);
+            // int numTris = triCountArray[0];
+            //
+            // Triangle[] tris = new Triangle[numTris];
+            // triangleBuffer.GetData(tris, 0, 0, numTris);
+            //
+            // var vertices = new Vector3[numTris * 3];
+            // var meshTriangles = new int[numTris * 3];
+            //
+            // for (int i = 0; i < numTris; i++)
+            // {
+            //     for (int j = 0; j < 3; j++)
+            //     {
+            //         meshTriangles[i * 3 + j] = i * 3 + j;
+            //         vertices[i * 3 + j] = tris[i][j];
+            //     }
+            // }
+            //
+            // mesh.SetVertices(vertices);
+            // mesh.SetTriangles(meshTriangles, 0);
 
-            shader.Dispatch(0, (ChunkSize) / 8, (ChunkHeight) / 8, (ChunkSize) / 8);
+             #region NotJobs
+             var meshCreator = new MeshCreator(Engine.WorldData);
             
-            ComputeBuffer.CopyCount(triangleBuffer, triCountBuffer, 0);
-            int[] triCountArray = { 0 };
-            triCountBuffer.GetData(triCountArray);
-            int numTris = triCountArray[0];
-
-            Triangle[] tris = new Triangle[numTris];
-            triangleBuffer.GetData(tris, 0, 0, numTris);
-
-            var vertices = new Vector3[numTris * 3];
-            var meshTriangles = new int[numTris * 3];
-
-            for (int i = 0; i < numTris; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    meshTriangles[i * 3 + j] = i * 3 + j;
-                    vertices[i * 3 + j] = tris[i][j];
-                }
-            }
-
-            mesh.SetVertices(vertices);
-            mesh.SetTriangles(meshTriangles, 0);
-
-            // #region NotJobs
-            // var meshCreator = new MeshCreator(Engine.WorldData);
-            //
-            // //Build mesh data
-            // meshCreator.SetMesh(Voxels, origin.x, origin.y, origin.z,
-            //     Engine.ChunkInfo.VoxelSize, Engine.ChunkInfo.InterpolateMesh);
-            //
-            // //Update mesh
-            // mesh.vertices = meshCreator.Vertices.ToArray();
-            // mesh.triangles = meshCreator.Triangles.ToArray();            
-            //
+             //Build mesh data
+             meshCreator.SetMesh(Voxels, origin.x, origin.y, origin.z,
+                 Engine.ChunkInfo.VoxelSize, Engine.ChunkInfo.InterpolateMesh);
+            
+             //Update mesh
+             mesh.vertices = meshCreator.Vertices.ToArray();
+             mesh.triangles = meshCreator.Triangles.ToArray();            
+            
             mesh.SetUVs(0, new List<Vector2>(mesh.vertices.Length));
-            // //Set uv channel to contain voxel uv data
-            // mesh.SetUVs(1, meshCreator.uv0);
-            // //Set uv channel to contain barycentric uv data
-            // mesh.SetUVs(2, meshCreator.uv1);
-            // #endregion
+             //Set uv channel to contain voxel uv data
+             mesh.SetUVs(1, meshCreator.uv0);
+             //Set uv channel to contain barycentric uv data
+             mesh.SetUVs(2, meshCreator.uv1);
+             #endregion
             
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();

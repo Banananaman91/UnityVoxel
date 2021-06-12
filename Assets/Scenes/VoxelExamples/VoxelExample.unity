@@ -849,6 +849,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: VoxelEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[0]._heightScale
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7941170911782372762, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _origin
