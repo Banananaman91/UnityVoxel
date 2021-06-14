@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using TerrainData;
+using UnityEditor;
 using UnityEngine;
 using VoxelTerrain.Engine.Dependencies;
 using VoxelTerrain.Engine.InfoData;
@@ -12,6 +13,7 @@ namespace VoxelTerrain.Engine
 {
     [RequireComponent(typeof(WorldInfo), typeof(ChunkInfo), typeof(NoiseInfo))]
     [RequireComponent(typeof(WorldGenerationFunctions))]
+    [ExecuteAlways]
     public class VoxelEngine : MonoBehaviour
     {
         public World WorldData = new World();
@@ -22,6 +24,7 @@ namespace VoxelTerrain.Engine
         [SerializeField] private NoiseInfo[] _noiseInfo;
         [SerializeField] private WorldGenerationFunctions _worldGeneration;
         [SerializeField] private bool _updateWater;
+        [SerializeField] private bool _gpuMesh;
 #pragma warning restore 0649
 
         public bool UpdateWater => _updateWater;
@@ -37,10 +40,16 @@ namespace VoxelTerrain.Engine
         public float ChunkHeight => Chunk.ChunkHeight * _chunkInfo.VoxelSize;
         public NoiseInfo[] NoiseInfo => _noiseInfo;
         public WorldInfo WorldInfo => _worldInfo;
+        
+        public ComputeBuffer pointBuffer;
+        public ComputeBuffer triangleBuffer;
+        public ComputeBuffer triCountBuffer;
 
         #region Unity Functions
+
         private void Awake()
         {
+            CreateBuffers();
             var activeWorldDirectory = Application.persistentDataPath + "/" + "Active_World" + "/";
 
             if (Directory.Exists(activeWorldDirectory))
@@ -96,6 +105,12 @@ namespace VoxelTerrain.Engine
         
         private void Update()
         {
+            if (!Application.isPlaying)
+            {
+                ReleaseBuffers();
+                return;
+            }
+            
             var point = NearestChunk(Position);
 
             // for (var i = 0; i <= Math.Pow(_worldInfo.Distance, 2); i++)
@@ -202,14 +217,53 @@ namespace VoxelTerrain.Engine
             go.name = pos.ToString();
 
             nonNullChunk.AddEntity(go);
-            nonNullChunk.triangleBuffer = new ComputeBuffer (nonNullChunk.Voxels.Length * 5, sizeof (float) * 3 * 3, ComputeBufferType.Append);
-            nonNullChunk.pointBuffer = new ComputeBuffer(nonNullChunk.Voxels.Length, Unsafe.SizeOf<Voxel>());
-            nonNullChunk.triCountBuffer = new ComputeBuffer (1, sizeof (int), ComputeBufferType.Raw);
-            //initial write to GPU buffer
-            nonNullChunk.pointBuffer.SetData(nonNullChunk.Voxels, 0, 0, nonNullChunk.Voxels.Length);
 
-            nonNullChunk.SetMesh(pos, _chunkInfo.MarchingShader);
+            switch (_gpuMesh)
+            {
+                case true:
+                    //initial write to GPU buffer
+                    pointBuffer.SetData(nonNullChunk.Voxels, 0, 0, nonNullChunk.Voxels.Length);
             
+                    var mesh = new Mesh();
+
+                    triangleBuffer.SetCounterValue(0);
+                    _chunkInfo.MarchingShader.SetBuffer(0, "points", pointBuffer);
+                    _chunkInfo.MarchingShader.SetBuffer(0, "triangles", triangleBuffer);
+                    _chunkInfo.MarchingShader.SetInt("width", Chunk.ChunkSize + 1);
+                    _chunkInfo.MarchingShader.SetInt("height", Chunk.ChunkHeight);
+            
+                    _chunkInfo.MarchingShader.Dispatch(0, (Chunk.ChunkSize) / 8, (Chunk.ChunkHeight) / 8, (Chunk.ChunkSize) / 8);
+            
+                    ComputeBuffer.CopyCount(triangleBuffer, triCountBuffer, 0);
+                    int[] triCountArray = { 0 };
+                    triCountBuffer.GetData(triCountArray);
+                    int numTris = triCountArray[0];
+            
+                    Triangle[] tris = new Triangle[numTris];
+                    triangleBuffer.GetData(tris, 0, 0, numTris);
+            
+                    var vertices = new Vector3[numTris * 3];
+                    var meshTriangles = new int[numTris * 3];
+            
+                    for (int i = 0; i < numTris; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            meshTriangles[i * 3 + j] = i * 3 + j;
+                            vertices[i * 3 + j] = tris[i][j];
+                        }
+                    }
+            
+                    mesh.SetVertices(vertices);
+                    mesh.SetTriangles(meshTriangles, 0);
+
+                    nonNullChunk.SetMesh(mesh);
+                    break;
+                case false:
+                    nonNullChunk.SetMesh(pos);
+                    break;
+            }
+
             if (WorldData.ChunkObjects.ContainsKey(chunkId)) Debug.Log("Chunk: " + chunkId.X + ", " + chunkId.Y + ", " + chunkId.Z + " Exists");
             WorldData.ChunkObjects.Add(chunkId, go);
         }
@@ -235,5 +289,49 @@ namespace VoxelTerrain.Engine
         public bool WithinRange(Vector3 pos) => Vector3.Distance(Position, pos) <= WorldInfo.Distance / 2 * ChunkSize;
 
         #endregion
+
+        private void CreateBuffers()
+        {
+            int numPoints = (Chunk.ChunkSize + 1) * (Chunk.ChunkHeight + 1) * (Chunk.ChunkSize + 1);
+            int numVoxels = Chunk.ChunkSize * Chunk.ChunkHeight * Chunk.ChunkSize;
+            int maxTriangles = numVoxels * 5;
+            triangleBuffer = new ComputeBuffer (maxTriangles, sizeof (float) * 3 * 3, ComputeBufferType.Append);
+            pointBuffer = new ComputeBuffer(numPoints, Unsafe.SizeOf<Voxel>());
+            triCountBuffer = new ComputeBuffer (1, sizeof (int), ComputeBufferType.Raw);
+        }
+
+        private void ReleaseBuffers()
+        {
+            if (triangleBuffer != null)
+            {
+                triangleBuffer.Release();
+                pointBuffer.Release();
+                triCountBuffer.Release();
+            }
+        }
+
+        struct Triangle
+        {
+#pragma warning disable 649 // disable unassigned variable warning
+            public Vector3 a;
+            public Vector3 b;
+            public Vector3 c;
+
+            public Vector3 this[int i]
+            {
+                get
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            return a;
+                        case 1:
+                            return b;
+                        default:
+                            return c;
+                    }
+                }
+            }
+        };
     }
 }

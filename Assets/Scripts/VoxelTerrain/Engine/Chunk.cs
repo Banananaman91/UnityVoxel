@@ -16,10 +16,6 @@ namespace VoxelTerrain.Engine
         private GameObject Entity;
         public Vector3 Position;
 
-        public ComputeBuffer pointBuffer;
-        public ComputeBuffer triangleBuffer;
-        public ComputeBuffer triCountBuffer;
-
         //Used to find voxel at position
         public Engine.Voxel this[float x, float y, float z]
         {
@@ -41,7 +37,7 @@ namespace VoxelTerrain.Engine
         }
 
         //Create the mesh data and set it to the object
-        public void SetMesh(Vector3 origin, ComputeShader shader)
+        public void SetMesh(Vector3 origin)
         {
             Position = origin;
             //If we don't have an entity then this isn't a chunk being used in the scene
@@ -49,41 +45,10 @@ namespace VoxelTerrain.Engine
             if (!Entity) return;
             
             var mesh = new Mesh();
-
-            var monoGo = Entity.GetComponent<MonoChunk>();
             
-            // triangleBuffer.SetCounterValue(0);
-            // shader.SetBuffer(0, "points", pointBuffer);
-            // shader.SetBuffer(0, "triangles", triangleBuffer);
-            // shader.SetInt("width", ChunkSize);
-            // shader.SetInt("height", ChunkHeight);
-            //
-            // shader.Dispatch(0, (ChunkSize) / 8, (ChunkHeight) / 8, (ChunkSize) / 8);
-            //
-            // ComputeBuffer.CopyCount(triangleBuffer, triCountBuffer, 0);
-            // int[] triCountArray = { 0 };
-            // triCountBuffer.GetData(triCountArray);
-            // int numTris = triCountArray[0];
-            //
-            // Triangle[] tris = new Triangle[numTris];
-            // triangleBuffer.GetData(tris, 0, 0, numTris);
-            //
-            // var vertices = new Vector3[numTris * 3];
-            // var meshTriangles = new int[numTris * 3];
-            //
-            // for (int i = 0; i < numTris; i++)
-            // {
-            //     for (int j = 0; j < 3; j++)
-            //     {
-            //         meshTriangles[i * 3 + j] = i * 3 + j;
-            //         vertices[i * 3 + j] = tris[i][j];
-            //     }
-            // }
-            //
-            // mesh.SetVertices(vertices);
-            // mesh.SetTriangles(meshTriangles, 0);
+            var monoGo = Entity.GetComponent<MonoChunk>();
 
-             #region NotJobs
+            #region NotJobs
              var meshCreator = new MeshCreator(Engine.WorldData);
             
              //Build mesh data
@@ -109,34 +74,22 @@ namespace VoxelTerrain.Engine
             mesh.name = "Chunk: " + origin;
 
             monoGo.MeshFilter.sharedMesh = mesh;
-            //monoGo.MeshCollider.sharedMesh = mesh;
+            monoGo.MeshCollider.sharedMesh = mesh;
+        }
+
+        public void SetMesh(Mesh mesh)
+        {
+            mesh.RecalculateBounds();
+            mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
+            Entity.GetComponent<MeshFilter>().sharedMesh = mesh;
         }
 
         //Constructor, for constructioning
         public Chunk(VoxelEngine engine)
         {
             Engine = engine;
-            Voxels = new Voxel[ChunkSize * ChunkHeight * ChunkSize];
-        }
-        
-        struct Triangle {
-#pragma warning disable 649 // disable unassigned variable warning
-            public Vector3 a;
-            public Vector3 b;
-            public Vector3 c;
-
-            public Vector3 this [int i] {
-                get {
-                    switch (i) {
-                        case 0:
-                            return a;
-                        case 1:
-                            return b;
-                        default:
-                            return c;
-                    }
-                }
-            }
+            Voxels = new Voxel[(ChunkSize + 1) * (ChunkHeight) * (ChunkSize + 1)];
         }
     }
 }
