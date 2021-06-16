@@ -44,6 +44,7 @@ namespace VoxelTerrain.Engine
         public ComputeBuffer pointBuffer;
         public ComputeBuffer triangleBuffer;
         public ComputeBuffer triCountBuffer;
+        public ComputeBuffer noiseBuffer;
 
         #region Unity Functions
 
@@ -71,7 +72,7 @@ namespace VoxelTerrain.Engine
             }
 
             WorldData.Engine = this;
-            _worldGeneration.GenerateWorld(transform.position, _worldInfo.Distance,  - (ChunkHeight / 2), _chunkInfo.VoxelSize);
+            //_worldGeneration.GenerateWorld(transform.position, _worldInfo.Distance,  - (ChunkHeight / 2), _chunkInfo.VoxelSize);
         }
 
         private void Start()
@@ -140,6 +141,41 @@ namespace VoxelTerrain.Engine
             //     }
             // }
 
+            // for (var i = -_worldInfo.Distance / 2; i <= _worldInfo.Distance / 2; i++)
+            // {
+            //     for (var j = -_worldInfo.Distance / 2; j <= _worldInfo.Distance / 2; j++)
+            //     {
+            //         var x = i * ChunkSize;
+            //         var z = j * ChunkSize;
+            //         
+            //         var pointToCheck = new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z);
+            //         
+            //         //Check chunk pool doesn't already have object
+            //         if (_chunkPool.ContainsKey(pointToCheck)) continue;
+            //         
+            //         //check position is within distance, rounds off view area.
+            //         if (!WithinRange(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z))) continue;
+            //
+            //         //check for chunk in the world data, in case it has already been spawned
+            //         var c = ChunkAt(pointToCheck, false);
+            //
+            //         //if chunk is not found, attempt to load one
+            //         //Update repeatedly checks until we have a chunk
+            //         if (c == null)
+            //         {
+            //             c = LoadChunkAt(pointToCheck);
+            //             
+            //             if (c != null) _chunkPool.Add(new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z), c);//  SpawnChunk(c, new Vector3(point.x + x, -(ChunkHeight / 2), point.z + z));
+            //         }
+            //     }
+            // }
+            
+            GenerateGpuChunks();
+        }
+
+        public void GenerateGpuChunks()
+        {
+            var point = NearestChunk(Position);
             for (var i = -_worldInfo.Distance / 2; i <= _worldInfo.Distance / 2; i++)
             {
                 for (var j = -_worldInfo.Distance / 2; j <= _worldInfo.Distance / 2; j++)
@@ -154,18 +190,14 @@ namespace VoxelTerrain.Engine
                     
                     //check position is within distance, rounds off view area.
                     if (!WithinRange(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z))) continue;
+
+                    var c = ChunkAt(pointToCheck, false);
+
+                    if (c != null) return;
             
                     //check for chunk in the world data, in case it has already been spawned
-                    var c = ChunkAt(pointToCheck, false);
-            
-                    //if chunk is not found, attempt to load one
-                    //Update repeatedly checks until we have a chunk
-                    if (c == null)
-                    {
-                        c = LoadChunkAt(pointToCheck);
-                        
-                        if (c != null) _chunkPool.Add(new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z), c);//  SpawnChunk(c, new Vector3(point.x + x, -(ChunkHeight / 2), point.z + z));
-                    }
+                    c = new Chunk(this);
+                    _chunkPool.Add(pointToCheck, c);
                 }
             }
         }
@@ -221,6 +253,19 @@ namespace VoxelTerrain.Engine
             switch (_gpuMesh)
             {
                 case true:
+                    
+                    _chunkInfo.NoiseShader.SetBuffer(0, "points", pointBuffer);
+                    _chunkInfo.NoiseShader.SetBuffer(0, "noiseInfo", noiseBuffer);
+                    _chunkInfo.NoiseShader.SetInt("width", Chunk.ChunkSize + 1);
+                    _chunkInfo.NoiseShader.SetInt("height", Chunk.ChunkHeight);
+                    _chunkInfo.NoiseShader.SetInt("seed", _worldInfo.Seed);
+                    _chunkInfo.NoiseShader.SetInt("noiseInfoLength", _noiseInfo.Length);
+                    _chunkInfo.NoiseShader.SetVector("worldPosition", pos);
+                    
+                    _chunkInfo.NoiseShader.Dispatch(0, Mathf.CeilToInt((Chunk.ChunkSize + 1) / 8f), (Chunk.ChunkHeight) / 8, Mathf.CeilToInt((Chunk.ChunkSize + 1) / 8f));
+                    
+                    pointBuffer.GetData(nonNullChunk.Voxels);
+                    
                     //initial write to GPU buffer
                     pointBuffer.SetData(nonNullChunk.Voxels, 0, 0, nonNullChunk.Voxels.Length);
             
@@ -292,12 +337,14 @@ namespace VoxelTerrain.Engine
 
         private void CreateBuffers()
         {
-            int numPoints = (Chunk.ChunkSize + 1) * (Chunk.ChunkHeight + 1) * (Chunk.ChunkSize + 1);
+            int numPoints = (Chunk.ChunkSize + 1) * (Chunk.ChunkHeight) * (Chunk.ChunkSize + 1);
             int numVoxels = Chunk.ChunkSize * Chunk.ChunkHeight * Chunk.ChunkSize;
             int maxTriangles = numVoxels * 5;
             triangleBuffer = new ComputeBuffer (maxTriangles, sizeof (float) * 3 * 3, ComputeBufferType.Append);
             pointBuffer = new ComputeBuffer(numPoints, Unsafe.SizeOf<Voxel>());
             triCountBuffer = new ComputeBuffer (1, sizeof (int), ComputeBufferType.Raw);
+            noiseBuffer = new ComputeBuffer(_noiseInfo.Length, Unsafe.SizeOf<NoiseInfo>());
+            noiseBuffer.SetData(_noiseInfo, 0, 0, _noiseInfo.Length);
         }
 
         private void ReleaseBuffers()
@@ -307,6 +354,7 @@ namespace VoxelTerrain.Engine
                 triangleBuffer.Release();
                 pointBuffer.Release();
                 triCountBuffer.Release();
+                noiseBuffer.Release();
             }
         }
 

@@ -1,0 +1,81 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel Noise
+#include "FastNoiseLite.compute"
+
+struct NoiseInfo
+{
+    int _3dNoise;
+    float _noiseScale;
+    float _heightScale;
+    int _octaves;
+    float _lacunarity;
+    float _dimension;
+    int _noiseType;
+};
+
+static const int numThreads = 8;
+
+struct Voxel {
+    int type;
+    float value;
+};
+
+RWStructuredBuffer<Voxel> points;
+RWStructuredBuffer<NoiseInfo> noiseInfo;
+
+int width;
+int height;
+int seed;
+int noiseInfoLength;
+float3 worldPosition;
+
+int indexFromCoord(int x, int y, int z) {
+    return z * width * height + y * width + x;
+}
+
+void SetNoiseValue(uint3 id)
+{
+    float firstLayerValue = 0;
+    float heightMap = 0;
+    fnl_state noise = fnlCreateState(seed);
+    noise.noise_type = FNL_NOISE_OPENSIMPLEX2;
+
+    float3 pos = worldPosition + id;
+
+    for (int i = 0; i < noiseInfoLength; i++)
+    {
+        float v;
+        noise.octaves = noiseInfo[i]._octaves;
+        noise.lacunarity = noiseInfo[i]._lacunarity;
+        noise.gain = noiseInfo[i]._dimension;
+        if (noiseInfo[i]._noiseType == 1) noise.fractal_type = FNL_FRACTAL_RIDGED;
+        else noise.fractal_type = FNL_FRACTAL_FBM;
+        float xSample = pos.x / noiseInfo[i]._noiseScale;
+        float zSample = pos.z / noiseInfo[i]._noiseScale;
+
+        v = fnlGetNoise2D(noise, xSample, zSample) * noiseInfo[i]._heightScale;
+
+        if (i == 0)
+        {
+            firstLayerValue = v;
+            heightMap = firstLayerValue;
+            continue;
+        }
+        heightMap += v * firstLayerValue;
+    }
+
+    float heightSample = heightMap - pos.y;
+    Voxel voxel;
+    voxel.type = 0;
+    voxel.value = heightSample;
+
+    points[indexFromCoord(id.x, id.y, id.z)] = voxel;
+}
+
+[numthreads(numThreads,numThreads,numThreads)]
+void Noise (uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= width || id.z >= width) return;
+    
+    SetNoiseValue(id);
+}

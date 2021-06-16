@@ -852,7 +852,7 @@ PrefabInstance:
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
       propertyPath: _noiseInfo.Array.size
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -863,6 +863,126 @@ PrefabInstance:
         type: 3}
       propertyPath: _gpuMesh
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[0].NoiseScale
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[0].HeightScale
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[0].Octaves
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[0].Lacunarity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[0].Dimension
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[1].NoiseScale
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[1].HeightScale
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[1].Octaves
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[1].Lacunarity
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[1].Dimension
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2].NoiseScale
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2].HeightScale
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2].Octaves
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2].Lacunarity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2].Dimension
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3].NoiseScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3].HeightScale
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3].Octaves
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3].Lacunarity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3].Dimension
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[2].NoiseType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[3].NoiseType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219288309473230983, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseInfo.Array.data[0].ThreeDimensional
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7941170911782372762, guid: 2b7228255036a30479393ef9a76b8464,
         type: 3}
@@ -879,6 +999,11 @@ PrefabInstance:
       propertyPath: _marchingShader
       value: 
       objectReference: {fileID: 7200000, guid: 8de5f334beff4a547a2be57a562342f1, type: 3}
+    - target: {fileID: 7941170911782372763, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _noiseShader
+      value: 
+      objectReference: {fileID: 7200000, guid: 7b2e2f894cc7174479fed5a835c6031b, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b7228255036a30479393ef9a76b8464, type: 3}
 --- !u!114 &1219288309642976020 stripped
