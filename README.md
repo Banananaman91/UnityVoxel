@@ -1,6 +1,9 @@
 # Procedurally generated voxel terrain engine
 With customisable voxel interactions, voxel-based shader and voxel-based VFX controller tool.
 
+## Recent Updates
+![HLSL Marching cubes](https://github.com/Banananaman91/UnityVoxel/blob/main/Assets/Scripts/VoxelTerrain/MMesh/MarchingCubes.compute) and ![Layered Noise](https://github.com/Banananaman91/UnityVoxel/blob/main/Assets/Scripts/VoxelTerrain/MMesh/NoiseGenerator.compute)
+
 ## WIP
 Currently reworking a lot of these systems to improve the terrain as well as performance.
 For guarantee, last fully working iteration was at
