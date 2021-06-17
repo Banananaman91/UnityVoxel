@@ -17,24 +17,26 @@ Burst
 Mathematics
 Newtonsoft.json library
 
+# Features
+
 ![](VoxelWorld.gif)
 
-## Infinite seeded worlds
+## ![Infinite seeded worlds](https://github.com/Banananaman91/UnityVoxel/blob/main/Assets/Scripts/VoxelTerrain/Engine/VoxelEngine.cs)
 Generate seeded worlds with continously generated terrain.
 
 ![](VoxelGenerating.gif)
 
-## Voxel Interactions
+## ![Voxel Interactions](https://github.com/Banananaman91/UnityVoxel/blob/main/Assets/Scripts/VoxelTerrain/Mouse/VoxelInteraction.cs)
 Customise voxel interactions based on shape and size, offering abilities for destruction/creation as well as flattening surfaces.
 
 ![](VoxelInteraction.gif)
 
-## Voxel-based Shader
+## ![Voxel-based Shader]()
 Material shader uses voxel values to map textures to the mesh, using Barycentric coordinates for per-triangle texturing and Triplanar Mapping with individual offsets.
 
 ![](VoxelShader.gif)
 
-## Voxel-based VFX control tool
+## ![Voxel-based VFX control tool](https://github.com/Banananaman91/UnityVoxel/blob/main/Assets/Editor/VfxInteractGui.cs)
 Scriptable objects with custom GUI allows the ability to control VFX properties and call specific VFX based on voxel type, allowing all unique VFX based on voxel type and interaction size.
 
 ![](https://raw.githubusercontent.com/Banananaman91/UnityVoxel/main/VFXInteraction.PNG)
