@@ -1004,6 +1004,12 @@ PrefabInstance:
       propertyPath: _noiseShader
       value: 
       objectReference: {fileID: 7200000, guid: 7b2e2f894cc7174479fed5a835c6031b, type: 3}
+    - target: {fileID: 7941170911782372763, guid: 2b7228255036a30479393ef9a76b8464,
+        type: 3}
+      propertyPath: _chunkPrefab
+      value: 
+      objectReference: {fileID: 8788348479459475484, guid: 9b9ced7c5de5dc94dbe09cac2c11378b,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b7228255036a30479393ef9a76b8464, type: 3}
 --- !u!114 &1219288309642976020 stripped

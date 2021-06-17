@@ -25,14 +25,16 @@ namespace VoxelTerrain.Engine
         [SerializeField] private WorldGenerationFunctions _worldGeneration;
         [SerializeField] private bool _updateWater;
         [SerializeField] private bool _gpuMesh;
+        [SerializeField] private bool _updateInEditor;
 #pragma warning restore 0649
 
         public bool UpdateWater => _updateWater;
+        private bool _settingsUpdated;
 
-        private float _maxMagnitude;
-        
         //Water update pool
         public Dictionary<ChunkId, Chunk> _waterPool = new Dictionary<ChunkId, Chunk>();
+        private Dictionary<ChunkId, Chunk> _chunkPool = new Dictionary<ChunkId, Chunk>();
+        private Dictionary<ChunkId, Chunk> _destroyChunks = new Dictionary<ChunkId, Chunk>();
 
         private Vector3 Position => _worldInfo.Origin != null ? new Vector3(_worldInfo.Origin.position.x, -ChunkHeight / 2, _worldInfo.Origin.position.z) : Vector3.zero;
         public ChunkInfo ChunkInfo => _chunkInfo;
@@ -48,9 +50,32 @@ namespace VoxelTerrain.Engine
 
         #region Unity Functions
 
+        private void OnValidate()
+        {
+            _settingsUpdated = true;
+        }
+
         private void Awake()
         {
+
+            var children = GetComponentsInChildren<Transform>();
+            for (int i = children.Length - 1; i >= 0; i--)
+            {
+                if (children[i].gameObject == gameObject) continue;
+                Destroy(children[i].gameObject);
+            }
+
             CreateBuffers();
+            CreateWorldDirectory();
+
+            WorldData.Engine = this;
+            if (!_gpuMesh)
+                _worldGeneration.GenerateWorld(transform.position, _worldInfo.Distance, -(ChunkHeight / 2),
+                    _chunkInfo.VoxelSize);
+        }
+
+        private void CreateWorldDirectory()
+        {
             var activeWorldDirectory = Application.persistentDataPath + "/" + "Active_World" + "/";
 
             if (Directory.Exists(activeWorldDirectory))
@@ -70,26 +95,24 @@ namespace VoxelTerrain.Engine
                     WorldInfo.Seed = Convert.ToInt32(fileContents);
                 }
             }
-
-            WorldData.Engine = this;
-            //_worldGeneration.GenerateWorld(transform.position, _worldInfo.Distance,  - (ChunkHeight / 2), _chunkInfo.VoxelSize);
         }
-
-        private void Start()
-        {
-            var corner = new Vector3(-_worldInfo.Distance, 0, -_worldInfo.Distance);
-            _maxMagnitude = (Position - corner).magnitude;
-        }
-
-        private Dictionary<ChunkId, Chunk> _chunkPool = new Dictionary<ChunkId, Chunk>();
 
         private void LateUpdate()
         {
+            if (!Application.isPlaying) return;
             if (_chunkPool.Count > 0)
             {
                 var chunk = _chunkPool.First();
                 SpawnChunk(chunk.Value, new Vector3(chunk.Key.X, chunk.Key.Y, chunk.Key.Z));
                 _chunkPool.Remove(chunk.Key);
+            }
+
+            if (_destroyChunks.Count > 0)
+            {
+                var chunk = _destroyChunks.First();
+                var pos = new Vector3(chunk.Key.X, chunk.Key.Y, chunk.Key.Z);
+                RemoveChunkAt(pos);
+                _destroyChunks.Remove(chunk.Key);
             }
 
             // if (_waterPool.Count > 0)
@@ -100,80 +123,29 @@ namespace VoxelTerrain.Engine
             // }
         }
 
-        private static float GetXPos(float i, float distance, float size) => Mathf.Floor(i / distance) * size - distance / 2 * size;
-        
-        private static float GetZPos(float i, float distance, float size) => i % distance * size - distance / 2 * size;
-        
         private void Update()
         {
-            if (!Application.isPlaying)
+            if (!Application.isPlaying && _settingsUpdated && _updateInEditor)
             {
+                CreateBuffers();
+                GenerateEditorChunks();
                 ReleaseBuffers();
-                return;
+                _settingsUpdated = false;
             }
             
-            var point = NearestChunk(Position);
-
-            // for (var i = 0; i <= Math.Pow(_worldInfo.Distance, 2); i++)
-            // {
-            //     var x = GetXPos(i, _worldInfo.Distance, ChunkSize);
-            //     var z = GetZPos(i, _worldInfo.Distance, ChunkSize);
-            //
-            //     var pointToCheck = new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z);
-            //     
-            //     //Check chunk pool doesn't already have object
-            //     if (_chunkPool.ContainsKey(pointToCheck)) continue;
-            //         
-            //     //check position is within distance, rounds off view area.
-            //     if (!WithinRange(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z))) continue;
-            //
-            //     //check for chunk in the world data, in case it has already been spawned
-            //     var c = ChunkAt(pointToCheck, false);
-            //
-            //     //if chunk is not found, attempt to load one
-            //     //Update repeatedly checks until we have a chunk
-            //     if (c == null)
-            //     {
-            //         c = LoadChunkAt(pointToCheck);
-            //             
-            //         if (c != null) _chunkPool.Add(new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z), c);
-            //         
-            //     }
-            // }
-
-            // for (var i = -_worldInfo.Distance / 2; i <= _worldInfo.Distance / 2; i++)
-            // {
-            //     for (var j = -_worldInfo.Distance / 2; j <= _worldInfo.Distance / 2; j++)
-            //     {
-            //         var x = i * ChunkSize;
-            //         var z = j * ChunkSize;
-            //         
-            //         var pointToCheck = new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z);
-            //         
-            //         //Check chunk pool doesn't already have object
-            //         if (_chunkPool.ContainsKey(pointToCheck)) continue;
-            //         
-            //         //check position is within distance, rounds off view area.
-            //         if (!WithinRange(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z))) continue;
-            //
-            //         //check for chunk in the world data, in case it has already been spawned
-            //         var c = ChunkAt(pointToCheck, false);
-            //
-            //         //if chunk is not found, attempt to load one
-            //         //Update repeatedly checks until we have a chunk
-            //         if (c == null)
-            //         {
-            //             c = LoadChunkAt(pointToCheck);
-            //             
-            //             if (c != null) _chunkPool.Add(new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z), c);//  SpawnChunk(c, new Vector3(point.x + x, -(ChunkHeight / 2), point.z + z));
-            //         }
-            //     }
-            // }
-            
-            GenerateGpuChunks();
+            else if (Application.isPlaying)
+            {
+                foreach (var chunk in WorldData.Chunks)
+                {
+                    Vector3 pos = new Vector3(chunk.Key.X, chunk.Key.Y, chunk.Key.Z);
+                    if (!WithinRange(pos) && !_destroyChunks.ContainsKey(chunk.Key)) _destroyChunks.Add(chunk.Key, chunk.Value);
+                }
+                if (_gpuMesh) GenerateGpuChunks();
+                else GenerateJobChunks();
+            }
         }
 
-        public void GenerateGpuChunks()
+        private void GenerateGpuChunks()
         {
             var point = NearestChunk(Position);
             for (var i = -_worldInfo.Distance / 2; i <= _worldInfo.Distance / 2; i++)
@@ -191,19 +163,112 @@ namespace VoxelTerrain.Engine
                     //check position is within distance, rounds off view area.
                     if (!WithinRange(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z))) continue;
 
+                    //Check for chunk in the world data, in case it has already been spawned
                     var c = ChunkAt(pointToCheck, false);
 
-                    if (c != null) return;
-            
-                    //check for chunk in the world data, in case it has already been spawned
+                    if (c != null) continue;
+                    
                     c = new Chunk(this);
                     _chunkPool.Add(pointToCheck, c);
                 }
             }
         }
+
+        private void GenerateJobChunks()
+        {
+            var point = NearestChunk(Position);
+            for (var i = -_worldInfo.Distance / 2; i <= _worldInfo.Distance / 2; i++)
+            {
+                for (var j = -_worldInfo.Distance / 2; j <= _worldInfo.Distance / 2; j++)
+                {
+                    var x = i * ChunkSize;
+                    var z = j * ChunkSize;
+                    
+                    var pointToCheck = new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z);
+                    
+                    //Check chunk pool doesn't already have object
+                    if (_chunkPool.ContainsKey(pointToCheck)) continue;
+                    
+                    //check position is within distance, rounds off view area.
+                    if (!WithinRange(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z))) continue;
+            
+                    //check for chunk in the world data, in case it has already been spawned
+                    var c = ChunkAt(pointToCheck, false);
+            
+                    //if chunk is not found, attempt to load one
+                    //Update repeatedly checks until we have a chunk
+                    if (c == null)
+                    {
+                        c = LoadChunkAt(pointToCheck);
+                        
+                        if (c != null) _chunkPool.Add(new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z), c);//  SpawnChunk(c, new Vector3(point.x + x, -(ChunkHeight / 2), point.z + z));
+                    }
+                }
+            }
+        }
+
+        private void GenerateEditorChunks()
+        {
+            var oldChunks = GetComponentsInChildren<Transform>();
+            var point = NearestChunk(Vector3.zero);
+            for (var i = -_worldInfo.Distance / 2; i <= _worldInfo.Distance / 2; i++)
+            {
+                for (var j = -_worldInfo.Distance / 2; j <= _worldInfo.Distance / 2; j++)
+                {
+                    var x = i * ChunkSize;
+                    var z = j * ChunkSize;
+                    
+                    var pointToCheck = new ChunkId(point.x + x, -(ChunkHeight / 2), point.z + z);
+                    
+                    //Check chunk pool doesn't already have object
+                    if (_chunkPool.ContainsKey(pointToCheck)) continue;
+                    
+                    //check position is within distance, rounds off view area.
+                    if (!WithinRange(new Vector3(pointToCheck.X, -(ChunkHeight / 2), pointToCheck.Z))) continue;
+
+                    //Check if chunk already exists and update mesh
+                    var c = ChunkAt(pointToCheck, false);
+
+                    if (c != null)
+                    {
+                        foreach (var t in oldChunks)
+                        {
+                            if (t.position != new Vector3(pointToCheck.X, pointToCheck.Y, pointToCheck.Z)) continue;
+                            c.AddEntity(t.gameObject);
+                            break;
+                        }
+                        _chunkPool.Add(pointToCheck, c);
+                        continue;
+                    }
+            
+                    //check for chunk in the world data, in case it has already been spawned
+                    c = new Chunk(this);
+                    foreach (var t in oldChunks)
+                    {
+                        if (t.position != new Vector3(pointToCheck.X, pointToCheck.Y, pointToCheck.Z)) continue;
+                        c.AddEntity(t.gameObject);
+                        break;
+                    }
+                    _chunkPool.Add(pointToCheck, c);
+                }
+            }
+            
+            UpdateAllChunks();
+        }
+
         #endregion
 
         #region Voxel Methods
+
+        private void UpdateAllChunks()
+        {
+            foreach (var chunk in _chunkPool)
+            {
+                SpawnChunk(chunk.Value, new Vector3(chunk.Key.X, chunk.Key.Y, chunk.Key.Z));
+            }
+            _chunkPool.Clear();
+        }
+        
         //Convert position to the nearest chunk position
         public Vector3 NearestChunk(Vector3 pos)
         {
@@ -241,14 +306,26 @@ namespace VoxelTerrain.Engine
         {
             nonNullChunk.AddEngine(this);
             var chunkId = new ChunkId(pos.x, pos.y, pos.z);
-            WorldData.Chunks.Add(chunkId, nonNullChunk);
+            
+            if (!WorldData.Chunks.ContainsKey(chunkId)) WorldData.Chunks.Add(chunkId, nonNullChunk);
+            
+            if (!nonNullChunk.GetEntity())
+            {
+                var go = Instantiate(_chunkInfo.ChunkPrefab.gameObject, pos, Quaternion.identity);
+                go.transform.parent = transform;
 
-            var go = Instantiate(_chunkInfo.ChunkPrefab.gameObject, pos, Quaternion.identity);
+                //go.transform.position = pos;
+                go.name = pos.ToString();
 
-            //go.transform.position = pos;
-            go.name = pos.ToString();
+                nonNullChunk.AddEntity(go);
 
-            nonNullChunk.AddEntity(go);
+                if (Application.isPlaying)
+                {
+                    if (WorldData.ChunkObjects.ContainsKey(chunkId))
+                        Debug.Log("Chunk: " + chunkId.X + ", " + chunkId.Y + ", " + chunkId.Z + " Exists");
+                    else WorldData.ChunkObjects.Add(chunkId, go);
+                }
+            }
 
             switch (_gpuMesh)
             {
@@ -308,9 +385,6 @@ namespace VoxelTerrain.Engine
                     nonNullChunk.SetMesh(pos);
                     break;
             }
-
-            if (WorldData.ChunkObjects.ContainsKey(chunkId)) Debug.Log("Chunk: " + chunkId.X + ", " + chunkId.Y + ", " + chunkId.Z + " Exists");
-            WorldData.ChunkObjects.Add(chunkId, go);
         }
         
         //Remove the chunk at this position, both data and gameobject
@@ -340,11 +414,16 @@ namespace VoxelTerrain.Engine
             int numPoints = (Chunk.ChunkSize + 1) * (Chunk.ChunkHeight) * (Chunk.ChunkSize + 1);
             int numVoxels = Chunk.ChunkSize * Chunk.ChunkHeight * Chunk.ChunkSize;
             int maxTriangles = numVoxels * 5;
-            triangleBuffer = new ComputeBuffer (maxTriangles, sizeof (float) * 3 * 3, ComputeBufferType.Append);
-            pointBuffer = new ComputeBuffer(numPoints, Unsafe.SizeOf<Voxel>());
-            triCountBuffer = new ComputeBuffer (1, sizeof (int), ComputeBufferType.Raw);
-            noiseBuffer = new ComputeBuffer(_noiseInfo.Length, Unsafe.SizeOf<NoiseInfo>());
-            noiseBuffer.SetData(_noiseInfo, 0, 0, _noiseInfo.Length);
+
+
+                if (Application.isPlaying) ReleaseBuffers();
+
+                triangleBuffer = new ComputeBuffer(maxTriangles, sizeof(float) * 3 * 3, ComputeBufferType.Append);
+                pointBuffer = new ComputeBuffer(numPoints, Unsafe.SizeOf<Voxel>());
+                triCountBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.Raw);
+                noiseBuffer = new ComputeBuffer(_noiseInfo.Length, Unsafe.SizeOf<NoiseInfo>());
+                noiseBuffer.SetData(_noiseInfo, 0, 0, _noiseInfo.Length);
+            
         }
 
         private void ReleaseBuffers()
