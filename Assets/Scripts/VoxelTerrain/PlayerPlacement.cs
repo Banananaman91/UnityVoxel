@@ -39,7 +39,7 @@ namespace VoxelTerrain
             int yCounter = 0;
 
             //get the current voxel at the centre, lowest point
-            byte voxel = chunk[xz, yCounter, xz].Type;
+            var voxel = chunk[xz, yCounter, xz].Type;
 
             //continuously move up until we find an empty space to set the object position
             while (voxel != 0)

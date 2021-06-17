@@ -7,20 +7,12 @@ namespace VoxelTerrain.Engine.InfoData
     [Serializable]
     public struct NoiseInfo
     {
-        [SerializeField] private bool _3dNoise;
-        [SerializeField] private float _noiseScale;
-        [SerializeField] private float _heightScale;
-        [SerializeField] private int _octaves;
-        [SerializeField] private float _lacunarity;
-        [SerializeField] private float _dimension;
-        [SerializeField] private NoiseType _noiseType;
-
-        public bool ThreeDimensional => _3dNoise;
-        public float NoiseScale => _noiseScale;
-        public float HeightScale => _heightScale;
-        public int Octaves => _octaves;
-        public float Lacunarity => _lacunarity;
-        public float Dimension => _dimension;
-        public NoiseType NoiseType => _noiseType;
+        public int ThreeDimensional;
+        public float NoiseScale;
+        public float HeightScale;
+        public int Octaves;
+        public float Lacunarity;
+        public float Dimension;
+        public int NoiseType;
     }
 }

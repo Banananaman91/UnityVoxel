@@ -54,6 +54,7 @@ namespace VoxelTerrain.Engine
                     //set voxel data and dispose of job
                     chunk.Voxels = job.voxels.ToArray();
                     job.voxels.Dispose();
+                    job.noiseData.Dispose();
 
                     //remove job from the dictionary, it isn't needed anymore
                     _jobs.Remove(worldOrigin);
@@ -85,6 +86,7 @@ namespace VoxelTerrain.Engine
                     
                     chunk.Voxels = holder.Job.voxels.ToArray();
                     holder.Job.voxels.Dispose();
+                    holder.Job.noiseData.Dispose();
 
                     _jobs.Remove(worldOrigin);
 
@@ -117,8 +119,8 @@ namespace VoxelTerrain.Engine
                 height = Chunk.ChunkHeight,
                 resolution = Engine.ChunkInfo.VoxelSize,
                 origin = origin,
-                voxels = new NativeArray<Voxel>((Chunk.ChunkSize) * (Chunk.ChunkHeight) * (Chunk.ChunkSize), Allocator.Persistent),
-                noiseData = new NativeArray<NoiseInfo>(Engine.NoiseInfo, Allocator.TempJob),
+                voxels = new NativeArray<Voxel>((Chunk.ChunkSize + 1) * (Chunk.ChunkHeight) * (Chunk.ChunkSize + 1), Allocator.Persistent),
+                noiseData = new NativeArray<NoiseInfo>(Engine.NoiseInfo, Allocator.Persistent),
                 seed = Engine.WorldInfo.Seed
             };
         }

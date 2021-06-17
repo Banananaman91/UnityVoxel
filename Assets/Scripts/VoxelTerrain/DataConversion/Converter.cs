@@ -9,7 +9,7 @@ namespace VoxelTerrain.DataConversion
         private static int ChunkHeight => Chunk.ChunkHeight;
         
         //convert world position to index position of the voxel array
-        public static int PosToIndex(int x, int y, int z) => z * (ChunkSize) * (ChunkHeight) + y * (ChunkSize) + x;
+        public static int PosToIndex(int x, int y, int z) => z * (ChunkSize + 1) * (ChunkHeight) + y * (ChunkSize + 1) + x;
 
         public static Vector3 IndexToPos(int idx)
         {

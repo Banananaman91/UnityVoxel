@@ -2,10 +2,10 @@
 {
     public struct Voxel
     {
-        public byte Type;
+        public int Type;
         public float Value;
 
-        public Voxel(byte type, float value)
+        public Voxel(int type, float value)
         {
             Type = type;
             Value = value;
