@@ -7,7 +7,7 @@ With customisable voxel interactions, voxel-based shader and voxel-based VFX con
 ## WIP
 Currently reworking a lot of these systems to improve the terrain as well as performance.
 For guarantee, last fully working iteration was at
-Commit ID: 0ac3bdf3c310b0312b3de1fc2ad08dafe98a23c2
+![Commit ID: 0ac3bdf3c310b0312b3de1fc2ad08dafe98a23c2](https://github.com/Banananaman91/UnityVoxel/tree/0ac3bdf3c310b0312b3de1fc2ad08dafe98a23c2)
 
 ## Dependencies
 The following packages are required to run:
