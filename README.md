@@ -31,7 +31,7 @@ Customise voxel interactions based on shape and size, offering abilities for des
 
 ![](VoxelInteraction.gif)
 
-## ![Voxel-based Shader]()
+## ![Voxel-based Shader](https://github.com/Banananaman91/UnityVoxel/wiki/Voxel-Based-shader)
 Material shader uses voxel values to map textures to the mesh, using Barycentric coordinates for per-triangle texturing and Triplanar Mapping with individual offsets.
 
 ![](VoxelShader.gif)
