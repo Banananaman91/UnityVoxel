@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using TerrainData;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 using VoxelTerrain.Engine.Dependencies;
 using VoxelTerrain.Engine.InfoData;
 
@@ -25,11 +26,12 @@ namespace VoxelTerrain.Engine
         [SerializeField] private WorldGenerationFunctions _worldGeneration;
         [SerializeField] private bool _updateWater;
         [SerializeField] private bool _gpuMesh;
-        [SerializeField] private bool _updateInEditor;
+        [SerializeField] private bool _previewInEditor;
 #pragma warning restore 0649
 
         public bool UpdateWater => _updateWater;
         private bool _settingsUpdated;
+        private bool _childrenCleared;
 
         //Water update pool
         public Dictionary<ChunkId, Chunk> _waterPool = new Dictionary<ChunkId, Chunk>();
@@ -50,10 +52,13 @@ namespace VoxelTerrain.Engine
 
         #region Unity Functions
 
+        #if UNITY_EDITOR
         private void OnValidate()
         {
+            if (!_previewInEditor) return;
             _settingsUpdated = true;
         }
+        #endif
 
         private void Awake()
         {
@@ -125,23 +130,40 @@ namespace VoxelTerrain.Engine
 
         private void Update()
         {
-            if (!Application.isPlaying && _settingsUpdated && _updateInEditor)
+            switch (Application.isPlaying)
             {
-                CreateBuffers();
-                GenerateEditorChunks();
-                ReleaseBuffers();
-                _settingsUpdated = false;
-            }
-            
-            else if (Application.isPlaying)
-            {
-                foreach (var chunk in WorldData.Chunks)
+                case false when !_previewInEditor && !_childrenCleared:
+                    DestroyChildren();
+                    _childrenCleared = true;
+                    break;
+                case false when _settingsUpdated && _previewInEditor:
+                    CreateBuffers();
+                    GenerateEditorChunks();
+                    ReleaseBuffers();
+                    _settingsUpdated = false;
+                    _childrenCleared = false;
+                    break;
+                case true:
                 {
-                    Vector3 pos = new Vector3(chunk.Key.X, chunk.Key.Y, chunk.Key.Z);
-                    if (!WithinRange(pos) && !_destroyChunks.ContainsKey(chunk.Key)) _destroyChunks.Add(chunk.Key, chunk.Value);
+                    foreach (var chunk in WorldData.Chunks)
+                    {
+                        Vector3 pos = new Vector3(chunk.Key.X, chunk.Key.Y, chunk.Key.Z);
+                        if (!WithinRange(pos) && !_destroyChunks.ContainsKey(chunk.Key)) _destroyChunks.Add(chunk.Key, chunk.Value);
+                    }
+                    if (_gpuMesh) GenerateGpuChunks();
+                    else GenerateJobChunks();
+                    break;
                 }
-                if (_gpuMesh) GenerateGpuChunks();
-                else GenerateJobChunks();
+            }
+        }
+
+        private void DestroyChildren()
+        {
+            var children = GetComponentsInChildren<Transform>();
+            if (children.Length == 0) return;
+            for (int i = children.Length - 1; i >= 0; i--)
+            {
+                if (children[i] != transform) DestroyImmediate(children[i].gameObject);
             }
         }
 
@@ -416,14 +438,14 @@ namespace VoxelTerrain.Engine
             int maxTriangles = numVoxels * 5;
 
 
-                if (Application.isPlaying) ReleaseBuffers();
+            if (!Application.isPlaying) ReleaseBuffers();
 
-                triangleBuffer = new ComputeBuffer(maxTriangles, sizeof(float) * 3 * 3, ComputeBufferType.Append);
-                pointBuffer = new ComputeBuffer(numPoints, Unsafe.SizeOf<Voxel>());
-                triCountBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.Raw);
-                noiseBuffer = new ComputeBuffer(_noiseInfo.Length, Unsafe.SizeOf<NoiseInfo>());
-                noiseBuffer.SetData(_noiseInfo, 0, 0, _noiseInfo.Length);
-            
+            triangleBuffer = new ComputeBuffer(maxTriangles, sizeof(float) * 3 * 3, ComputeBufferType.Append);
+            pointBuffer = new ComputeBuffer(numPoints, Unsafe.SizeOf<Voxel>());
+            triCountBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.Raw);
+            noiseBuffer = new ComputeBuffer(_noiseInfo.Length, Unsafe.SizeOf<NoiseInfo>());
+            noiseBuffer.SetData(_noiseInfo, 0, 0, _noiseInfo.Length);
+
         }
 
         private void ReleaseBuffers()
